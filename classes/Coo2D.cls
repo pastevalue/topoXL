@@ -12,7 +12,7 @@ Option Explicit
 Private m_X As Double 'Abscissa
 Private m_Y As Double 'Ordinate
 
-'Class constructor
+'Class constructor add1
 Private Sub Class_Initialize()
     m_X = 0
     m_Y = 0
