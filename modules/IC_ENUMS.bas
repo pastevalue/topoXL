@@ -1,4 +1,12 @@
 Attribute VB_Name = "IC_ENUMS"
+''=======================================================
+''Called by:
+''    Modules: IntervalCollectionsInit
+''    Classes: Interval
+''Calls:
+''    Modules: None
+''    Classes: None
+''=======================================================
 Option Explicit
 Option Private Module
 

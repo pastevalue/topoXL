@@ -1,4 +1,12 @@
 Attribute VB_Name = "UDF_Math"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: ArcCircle
+''Calls:
+''    Modules: UDF_COGO, MathFunctions
+''    Classes: None
+''=======================================================
 Option Explicit
 Public Const PI As Double = 3.14159265358979
 'Returns the arc sine of a number.

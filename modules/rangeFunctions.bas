@@ -1,4 +1,12 @@
 Attribute VB_Name = "rangeFunctions"
+''=======================================================
+''Called by:
+''    Modules: UDF_DataManipulation, UDF_COGO
+''    Classes: None
+''Calls:
+''    Modules: ArrayFunctions
+''    Classes: None
+''=======================================================
 Option Private Module
 Option Explicit
 

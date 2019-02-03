@@ -1,4 +1,12 @@
 Attribute VB_Name = "UDF_COGO"
+''=======================================================
+''Called by:
+''    Modules: UDF_Math
+''    Classes: ArcCircle, ArcClothoid, Line2D, RLarcCircle
+''Calls:
+''    Modules: COGOfunctions, MathFunctions, rangeFunctions
+''    Classes: None
+''=======================================================
 Option Explicit
 
 'get distance between two sets of 2D coordinates

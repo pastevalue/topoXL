@@ -1,4 +1,12 @@
 Attribute VB_Name = "registerFunctions"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: None
+''    Classes: None
+''=======================================================
 Option Private Module
 Sub registerUDF(UDFname As String, description As String, category As Integer)
     'Application.MacroOptions Macro:=UDFname, description:=description, category:=category

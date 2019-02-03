@@ -1,4 +1,12 @@
 Attribute VB_Name = "UDF_DataManipulation"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: rangeFunctions, ArrayFunctions
+''    Classes: None
+''=======================================================
 Option Explicit
 'Public Function dmFilterColumsFromRange(rng As Range, ParamArray colIndex() As Variant) As Variant
 '    Dim tempIndexColl As Collection

@@ -1,4 +1,12 @@
 Attribute VB_Name = "UDF_Analyze"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: None
+''    Classes: None
+''=======================================================
 Option Explicit
 
 Public Function anlHasFormula(ParamArray ranges() As Variant) As Variant

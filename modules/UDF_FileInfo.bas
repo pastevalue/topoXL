@@ -1,4 +1,12 @@
 Attribute VB_Name = "UDF_FileInfo"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: None
+''    Classes: None
+''=======================================================
 Option Explicit
 
 'Verfify if a file exists

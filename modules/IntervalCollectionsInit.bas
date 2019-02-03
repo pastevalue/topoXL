@@ -1,4 +1,12 @@
 Attribute VB_Name = "IntervalCollectionsInit"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: None
+''    Classes: Interval, IntvlColl, IntvlColls
+''=======================================================
 Option Private Module
 Option Explicit
 Public INTVL_COLLS As New IntvlColls

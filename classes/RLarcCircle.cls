@@ -7,6 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: RedLinesInit
+''    Classes: None
+''Calls:
+''    Modules: RLenums, UDF_COGO
+''    Classes: Coo2D, ArcCircle
+''=======================================================
 Option Explicit
 Implements RLelement
 Private m_Type As RL_ELEM_TYPES

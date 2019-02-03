@@ -7,6 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: RLarcCircle
+''Calls:
+''    Modules: RLenums, UDF_COGO, UDF_Math
+''    Classes: Coo2D
+''=======================================================
 Option Explicit
 
 'primary members

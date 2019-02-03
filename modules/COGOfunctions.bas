@@ -1,4 +1,12 @@
 Attribute VB_Name = "COGOfunctions"
+''=======================================================
+''Called by:
+''    Modules: UDF_COGO
+''    Classes: None
+''Calls:
+''    Modules: MathFunctions
+''    Classes: None
+''=======================================================
 Option Private Module
 Option Explicit
 

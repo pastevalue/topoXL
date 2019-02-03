@@ -7,6 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: IntervalCollectionsInit
+''    Classes: IntvlColls
+''Calls:
+''    Modules: None
+''    Classes: IntvlColl
+''=======================================================
 Option Explicit
 Private m_name As String
 Private m_intervals As Collection

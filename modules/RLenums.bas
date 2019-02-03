@@ -1,4 +1,12 @@
 Attribute VB_Name = "RLenums"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: RLline, RLarcCircle, RLarcClothoid, RedLinesInit
+''Calls:
+''    Modules: IC_ENUMS
+''    Classes: None
+''=======================================================
 Option Explicit
 Option Private Module
 

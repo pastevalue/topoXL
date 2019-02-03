@@ -7,6 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: IntervalCollectionsInit
+''    Classes: IntvlColl
+''Calls:
+''    Modules: IC_ENUMS
+''    Classes: None
+''=======================================================
 Option Explicit
 
 Private m_startVal As Double

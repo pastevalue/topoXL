@@ -7,12 +7,21 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: UDF_RedLine
+''    Classes: Line2D, ArcCircle, ArcClothoid, RLelement,
+''             RLarcCircle, RLarcClothoid,RedLine, RLline
+''Calls:
+''    Modules: None
+''    Classes: None
+''=======================================================
 Option Explicit
 
 Private m_X As Double 'Abscissa
 Private m_Y As Double 'Ordinate
 
-'Class constructor add1
+'Class constructor
 Private Sub Class_Initialize()
     m_X = 0
     m_Y = 0

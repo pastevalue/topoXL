@@ -7,6 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: RLenums
+''    Classes: None
+''=======================================================
 Option Explicit
 Private Const NAME_PREFIX As String = "tblRL" 'use this constant to validate, by name prefix, that a table contains Red Line information
 Private Const TYPE_STR As String = "Element Type"

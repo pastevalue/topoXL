@@ -7,6 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: RedLinesInit
+''    Classes: RedLine
+''Calls:
+''    Modules: None
+''    Classes: Coo2D
+''=======================================================
 Option Explicit
 
 'abstract function to get a set of coordinates from a RLelement at a specified station

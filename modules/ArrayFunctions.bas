@@ -1,4 +1,12 @@
 Attribute VB_Name = "ArrayFunctions"
+''=======================================================
+''Called by:
+''    Modules: rangeFunctions, UDF_DataManipulation
+''    Classes: None
+''Calls:
+''    Modules: None
+''    Classes: None
+''=======================================================
 Option Private Module
 Option Explicit
 

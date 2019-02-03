@@ -1,4 +1,12 @@
 Attribute VB_Name = "UDF_Text"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: None
+''    Classes: None
+''=======================================================
 Option Explicit
 
 'returns the sum of integers from the received ranges

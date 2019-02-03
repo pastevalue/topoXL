@@ -1,4 +1,12 @@
 Attribute VB_Name = "UDF_RedLine"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: None
+''    Classes: Coo2D
+''=======================================================
 Option Explicit
 
 Public Function rlGetCooArray(rlName As String, station As Double, offset As Double) As Variant

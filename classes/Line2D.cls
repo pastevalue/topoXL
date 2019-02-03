@@ -7,6 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: RLline
+''Calls:
+''    Modules: UDF_COGO
+''    Classes: Coo2D
+''=======================================================
 Option Explicit
 
 Private m_startCoo As Coo2D

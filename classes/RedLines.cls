@@ -7,6 +7,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+''=======================================================
+''Called by:
+''    Modules: RedLinesInit
+''    Classes: None
+''Calls:
+''    Modules: None
+''    Classes: RedLine
+''=======================================================
 Option Explicit
 Private m_redLines As Collection
 

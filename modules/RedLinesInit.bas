@@ -1,4 +1,12 @@
 Attribute VB_Name = "RedLinesInit"
+''=======================================================
+''Called by:
+''    Modules: None
+''    Classes: None
+''Calls:
+''    Modules: RLenums
+''    Classes: RedLine, RedLines, RLarcCircle, RLarcClothoid, RLelement, RLline
+''=======================================================
 Option Private Module
 Option Explicit
 Public RED_LINES As New RedLines
