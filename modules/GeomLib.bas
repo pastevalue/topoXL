@@ -14,17 +14,46 @@ Attribute VB_Name = "GeomLib"
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-''=======================================================
-''Description
-''Stores basic geometry functions
-''=======================================================
-
 '@Folder("TopoXL.geom")
 Option Explicit
+Option Private Module
 
-'Returns the distance between two sets of 2D grid coordinates
-Public Function Dist2D(X1 As Double, Y1 As Double, X2 As Double, Y2 As Double) As Double
-    Dist2D = Sqr((X1 - X2) ^ 2 + (Y1 - Y2) ^ 2)
+''=======================================================
+'' Description:
+'' Stores basic geometry functions
+''=======================================================
+
+
+Public Const PI As Double = 3.14159265358979
+
+' Returns the distance between two sets of 2D grid coordinates
+Public Function Dist2D(x1 As Double, y1 As Double, x2 As Double, y2 As Double) As Double
+    Dist2D = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 End Function
 
+' Returns the angle in radians between the positive x-axis
+' and the ray to the point (X,Y). The returned value
+' is within range (-pi, pi]
+'
+' Raises error for (0,0)
+Public Function Atn2(X As Double, Y As Double) As Double
+    Select Case X
+    Case Is > 0
+        Atn2 = Atn(Y / X)
+    Case Is < 0
+        Dim tmpSign As Integer
+        If Y = 0 Then
+            tmpSign = 1
+        Else
+            tmpSign = Sgn(Y)
+        End If
+        Atn2 = Atn(Y / X) + PI * tmpSign
+    Case Is = 0
+        If Y = 0 Then
+         Err.Raise 5, "Atan2 function", "Cant compute Atan2 on (0,0)"
+        Else
+            Atn2 = PI / 2 * Sgn(Y)
+        End If
+    End Select
+End Function
 
