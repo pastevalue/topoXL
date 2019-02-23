@@ -14,11 +14,11 @@ Attribute VB_Name = "TestGeomFactory"
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-Option Explicit
-Option Private Module
-
 '@TestModule
 '@Folder("Tests")
+
+Option Explicit
+Option Private Module
 
 Private Assert As Object
 Private Fakes As Object
@@ -44,20 +44,20 @@ Public Sub TestNewPointFromValidVariant()
     'Arrange:
     Dim sut As Point
     Dim expected As New Point
-    Dim X As Variant
-    Dim Y As Variant
+    Dim x As Variant
+    Dim y As Variant
     
     'Act:
-    X = "3.33"
-    Y = "-6.0"
-    expected.X = 3.33
-    expected.Y = -6#
+    x = "3.33"
+    y = "-6.0"
+    expected.x = 3.33
+    expected.y = -6#
     
-    Set sut = GeomFactory.NewPointFromVariant(X, Y)
+    Set sut = GeomFactory.NewPointFromVariant(x, y)
     
     'Assert:
-    Assert.AreEqual expected.X, sut.X, "Failed to extract X Double value from Variant!"
-    Assert.AreEqual expected.Y, sut.Y, "Failed to extract Y Double values from Variant!"
+    Assert.AreEqual expected.x, sut.x, "Failed to extract X Double value from Variant!"
+    Assert.AreEqual expected.y, sut.y, "Failed to extract Y Double values from Variant!"
 
 TestExit:
     Exit Sub
@@ -71,13 +71,13 @@ Public Sub TestNewPointFromInvalidVariant()
     
     'Arrange:
     Dim sut As Point
-    Dim X As Variant
-    Dim Y As Variant
+    Dim x As Variant
+    Dim y As Variant
     
     'Act:
-    X = "3.33"
-    Y = "-6.0abc"
-    Set sut = GeomFactory.NewPointFromVariant(X, Y)
+    x = "3.33"
+    y = "-6.0abc"
+    Set sut = GeomFactory.NewPointFromVariant(x, y)
 
     'Assert:
     Assert.IsTrue sut Is Nothing, "Nothing expected on Point initialize with invalid arguments!"
@@ -90,30 +90,6 @@ End Sub
 
 '@TestMethod
 Public Sub TestNewMeasOffsetFromValidVariant()
-    On Error GoTo TestFail
-    
-    'Arrange:
-    Dim sut As MeasOffset
-    Dim m As Variant
-    Dim o As Variant
-    
-    'Act:
-    m = "3.33"
-    o = "-6.0abc"
-    
-    Set sut = GeomFactory.NewMeasOffsetFromVariant(m, o)
-    
-    'Assert:
-    Assert.IsTrue sut Is Nothing, "Nothing expected on MeasOffset initialize with invalid arguments!"
-
-TestExit:
-    Exit Sub
-TestFail:
-    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
-End Sub
-
-'@TestMethod
-Public Sub TestNewMeasOffsetFromInvalidVariant()
     On Error GoTo TestFail
     
     'Arrange:
@@ -139,3 +115,91 @@ TestExit:
 TestFail:
     Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
 End Sub
+
+'@TestMethod
+Public Sub TestNewMeasOffsetFromInvalidVariant()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As MeasOffset
+    Dim m As Variant
+    Dim o As Variant
+    
+    'Act:
+    m = "3.33"
+    o = "-6.0abc"
+    
+    Set sut = GeomFactory.NewMeasOffsetFromVariant(m, o)
+    
+    'Assert:
+    Assert.IsTrue sut Is Nothing, "Nothing expected on MeasOffset initialize with invalid arguments!"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewLineSegmentFromValidVariant()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As LineSegment
+    Dim expected As New LineSegment
+    Dim x1 As Variant
+    Dim y1 As Variant
+    Dim x2 As Variant
+    Dim y2 As Variant
+    
+    'Act:
+    x1 = "3.33"
+    y1 = "-6.0"
+    x2 = "3.0"
+    y2 = "6.66"
+    expected.Init 3.33, -6, 3, 6.66
+    
+    Set sut = GeomFactory.NewLineSegmentFromVariant(x1, y1, x2, y2)
+    
+    'Assert:
+    Assert.AreEqual expected.P1.x, sut.P1.x
+    Assert.AreEqual expected.P1.y, sut.P1.y
+    Assert.AreEqual expected.P2.x, sut.P2.x
+    Assert.AreEqual expected.P2.y, sut.P2.y
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewLineSegmentFromInvalidVariant()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As LineSegment
+    Dim expected As New LineSegment
+    Dim x1 As Variant
+    Dim y1 As Variant
+    Dim x2 As Variant
+    Dim y2 As Variant
+    
+    'Act:
+    x1 = "3.33"
+    y1 = "-6.0"
+    x2 = "3.0"
+    y2 = "6.66abc"
+    expected.Init 3.33, -6, 3, 6.66
+    
+    Set sut = GeomFactory.NewLineSegmentFromVariant(x1, y1, x2, y2)
+    
+    'Assert:
+    Assert.IsTrue sut Is Nothing, "Nothing expected on LineString initialize with invalid arguments!"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
