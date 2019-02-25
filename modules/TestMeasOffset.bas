@@ -14,11 +14,11 @@ Attribute VB_Name = "TestMeasOffset"
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-Option Explicit
-Option Private Module
-
 '@TestModule
 '@Folder("Tests")
+
+Option Explicit
+Option Private Module
 
 Private Assert As Object
 Private Fakes As Object
@@ -68,4 +68,29 @@ TestFail:
     Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
 End Sub
 
+'@TestMethod
+Public Sub TestIsEqual()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As New MeasOffset
+    Dim eMO As New MeasOffset                    'equivalent Point
+    Dim m As Double
+    Dim o As Double
+    
+    'Act:
+    m = 1 / 3
+    o = Math.Sqr(2)
+    
+    sut.Init m, o
+    eMO.Init m, o
+
+    'Assert:
+    Assert.IsTrue sut.IsEqual(eMO), "M and O of equivalent MeasOffset are different!"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
 

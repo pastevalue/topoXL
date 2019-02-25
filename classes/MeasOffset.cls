@@ -58,6 +58,12 @@ Public Sub Init(ByVal m As Double, ByVal o As Double)
     m_o = o
 End Sub
 
+' Test if this MeasOffset is equivalent to another
+' Returns TRUE if all members are equal
+Public Function IsEqual(mo As MeasOffset) As Boolean
+    IsEqual = Me.m = mo.m And Me.o = mo.o
+End Function
+
 ' Returns a string representation of the Point class
 Public Function ToString() As String
     ToString = "(" & m_m & "," & m_o & ")"
