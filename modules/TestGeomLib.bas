@@ -16,6 +16,7 @@ Attribute VB_Name = "TestGeomLib"
 
 '@TestModule
 '@Folder("Tests")
+
 Option Explicit
 Option Private Module
 
@@ -96,5 +97,35 @@ TestFail:
     Else
         Resume Assert
     End If
+End Sub
+
+'@TestMethod
+Public Sub TestGetOrientationIndex()
+    On Error GoTo TestFail
+    
+    'Assert:
+    ' Horizontal line
+    Assert.AreEqual -1, GeomLib.GetOrientationIndex(0, 0, 1, 0, 0, 1), "Point is on the left of the horizontal line!"
+    Assert.AreEqual -1, GeomLib.GetOrientationIndex(1, 0, 0, 0, 0, -1), "Point is on the left of the horizontal line!"
+    Assert.AreEqual 0, GeomLib.GetOrientationIndex(0, 0, 1, 0, 0.5, 0), "Point is on the horizontal line!"
+    Assert.AreEqual 1, GeomLib.GetOrientationIndex(0, 0, 1, 0, 0, -1), "Point is on the right of the horizontal line!"
+    Assert.AreEqual 1, GeomLib.GetOrientationIndex(1, 0, 0, 0, 0, 1), "Point is on the right of the horizontal line!"
+    ' Vertical line
+    Assert.AreEqual -1, GeomLib.GetOrientationIndex(0, 0, 0, 1, -1, 0), "Point is on the left of the vertical line!"
+    Assert.AreEqual -1, GeomLib.GetOrientationIndex(0, 1, 0, 0, 1, 0), "Point is on the left of the vertical line!"
+    Assert.AreEqual 0, GeomLib.GetOrientationIndex(0, 0, 0, 1, 0, 0.5), "Point is on the vertical line!"
+    Assert.AreEqual 1, GeomLib.GetOrientationIndex(0, 0, 0, 1, 1, 0), "Point is on the right of the vertical line!"
+    Assert.AreEqual 1, GeomLib.GetOrientationIndex(0, 1, 0, 0, -1, 0), "Point is on the right of the vertical line!"
+    ' Sloped line
+    Assert.AreEqual -1, GeomLib.GetOrientationIndex(0, 0, 1, 1, 0, 1), "Point is on the left of the sloped line!"
+    Assert.AreEqual -1, GeomLib.GetOrientationIndex(1, 1, 0, 0, 1, 0), "Point is on the left of the sloped line!"
+    Assert.AreEqual 0, GeomLib.GetOrientationIndex(0, 0, 1, 1, 0.5, 0.5), "Point is on the sloped line!"
+    Assert.AreEqual 1, GeomLib.GetOrientationIndex(0, 0, 1, 1, 1, 0), "Point is on the right of the sloped line!"
+    Assert.AreEqual 1, GeomLib.GetOrientationIndex(1, 1, 0, 0, 0, 1), "Point is on the right of the sloped line!"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
 End Sub
 
