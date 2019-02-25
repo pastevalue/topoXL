@@ -14,20 +14,21 @@ Attribute VB_Name = "GeomLib"
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-'@Folder("TopoXL.geom")
-Option Explicit
-Option Private Module
-
-''=======================================================
+''========================================================================
 '' Description:
 '' Stores basic geometry functions
-''=======================================================
+''========================================================================
 
+'@Folder("TopoXL.geom")
+
+Option Explicit
+Option Private Module
 
 Public Const PI As Double = 3.14159265358979
 
 ' Returns the distance between two sets of 2D grid coordinates
-Public Function Dist2D(x1 As Double, y1 As Double, x2 As Double, y2 As Double) As Double
+Public Function Dist2D(ByVal x1 As Double, ByVal y1 As Double, _
+                       ByVal x2 As Double, ByVal y2 As Double) As Double
     Dist2D = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 End Function
 
@@ -36,24 +37,35 @@ End Function
 ' is within range (-pi, pi]
 '
 ' Raises error for (0,0)
-Public Function Atn2(X As Double, Y As Double) As Double
-    Select Case X
+Public Function Atn2(ByVal x As Double, ByVal y As Double) As Double
+    Select Case x
     Case Is > 0
-        Atn2 = Atn(Y / X)
+        Atn2 = Atn(y / x)
     Case Is < 0
         Dim tmpSign As Integer
-        If Y = 0 Then
+        If y = 0 Then
             tmpSign = 1
         Else
-            tmpSign = Sgn(Y)
+            tmpSign = Sgn(y)
         End If
-        Atn2 = Atn(Y / X) + PI * tmpSign
+        Atn2 = Atn(y / x) + PI * tmpSign
     Case Is = 0
-        If Y = 0 Then
-         Err.Raise 5, "Atan2 function", "Cant compute Atan2 on (0,0)"
+        If y = 0 Then
+            Err.Raise 5, "Atan2 function", "Cant compute Atan2 on (0,0)"
         Else
-            Atn2 = PI / 2 * Sgn(Y)
+            Atn2 = PI / 2 * Sgn(y)
         End If
     End Select
 End Function
+
+' Gets the orientation index (side) of a set of coordinates relative to a line
+' Returns -1 if coordinates are on the left, 0 if the coordinates are on the line
+' and +1 if coordinates are on the right
+' Left and right are considered relative to the start and end coordinates of the line
+Public Function GetOrientationIndex(ByVal x1 As Double, ByVal y1 As Double, _
+                                    ByVal x2 As Double, ByVal y2 As Double, _
+                                    ByVal x As Double, ByVal y As Double) As Integer
+    GetOrientationIndex = Sgn((y2 - y1) * (x - x1) - (x2 - x1) * (y - y1))
+End Function
+
 
