@@ -22,11 +22,15 @@ Attribute VB_Exposed = False
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-''=======================================================
-''Called by:
+''===================================================================
+'' Description
+'' Represents a location defined by a set of 2D grid
+'' coordinates
+''-------------------------------------------------------
+'' Called by:
 ''    Modules: None
 ''    Classes: None
-''Calls:
+'' Calls:
 ''    Modules: None
 ''    Classes: None
 ''=======================================================
@@ -37,37 +41,44 @@ Option Explicit
 Private m_X As Double                            'Abscissa: distance measured parallel to the horizontal axis
 Private m_Y As Double                            'Ordinate: distance measured parallel to the vertical axis
 
-'Class constructor
+' Class constructor
 Private Sub Class_Initialize()
     m_X = 0
     m_Y = 0
 End Sub
 
-'Class initialization
-Public Sub Init(ByVal X As Double, ByVal Y As Double)
-    m_X = X
-    m_Y = Y
+' Class initialization
+Public Sub Init(ByVal x As Double, ByVal y As Double)
+    m_X = x
+    m_Y = y
 End Sub
 
-'Returns a string representation of the Point class
+' Test if this Point is equivalent to another
+' Returns TRUE if all members are equal
+Public Function IsEqual(p As Point) As Boolean
+    IsEqual = Me.x = p.x And Me.y = p.y
+End Function
+
+' Returns a string representation of the Point class
 Public Function ToString() As String
     ToString = "(" & m_X & "," & m_Y & ")"
 End Function
 
-'X property
-Public Property Get X() As Double
-    X = m_X
+' X property
+Public Property Get x() As Double
+    x = m_X
 End Property
 
-Public Property Let X(X As Double)
-    m_X = X
+Public Property Let x(x As Double)
+    m_X = x
 End Property
 
-'Y property
-Public Property Get Y() As Double
-    Y = m_Y
+' Y property
+Public Property Get y() As Double
+    y = m_Y
 End Property
 
-Public Property Let Y(Y As Double)
-    m_Y = Y
+Public Property Let y(y As Double)
+    m_Y = y
 End Property
+
