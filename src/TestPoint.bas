@@ -14,11 +14,11 @@ Attribute VB_Name = "TestPoint"
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-Option Explicit
-Option Private Module
-
 '@TestModule
 '@Folder("Tests")
+
+Option Explicit
+Option Private Module
 
 Private Assert As Object
 Private Fakes As Object

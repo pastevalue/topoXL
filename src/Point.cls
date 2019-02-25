@@ -56,7 +56,7 @@ End Sub
 ' Test if this Point is equivalent to another
 ' Returns TRUE if all members are equal
 Public Function IsEqual(p As Point) As Boolean
-    IsEqual = Me.x = p.x And Me.y = p.y
+    IsEqual = m_X = p.x And m_Y = p.y
 End Function
 
 ' Returns a string representation of the Point class

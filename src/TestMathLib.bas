@@ -16,6 +16,7 @@ Attribute VB_Name = "TestMathLib"
 
 '@TestModule
 '@Folder("Tests")
+
 Option Explicit
 Option Private Module
 
