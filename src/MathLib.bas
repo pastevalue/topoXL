@@ -33,4 +33,11 @@ Function AreDoublesEqual(ByVal d1 As Double, ByVal d2 As Double, _
     
 End Function
 
-
+' Returns a rounded a number down to the nearest integer or to the nearest
+' multiple of significance
+' Parameters:
+'   - n: the number to be rounded down
+'   - f: fhe multiple to which you want to round
+Public Function Floor(ByVal n As Double, Optional ByVal f As Double = 1) As Double
+    Floor = Int(n / f) * f
+End Function
