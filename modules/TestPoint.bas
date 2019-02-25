@@ -58,4 +58,29 @@ TestFail:
     Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
 End Sub
 
+'@TestMethod
+Public Sub TestIsEqual()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As New Point
+    Dim eP As New Point                          'equivalent Point
+    Dim x As Double
+    Dim y As Double
+    
+    'Act:
+    x = 1 / 3
+    y = Math.Sqr(2)
+    
+    sut.Init x, y
+    eP.Init x, y
+
+    'Assert:
+    Assert.IsTrue sut.IsEqual(eP), "X and Y of equivalent points are different!"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
 
