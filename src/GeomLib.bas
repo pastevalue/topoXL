@@ -25,17 +25,18 @@ Option Explicit
 Option Private Module
 
 Public Const PI As Double = 3.14159265358979
-Public Const TWO_PI As Double = 2 * PI
+Public Const TWO_PI As Double = 6.28318530717959
+Private Const MODULE_NAME As String = "GeomLib"
 
 ' Returns the distance between two sets of 2D grid coordinates
 Public Function Dist2D(ByVal x1 As Double, ByVal y1 As Double, _
                        ByVal x2 As Double, ByVal y2 As Double) As Double
-    Dist2D = Math.Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+    Dist2D = Math.Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
 End Function
 
 ' Returns the arcsine of a number.
 ' Raises error if x is not within [-1,1] interval
-Public Function ASin(x As Double) As Double
+Public Function ASin(ByVal x As Double) As Double
     Select Case x
     Case -1
         ASin = 6 * Math.Atn(1)
@@ -50,7 +51,7 @@ End Function
 
 ' Returns the arccosine of a number.
 ' Raises error if x is not within [-1,1] interval
-Public Function ACos(x As Double) As Double
+Public Function ACos(ByVal x As Double) As Double
     Select Case x
     Case -1
         ACos = 4 * Math.Atn(1)
@@ -72,16 +73,14 @@ Public Function Atn2(ByVal x As Double, ByVal y As Double) As Double
     Case Is > 0
         Atn2 = Math.Atn(y / x)
     Case Is < 0
-        Dim tmpSign As Integer
-        If y = 0 Then
-            tmpSign = 1
+        If y < 0 Then
+            Atn2 = Math.Atn(y / x) - PI
         Else
-            tmpSign = Sgn(y)
+            Atn2 = Math.Atn(y / x) + PI
         End If
-        Atn2 = Math.Atn(y / x) + PI * tmpSign
     Case Is = 0
         If y = 0 Then
-            Err.Raise 5, "Atn2 function", "Cant compute Atn2 on (0,0)!"
+            Err.Raise 5, MODULE_NAME & ".Atn2", "Can't compute Atn2 on (0,0)!"
         Else
             Atn2 = PI / 2 * Sgn(y)
         End If
@@ -102,11 +101,12 @@ End Function
 ' Parameters:
 '   - r: the radius of the circle
 ' Raises error for negative r (radius)
-Public Function GetCircleCircumference(ByVal r As Double)
+Public Function GetCircleCircumference(ByVal r As Double) As Double
     If r >= 0 Then
-        GetCircleCircumference = 2 * PI * r
+        GetCircleCircumference = TWO_PI * r
     Else
-        Err.Raise 5, "Circle Circumference function", "Can't compute circumference of a circle with negative radius!"
+        Err.Raise 5, MODULE_NAME & ".GetCircleCircumference", _
+                  "Can't compute circumference of a circle with negative radius!"
     End If
 End Function
 
@@ -117,5 +117,6 @@ End Function
 Public Function NormalizeAngle(ByVal a As Double, ByVal c As Double) As Double
     NormalizeAngle = a - TWO_PI * MathLib.Floor((a + PI - c) / TWO_PI)
 End Function
+
 
 
