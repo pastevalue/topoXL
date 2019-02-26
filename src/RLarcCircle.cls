@@ -47,7 +47,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'initialize class
-Public Sub init(ac As ArcCircle, startStation As Double)
+Public Sub Init(ac As ArcCircle, startStation As Double)
     Set m_arcCircle = ac
     RLelement_setStations startStation
 End Sub
@@ -126,7 +126,7 @@ Public Function initFromCollection(coll As Collection) As Boolean
             tempArcCircle.initFromInCenLenDir tempCooIn, tempCooCenter, tempLength, tempCurveDirection
             
             'initialize class
-            Call init(tempArcCircle, tempStartStation)
+            Call Init(tempArcCircle, tempStartStation)
             initFromCollection = True
             
         Case RL_INPUT_TYPE.INPUT_IN_OUT_RAD_DIR_ST
@@ -173,7 +173,7 @@ Public Function initFromCollection(coll As Collection) As Boolean
             tempArcCircle.initFromInOutRadDir tempCooIn, tempCooOut, tempRadius, tempCurveDirection
             
             'initialize class
-            Call init(tempArcCircle, tempStartStation)
+            Call Init(tempArcCircle, tempStartStation)
             initFromCollection = True
             
         Case Else

@@ -49,7 +49,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'Initialize class
-Public Sub init(c As ArcClothoid, spiralType As SPIRAL_TYPE, startStation As Double)
+Public Sub Init(c As ArcClothoid, spiralType As SPIRAL_TYPE, startStation As Double)
     Set m_clothoid = c
     m_spiralType = spiralType
     RLelement_setStations startStation
@@ -130,11 +130,11 @@ Public Function initFromCollection(coll As Collection) As Boolean
             'init tempArcClothoid
             Dim tempArcClothoid As ArcClothoid
             Set tempArcClothoid = New ArcClothoid
-            tempArcClothoid.init tempCooIn, tempCooPeak, tempLength, tempRadius, tempCurveDirection
+            tempArcClothoid.Init tempCooIn, tempCooPeak, tempLength, tempRadius, tempCurveDirection
             
             
             'initialize class
-            Call init(tempArcClothoid, tempSpiralType, tempStartPosition)
+            Call Init(tempArcClothoid, tempSpiralType, tempStartPosition)
             initFromCollection = True
             
         Case Else

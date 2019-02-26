@@ -47,7 +47,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'Initialize class
-Public Sub init(l As Line2D, startStation As Double)
+Public Sub Init(l As Line2D, startStation As Double)
     Set m_Line2D = l
     RLelement_setStations startStation
 End Sub
@@ -90,10 +90,10 @@ Public Function initFromCollection(coll As Collection) As Boolean
             
             'init tempLine2D element
             Dim tempLine2D As New Line2D
-            tempLine2D.init tempCooIn, tempCooOut
+            tempLine2D.Init tempCooIn, tempCooOut
             
             'initialize class
-            Call init(tempLine2D, tempStartStation)
+            Call Init(tempLine2D, tempStartStation)
             initFromCollection = True
             
         Case Else

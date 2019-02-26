@@ -59,7 +59,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'Initialize class
-Public Sub init(clothoidIn As Coo2D, peak As Coo2D, length As Double, radius As Double, curveDirection As CURVE_DIRECTION)
+Public Sub Init(clothoidIn As Coo2D, peak As Coo2D, length As Double, radius As Double, curveDirection As CURVE_DIRECTION)
     Set m_startCoo = clothoidIn
     Set m_peak = peak
     m_rad = radius

@@ -46,7 +46,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'Class initialization
-Public Sub init(coo1 As Coo2D, coo2 As Coo2D)
+Public Sub Init(coo1 As Coo2D, coo2 As Coo2D)
     Set m_startCoo = coo1
     Set m_endCoo = coo2
     Call setAzimuth

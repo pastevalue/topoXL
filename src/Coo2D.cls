@@ -43,7 +43,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'Class initialization
-Public Sub init(x As Double, y As Double)
+Public Sub Init(x As Double, y As Double)
     m_X = x
     m_Y = y
 End Sub
@@ -51,7 +51,7 @@ End Sub
 'Class initialization from string
 Public Function initFromStrings(x As String, y As String)
     On Error GoTo ErrHandler
-    Me.init CDbl(x), CDbl(y)
+    Me.Init CDbl(x), CDbl(y)
     initFromStrings = True
     Exit Function
 ErrHandler:
