@@ -23,7 +23,7 @@ Attribute VB_Name = "UDF_Math"
 ''    Classes: None
 ''=======================================================
 Option Explicit
-Public Const PI As Double = 3.14159265358979
+'Public Const PI As Double = 3.14159265358979
 'Returns the arc sine of a number.
 'Value parameter must be in [-1,1] interval.
 Public Function mathASin(value As Double) As Double
