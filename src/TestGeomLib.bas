@@ -42,7 +42,7 @@ Public Sub TestDist2D()
     On Error GoTo TestFail
 
     'Assert:
-    Assert.AreEqual 5#, Dist2D(0, 0, 3, 4)
+    Assert.AreEqual 5#, dist2D(0, 0, 3, 4)
 
 TestExit:
     Exit Sub
@@ -61,14 +61,14 @@ Public Sub TestAtan2()
     
     'Assert:
     
-    Assert.IsTrue MathLib.AreDoublesEqual(GeomLib.PI / 2, GeomLib.Atn2(0, 1), eps), "Expected PI/2!"
-    Assert.IsTrue MathLib.AreDoublesEqual(GeomLib.PI / 4, GeomLib.Atn2(1, 1), eps), "Expected PI/4!"
-    Assert.IsTrue MathLib.AreDoublesEqual(0#, GeomLib.Atn2(1, 0), eps), "Expected 0!"
-    Assert.IsTrue MathLib.AreDoublesEqual(-GeomLib.PI / 4, GeomLib.Atn2(1, -1), eps), "Expected -PI/4"
-    Assert.IsTrue MathLib.AreDoublesEqual(-GeomLib.PI / 2, GeomLib.Atn2(0, -1), eps), "Expected -PI/2"
-    Assert.IsTrue MathLib.AreDoublesEqual(-3 * GeomLib.PI / 4, GeomLib.Atn2(-1, -1), eps), "Expected -3/4*PI"
-    Assert.IsTrue MathLib.AreDoublesEqual(GeomLib.PI, GeomLib.Atn2(-1, 0), eps), "Expected PI"
-    Assert.IsTrue MathLib.AreDoublesEqual(3 * GeomLib.PI / 4, GeomLib.Atn2(-1, 1), eps), "Expected 3/4*PI"
+    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI / 2, GeomLib.Atn2(0, 1), eps), "Expected PI/2!"
+    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI / 4, GeomLib.Atn2(1, 1), eps), "Expected PI/4!"
+    Assert.IsTrue MathLib.areDoublesEqual(0#, GeomLib.Atn2(1, 0), eps), "Expected 0!"
+    Assert.IsTrue MathLib.areDoublesEqual(-GeomLib.PI / 4, GeomLib.Atn2(1, -1), eps), "Expected -PI/4"
+    Assert.IsTrue MathLib.areDoublesEqual(-GeomLib.PI / 2, GeomLib.Atn2(0, -1), eps), "Expected -PI/2"
+    Assert.IsTrue MathLib.areDoublesEqual(-3 * GeomLib.PI / 4, GeomLib.Atn2(-1, -1), eps), "Expected -3/4*PI"
+    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI, GeomLib.Atn2(-1, 0), eps), "Expected PI"
+    Assert.IsTrue MathLib.areDoublesEqual(3 * GeomLib.PI / 4, GeomLib.Atn2(-1, 1), eps), "Expected 3/4*PI"
     
 TestExit:
     Exit Sub
@@ -100,28 +100,28 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetOrientationIndex()
+Public Sub TestOrientationIndex()
     On Error GoTo TestFail
     
     'Assert:
     ' Horizontal line
-    Assert.AreEqual -1, GeomLib.GetOrientationIndex(0, 0, 1, 0, 0, 1), "Point is on the left of the horizontal line!"
-    Assert.AreEqual -1, GeomLib.GetOrientationIndex(1, 0, 0, 0, 0, -1), "Point is on the left of the horizontal line!"
-    Assert.AreEqual 0, GeomLib.GetOrientationIndex(0, 0, 1, 0, 0.5, 0), "Point is on the horizontal line!"
-    Assert.AreEqual 1, GeomLib.GetOrientationIndex(0, 0, 1, 0, 0, -1), "Point is on the right of the horizontal line!"
-    Assert.AreEqual 1, GeomLib.GetOrientationIndex(1, 0, 0, 0, 0, 1), "Point is on the right of the horizontal line!"
+    Assert.AreEqual -1, GeomLib.orientationIndex(0, 0, 1, 0, 0, 1), "Point is on the left of the horizontal line!"
+    Assert.AreEqual -1, GeomLib.orientationIndex(1, 0, 0, 0, 0, -1), "Point is on the left of the horizontal line!"
+    Assert.AreEqual 0, GeomLib.orientationIndex(0, 0, 1, 0, 0.5, 0), "Point is on the horizontal line!"
+    Assert.AreEqual 1, GeomLib.orientationIndex(0, 0, 1, 0, 0, -1), "Point is on the right of the horizontal line!"
+    Assert.AreEqual 1, GeomLib.orientationIndex(1, 0, 0, 0, 0, 1), "Point is on the right of the horizontal line!"
     ' Vertical line
-    Assert.AreEqual -1, GeomLib.GetOrientationIndex(0, 0, 0, 1, -1, 0), "Point is on the left of the vertical line!"
-    Assert.AreEqual -1, GeomLib.GetOrientationIndex(0, 1, 0, 0, 1, 0), "Point is on the left of the vertical line!"
-    Assert.AreEqual 0, GeomLib.GetOrientationIndex(0, 0, 0, 1, 0, 0.5), "Point is on the vertical line!"
-    Assert.AreEqual 1, GeomLib.GetOrientationIndex(0, 0, 0, 1, 1, 0), "Point is on the right of the vertical line!"
-    Assert.AreEqual 1, GeomLib.GetOrientationIndex(0, 1, 0, 0, -1, 0), "Point is on the right of the vertical line!"
+    Assert.AreEqual -1, GeomLib.orientationIndex(0, 0, 0, 1, -1, 0), "Point is on the left of the vertical line!"
+    Assert.AreEqual -1, GeomLib.orientationIndex(0, 1, 0, 0, 1, 0), "Point is on the left of the vertical line!"
+    Assert.AreEqual 0, GeomLib.orientationIndex(0, 0, 0, 1, 0, 0.5), "Point is on the vertical line!"
+    Assert.AreEqual 1, GeomLib.orientationIndex(0, 0, 0, 1, 1, 0), "Point is on the right of the vertical line!"
+    Assert.AreEqual 1, GeomLib.orientationIndex(0, 1, 0, 0, -1, 0), "Point is on the right of the vertical line!"
     ' Sloped line
-    Assert.AreEqual -1, GeomLib.GetOrientationIndex(0, 0, 1, 1, 0, 1), "Point is on the left of the sloped line!"
-    Assert.AreEqual -1, GeomLib.GetOrientationIndex(1, 1, 0, 0, 1, 0), "Point is on the left of the sloped line!"
-    Assert.AreEqual 0, GeomLib.GetOrientationIndex(0, 0, 1, 1, 0.5, 0.5), "Point is on the sloped line!"
-    Assert.AreEqual 1, GeomLib.GetOrientationIndex(0, 0, 1, 1, 1, 0), "Point is on the right of the sloped line!"
-    Assert.AreEqual 1, GeomLib.GetOrientationIndex(1, 1, 0, 0, 0, 1), "Point is on the right of the sloped line!"
+    Assert.AreEqual -1, GeomLib.orientationIndex(0, 0, 1, 1, 0, 1), "Point is on the left of the sloped line!"
+    Assert.AreEqual -1, GeomLib.orientationIndex(1, 1, 0, 0, 1, 0), "Point is on the left of the sloped line!"
+    Assert.AreEqual 0, GeomLib.orientationIndex(0, 0, 1, 1, 0.5, 0.5), "Point is on the sloped line!"
+    Assert.AreEqual 1, GeomLib.orientationIndex(0, 0, 1, 1, 1, 0), "Point is on the right of the sloped line!"
+    Assert.AreEqual 1, GeomLib.orientationIndex(1, 1, 0, 0, 0, 1), "Point is on the right of the sloped line!"
 
 TestExit:
     Exit Sub
