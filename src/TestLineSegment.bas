@@ -38,17 +38,68 @@ Public Sub ModuleCleanup()
 End Sub
 
 '@TestMethod
-Public Sub TestGetLength()
+Public Sub TestInitInvalidSE()
+    Const ExpectedError As Long = 5
     On Error GoTo TestFail
     
     'Arrange:
     Dim sut As New LineSegment
     
     'Act:
-    sut.Init 0, 0, 3, 4
+    sut.init 0, 0, 0, 0
+
+Assert:
+    Assert.Fail "Expected error was not raised."
+
+TestExit:
+    Exit Sub
+TestFail:
+    If Err.Number = ExpectedError Then
+        Resume TestExit
+    Else
+        Resume Assert
+    End If
+End Sub
+
+'@TestMethod
+Public Sub TestInit()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As New LineSegment
+    Dim epsilon As Double
+    
+    'Act:
+    epsilon = 0.000000000000001                  '1E-15
+    
+
+    ' First quadrant, CW, PI/6 length
+    sut.init 0, 0, 3, 4
     
     'Assert:
-    Assert.AreEqual 5#, sut.GetLength, "Line segment length is wrong!"
+    Assert.AreEqual 3#, sut.dX, "dX must be 3!"
+    Assert.AreEqual 4#, sut.dY, "dy must be 4!"
+    Assert.AreEqual 5#, sut.length, "Length must be 4!"
+    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.Atn2(3, 4), sut.theta, epsilon), "Theta of line segment must be" & GeomLib.Atn2(3, 4) & "!"
+    
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestLength()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As New LineSegment
+    
+    'Act:
+    sut.init 0, 0, 3, 4
+    
+    'Assert:
+    Assert.AreEqual 5#, sut.length, "Line segment length is wrong!"
 
 TestExit:
     Exit Sub
@@ -57,7 +108,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetTheta()
+Public Sub TestTheta()
     On Error GoTo TestFail
     
     'Arrange:
@@ -68,29 +119,29 @@ Public Sub TestGetTheta()
     eps = 0.000000000001                         '1E-12
     
     'Assert:
-    sut.Init 0, 0, 1, 0
-    Assert.IsTrue MathLib.AreDoublesEqual(0#, sut.GetTheta(), eps), "Expected 0!"
+    sut.init 0, 0, 1, 0
+    Assert.IsTrue MathLib.areDoublesEqual(0#, sut.theta, eps), "Expected 0!"
     
-    sut.Init 0, 0, 1, 1
-    Assert.IsTrue MathLib.AreDoublesEqual(GeomLib.PI / 4, sut.GetTheta(), eps), "Expected PI/4!"
+    sut.init 0, 0, 1, 1
+    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI / 4, sut.theta, eps), "Expected PI/4!"
     
-    sut.Init 0, 0, 0, 1
-    Assert.IsTrue MathLib.AreDoublesEqual(GeomLib.PI / 2, sut.GetTheta(), eps), "Expected PI/2!"
+    sut.init 0, 0, 0, 1
+    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI / 2, sut.theta, eps), "Expected PI/2!"
     
-    sut.Init 0, 0, -1, 1
-    Assert.IsTrue MathLib.AreDoublesEqual(3 * GeomLib.PI / 4, sut.GetTheta(), eps), "Expected 3/4*PI"
+    sut.init 0, 0, -1, 1
+    Assert.IsTrue MathLib.areDoublesEqual(3 * GeomLib.PI / 4, sut.theta, eps), "Expected 3/4*PI"
     
-    sut.Init 0, 0, -1, 0
-    Assert.IsTrue MathLib.AreDoublesEqual(GeomLib.PI, sut.GetTheta(), eps), "Expected PI"
+    sut.init 0, 0, -1, 0
+    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI, sut.theta, eps), "Expected PI"
     
-    sut.Init 0, 0, 1, -1
-    Assert.IsTrue MathLib.AreDoublesEqual(-GeomLib.PI / 4, sut.GetTheta(), eps), "Expected -PI/4"
+    sut.init 0, 0, 1, -1
+    Assert.IsTrue MathLib.areDoublesEqual(-GeomLib.PI / 4, sut.theta, eps), "Expected -PI/4"
     
-    sut.Init 0, 0, 0, -1
-    Assert.IsTrue MathLib.AreDoublesEqual(-GeomLib.PI / 2, sut.GetTheta(), eps), "Expected -PI/2"
+    sut.init 0, 0, 0, -1
+    Assert.IsTrue MathLib.areDoublesEqual(-GeomLib.PI / 2, sut.theta, eps), "Expected -PI/2"
     
-    sut.Init 0, 0, -1, -1
-    Assert.IsTrue MathLib.AreDoublesEqual(-3 * GeomLib.PI / 4, sut.GetTheta(), eps), "Expected -3/4*PI"
+    sut.init 0, 0, -1, -1
+    Assert.IsTrue MathLib.areDoublesEqual(-3 * GeomLib.PI / 4, sut.theta, eps), "Expected -3/4*PI"
 
 TestExit:
     Exit Sub
@@ -104,10 +155,10 @@ Public Sub TestIsHorizontal()
     
     'Arrange:
     Dim sut As New LineSegment
-    sut.Init 0, 1.33, 10, 1.33
+    sut.init 0, 1.33, 10, 1.33
     
     'Assert:
-    Assert.IsTrue sut.IsHorizontal, "Line segment is not horizontal!"
+    Assert.IsTrue sut.isHorizontal, "Line segment is not horizontal!"
 
 TestExit:
     Exit Sub
@@ -121,10 +172,10 @@ Public Sub TestIsVertical()
     
     'Arrange:
     Dim sut As New LineSegment
-    sut.Init 1.33, 0, 1.33, 10
+    sut.init 1.33, 0, 1.33, 10
 
     'Assert:
-    Assert.IsTrue sut.IsVertical, "Line segment is not vertical!"
+    Assert.IsTrue sut.isVertical, "Line segment is not vertical!"
 
 TestExit:
     Exit Sub
@@ -148,13 +199,13 @@ Public Sub TestGetProjectionFactor()
     e_max = 100000000000000#
     x = 1 / 3
     y = 0
-    sut.Init 0, 0, x, y
+    sut.init 0, 0, x, y
 
     'Assert:
-    Assert.AreEqual 0#, sut.GetProjectionFactor(0, y + e_max), "Projection point must be start point of Line Segment!"
-    Assert.AreEqual 1#, sut.GetProjectionFactor(x, y + e_max), "Projection point must be end point of Line Segment!"
-    Assert.IsTrue 1 < sut.GetProjectionFactor(x + e_min, y + e_max)
-    Assert.IsTrue 0 > sut.GetProjectionFactor(0 - e_min, y + e_max)
+    Assert.AreEqual 0#, sut.calcProjectionFactor(0, y + e_max), "Projection point must be start point of Line Segment!"
+    Assert.AreEqual 1#, sut.calcProjectionFactor(x, y + e_max), "Projection point must be end point of Line Segment!"
+    Assert.IsTrue 1 < sut.calcProjectionFactor(x + e_min, y + e_max)
+    Assert.IsTrue 0 > sut.calcProjectionFactor(0 - e_min, y + e_max)
 
 TestExit:
     Exit Sub
@@ -181,11 +232,11 @@ Public Sub TestIsEqual()
     x2 = 100000000000000#
     y2 = 0.000000000000001
     
-    sut.Init x1, y1, x2, y2
-    els.Init x1, y1, x2, y2
+    sut.init x1, y1, x2, y2
+    els.init x1, y1, x2, y2
     
     'Assert:
-    Assert.IsTrue sut.IsEqual(els), "X and Y of equivalent LineSegments are different!"
+    Assert.IsTrue sut.isEqual(els), "X and Y of equivalent LineSegments are different!"
 
 TestExit:
     Exit Sub
@@ -203,125 +254,102 @@ Public Sub TestGetPointByMeasOffset()
     Dim expected As New Point
     
     ' Horizontal line segment
-    ls.Init 0, 0, 1, 0
+    ls.init 0, 0, 1, 0
     
     ' left offset in start point
-    Set sut = ls.GetPointByMeasOffset(0, -1)
-    expected.Init 0, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0, -1)
+    expected.init 0, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in start point
-    Set sut = ls.GetPointByMeasOffset(0, 0)
-    expected.Init 0, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0, 0)
+    expected.init 0, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' right offset in start point
-    Set sut = ls.GetPointByMeasOffset(0, 1)
-    expected.Init 0, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0, 1)
+    expected.init 0, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' left offset in mid point
-    Set sut = ls.GetPointByMeasOffset(0.5, -1)
-    expected.Init 0.5, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0.5, -1)
+    expected.init 0.5, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in mid point
-    Set sut = ls.GetPointByMeasOffset(0.5, 0)
-    expected.Init 0.5, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0.5, 0)
+    expected.init 0.5, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' right offset in mid point
-    Set sut = ls.GetPointByMeasOffset(0.5, 1)
-    expected.Init 0.5, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0.5, 1)
+    expected.init 0.5, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' left offset in end point
-    Set sut = ls.GetPointByMeasOffset(1, -1)
-    expected.Init 1, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(1, -1)
+    expected.init 1, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in end point
-    Set sut = ls.GetPointByMeasOffset(1, 0)
-    expected.Init 1, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(1, 0)
+    expected.init 1, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' right offset in end point
-    Set sut = ls.GetPointByMeasOffset(1, 1)
-    expected.Init 1, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(1, 1)
+    expected.init 1, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     
     ' Vertical line segment
-    ls.Init 0, 1, 0, 0
+    ls.init 0, 1, 0, 0
     
     ' left offset in start point
-    Set sut = ls.GetPointByMeasOffset(0, -1)
-    expected.Init 1, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0, -1)
+    expected.init 1, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in start point
-    Set sut = ls.GetPointByMeasOffset(0, 0)
-    expected.Init 0, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0, 0)
+    expected.init 0, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' right offset in start point
-    Set sut = ls.GetPointByMeasOffset(0, 1)
-    expected.Init -1, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0, 1)
+    expected.init -1, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' left offset in mid point
-    Set sut = ls.GetPointByMeasOffset(0.5, -1)
-    expected.Init 1, 0.5
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0.5, -1)
+    expected.init 1, 0.5
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in mid point
-    Set sut = ls.GetPointByMeasOffset(0.5, 0)
-    expected.Init 0, 0.5
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0.5, 0)
+    expected.init 0, 0.5
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' right offset in mid point
-    Set sut = ls.GetPointByMeasOffset(0.5, 1)
-    expected.Init -1, 0.5
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(0.5, 1)
+    expected.init -1, 0.5
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' left offset in end point
-    Set sut = ls.GetPointByMeasOffset(1, -1)
-    expected.Init 1, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(1, -1)
+    expected.init 1, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in end point
-    Set sut = ls.GetPointByMeasOffset(1, 0)
-    expected.Init 0, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(1, 0)
+    expected.init 0, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' right offset in end point
-    Set sut = ls.GetPointByMeasOffset(1, 1)
-    expected.Init -1, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcPointByMeasOffset(1, 1)
+    expected.init -1, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
-TestExit:
-    Exit Sub
-TestFail:
-    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
-End Sub
-
-'@TestMethod
-Public Sub TestGetPointByNegMeasOffset()
-    On Error GoTo TestFail
-    
-    'Arrange:
-    Dim ls As New LineSegment
-    Dim sut As New Point
-    Dim expected As New Point
-    
-    'Act:
-    ls.Init 3, 0, 0, 0
-    
-    'Assert:
-    Set sut = ls.GetPointByMeasOffset(-2, 0)
-    expected.Init 2, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
-        
 TestExit:
     Exit Sub
 TestFail:
@@ -338,11 +366,11 @@ Public Sub TestGetPointByMeasOffsetOutside()
     
     'Act:
     e = 0.000000000000001                        '1E-15
-    ls.Init 1, 1, 0, 0
+    ls.init 1, 1, 0, 0
     
     'Assert:
-    Assert.IsNothing ls.GetPointByMeasOffset(ls.GetLength + e, 0) ' positive measure
-    Assert.IsNothing ls.GetPointByMeasOffset(-(ls.GetLength + e), 0) ' negative measure
+    Assert.IsNothing ls.calcPointByMeasOffset(ls.length + e, 0) ' positive measure
+    Assert.IsNothing ls.calcPointByMeasOffset(-(ls.length + e), 0) ' negative measure
 
 TestExit:
     Exit Sub
@@ -360,101 +388,101 @@ Public Sub TestGetMeasOffsetOfPoint()
     Dim expected As New MeasOffset
     
     ' Horizontal line segment
-    ls.Init 0, 0, 1, 0
+    ls.init 0, 0, 1, 0
     
     ' left offset in start point
-    Set sut = ls.GetMeasOffsetOfPoint(0, 1)
-    expected.Init 0, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0, 1)
+    expected.init 0, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in start point
-    Set sut = ls.GetMeasOffsetOfPoint(0, 0)
-    expected.Init 0, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0, 0)
+    expected.init 0, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' ritght offset in start point
-    Set sut = ls.GetMeasOffsetOfPoint(0, -1)
-    expected.Init 0, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0, -1)
+    expected.init 0, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' left offset in mid point
-    Set sut = ls.GetMeasOffsetOfPoint(0.5, 1)
-    expected.Init 0.5, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0.5, 1)
+    expected.init 0.5, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in mid point
-    Set sut = ls.GetMeasOffsetOfPoint(0.5, 0)
-    expected.Init 0.5, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0.5, 0)
+    expected.init 0.5, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' right offset in mid point
-    Set sut = ls.GetMeasOffsetOfPoint(0.5, -1)
-    expected.Init 0.5, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0.5, -1)
+    expected.init 0.5, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' left offset in end point
-    Set sut = ls.GetMeasOffsetOfPoint(1, 1)
-    expected.Init 1, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(1, 1)
+    expected.init 1, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in end point
-    Set sut = ls.GetMeasOffsetOfPoint(1, 0)
-    expected.Init 1, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(1, 0)
+    expected.init 1, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' ritght offset in end point
-    Set sut = ls.GetMeasOffsetOfPoint(1, -1)
-    expected.Init 1, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(1, -1)
+    expected.init 1, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     
     ' Vertical line segment
-    ls.Init 0, 1, 0, 0
+    ls.init 0, 1, 0, 0
     
     ' left offset in start point
-    Set sut = ls.GetMeasOffsetOfPoint(1, 1)
-    expected.Init 0, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(1, 1)
+    expected.init 0, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in start point
-    Set sut = ls.GetMeasOffsetOfPoint(0, 1)
-    expected.Init 0, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0, 1)
+    expected.init 0, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' ritght offset in start point
-    Set sut = ls.GetMeasOffsetOfPoint(-1, 1)
-    expected.Init 0, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(-1, 1)
+    expected.init 0, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' left offset in mid point
-    Set sut = ls.GetMeasOffsetOfPoint(1, 0.5)
-    expected.Init 0.5, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(1, 0.5)
+    expected.init 0.5, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in mid point
-    Set sut = ls.GetMeasOffsetOfPoint(0, 0.5)
-    expected.Init 0.5, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0, 0.5)
+    expected.init 0.5, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' right offset in mid point
-    Set sut = ls.GetMeasOffsetOfPoint(-1, 0.5)
-    expected.Init 0.5, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(-1, 0.5)
+    expected.init 0.5, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' left offset in end point
-    Set sut = ls.GetMeasOffsetOfPoint(1, 0)
-    expected.Init 1, -1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(1, 0)
+    expected.init 1, -1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' no offset in end point
-    Set sut = ls.GetMeasOffsetOfPoint(0, 0)
-    expected.Init 1, 0
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(0, 0)
+    expected.init 1, 0
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     ' ritght offset in end point
-    Set sut = ls.GetMeasOffsetOfPoint(-1, 0)
-    expected.Init 1, 1
-    Assert.IsTrue sut.IsEqual(expected), "Expected: " & expected.ToString & ", sut: " & sut.ToString
+    Set sut = ls.calcMeasOffsetOfPoint(-1, 0)
+    expected.init 1, 1
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
     
     Exit Sub
 TestFail:
@@ -471,13 +499,13 @@ Public Sub TestGetMeasOffsetOfPointOutside()
     
     'Act:
     e = 0.000000000000001                        '1E-15
-    ls.Init 1, 1, 0, 0
+    ls.init 1, 1, 0, 0
     
     'Assert:
-    Assert.IsNothing ls.GetMeasOffsetOfPoint(1 + e, 1)
-    Assert.IsNothing ls.GetMeasOffsetOfPoint(1, 1 + e)
-    Assert.IsNothing ls.GetMeasOffsetOfPoint(0 - e, 0)
-    Assert.IsNothing ls.GetMeasOffsetOfPoint(0, 0 - e)
+    Assert.IsNothing ls.calcMeasOffsetOfPoint(1 + e, 1)
+    Assert.IsNothing ls.calcMeasOffsetOfPoint(1, 1 + e)
+    Assert.IsNothing ls.calcMeasOffsetOfPoint(0 - e, 0)
+    Assert.IsNothing ls.calcMeasOffsetOfPoint(0, 0 - e)
 
 TestExit:
     Exit Sub

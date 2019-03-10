@@ -24,67 +24,76 @@ Attribute VB_Exposed = False
 
 ''========================================================================
 '' Description
-'' Represents a line segment defined by two Point(s).
-'' P1 and P2 define the start and the end coordinates, respectively.
-''------------------------------------------------------------------------
-'' Called by:
-''    Modules: None
-''    Classes: None
-'' Calls:
-''    Modules: GeomLib
-''    Classes: Point
+'' Represents a line segment defined by coordinates of two points.
+'' Full list of members
+'' m_sX ,m_sY, m_eX, m_eY, m_dX, m_dY, m_length, m_theta.
+'' m_dX, m_dY, m_length, m_theta members are reduntant but they are
+'' all computed at the initialization stage for the purpose
+'' of increased speed in the calculation of "calcPointByMeasOffset" and
+'' "calcMeasOffsetOfPoint".
+'' Initilization methods
+'' "init". Any new initialize method must compute all members of
+'' the class. If wrong parameters are used with the initialize methods,
+'' error number 5 is raised.
 ''========================================================================
 
 '@Folder("TopoXL.geom")
 
 Option Explicit
 
-Private m_P1 As Point
-Private m_P2 As Point
+Private m_sX As Double                           ' start Point X
+Private m_sY As Double                           ' start Point Y
+Private m_eX As Double                           ' end Point X
+Private m_eY As Double                           ' end Point Y
+
+' Secondary members
+Private m_dX As Double                           ' delta X
+Private m_dY As Double                           ' delta Y
+Private m_length As Double                       ' length
+Private m_theta As Double                        ' theta
 
 ' Class constructor
 Private Sub Class_Initialize()
-    Set m_P1 = New Point                         ' First Point defining the line segment
-    Set m_P2 = New Point                         ' Second Point defining the line segment
+    m_sX = 0
+    m_sY = 0
+    m_eX = 0
+    m_eY = 0
+    m_dX = 0
+    m_dY = 0
+    m_length = 0
+    m_theta = 0
 End Sub
 
-' Class initialization
-Public Sub Init(ByVal x1 As Double, ByVal y1 As Double, _
-                ByVal x2 As Double, ByVal y2 As Double)
-    m_P1.Init x1, y1
-    m_P2.Init x2, y2
+' Initialize by: start Point and end Point
+' Raises error if:
+'   - start and end coordinates are equal
+Public Sub init(ByVal sX As Double, ByVal sY As Double, _
+                ByVal eX As Double, ByVal eY As Double)
+    m_sX = sX
+    m_sY = sY
+    m_eX = eX
+    m_eY = eY
+    
+    ' Raise error if start and end coordinates are equal
+    If sX = eX And sY = eY Then
+        Err.Raise 5, TypeName(Me), "Can't initiate line segment. Start and end point must be different!"
+    End If
 
+    ' Compute other members (m_dX, m_dY, m_length, m_theta)
+    m_dX = eX - sX
+    m_dY = eY - sY
+    m_length = GeomLib.dist2D(sX, sY, eX, eY)
+    m_theta = GeomLib.Atn2(m_dX, m_dY)
 End Sub
-
-' Returns dX of this LineSegment
-Public Function GetDX() As Double
-    GetDX = Me.P2.x - Me.P1.x
-End Function
-
-' Returns dY of this LineSegment
-Public Function GetDY() As Double
-    GetDY = Me.P2.y - Me.P1.y
-End Function
-
-' Returns the length of this LineSegment
-Public Function GetLength() As Double
-    GetLength = GeomLib.Dist2D(m_P1.x, m_P1.y, m_P2.x, m_P2.y)
-End Function
-
-' Return the angle that the vector defined by this segment
-' makes with the X-axis
-Public Function GetTheta() As Double
-    GetTheta = GeomLib.Atn2(Me.P2.x - Me.P1.x, Me.P2.y - Me.P1.y)
-End Function
 
 ' Tests whether this LineSegment is vertical
-Public Function IsVertical() As Boolean
-    IsVertical = (m_P1.x = m_P2.x)
+Public Function isVertical() As Boolean
+    isVertical = (sX = eX)
 End Function
 
 ' Tests whether this LineSegment is horizontal
-Public Function IsHorizontal() As Boolean
-    IsHorizontal = (m_P1.y = m_P2.y)
+Public Function isHorizontal() As Boolean
+    isHorizontal = (sY = eY)
 End Function
 
 ' Returns the Projection Factor for the projection of the point p(x,y)
@@ -97,46 +106,35 @@ End Function
 '   r < 0 P is on the backward extension of this LineSegment
 '   r > 1 P is on the forward extension of this LineSegment
 '   0 < r < 1 P is interior to this LineSegment
-Public Function GetProjectionFactor(ByVal x As Double, ByVal y As Double) As Double
-    Dim p As New Point
-    
-    p.Init x, y
-    If Me.P1.IsEqual(p) Then
-        GetProjectionFactor = 0#
+Public Function calcProjectionFactor(ByVal x As Double, ByVal y As Double) As Double
+    ' Identical to start point
+    If m_sX = x And m_sY = y Then
+        calcProjectionFactor = 0#
+        Exit Function
+    End If
+    ' Identical to end point
+    If m_eX = x And m_eY = y Then
+        calcProjectionFactor = 1#
         Exit Function
     End If
     
-    If Me.P2.IsEqual(p) Then
-        GetProjectionFactor = 1#
-        Exit Function
-    End If
-    
-    Dim dX As Double
-    Dim dY As Double
-        
-    dX = Me.GetDX
-    dY = Me.GetDY
-    GetProjectionFactor = ((p.x - Me.P1.x) * dX + (p.y - Me.P1.y) * dY) _
-        / (dX * dX + dY * dY)
+    calcProjectionFactor = ((x - sX) * m_dX + (y - sY) * m_dY) / (m_dX * m_dX + m_dY * m_dY)
 End Function
 
 ' Returns a Point which is at a specified offset (o) from this LineSegment
 ' and has its projection on this LineSegment at a specified distance (m) from
 ' one of its ends
 ' Parameters:
-'   - m (measure): the distance measured along this LineSegment: positive
-'                  is measured from P1 and negative from P2
+'   - m (measure): the distance from start point measured along this LineSegment
 '   - o (offset): the perpendicular distance measured against this LineSegment
 ' Result:
 '   - A Point object with the computed coordinates
 '   - Nothing if the distance in the m parameter is greater than this LineSegment
-'   - length
-Public Function GetPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Point
-    Dim length As Double
-    length = Me.GetLength
+'     length or less than 0
+Public Function calcPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Point
     
-    If Abs(m) > length Then
-        Set GetPointByMeasOffset = Nothing
+    If m < 0 Or m > m_length Then
+        Set calcPointByMeasOffset = Nothing
         Exit Function
     End If
     
@@ -146,24 +144,20 @@ Public Function GetPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Po
     Dim uX As Double
     Dim uY As Double
     
-    If m < 0 Then
-        fraction = (length + m) / length
-    Else
-        fraction = m / length
-    End If
+    fraction = m / m_length
     
     ' the measure point
-    mX = Me.P1.x + fraction * (Me.P2.x - Me.P1.x)
-    mY = Me.P1.y + fraction * (Me.P2.y - Me.P1.y)
+    mX = m_sX + fraction * m_dX
+    mY = m_sY + fraction * m_dY
     
     ' u is the vector that is the length of the offset, in the direction of the segment
-    uX = o * Me.GetDX / length
-    uY = o * Me.GetDY / length
+    uX = o * m_dX / m_length
+    uY = o * m_dY / m_length
     
-    Set GetPointByMeasOffset = New Point
+    Set calcPointByMeasOffset = New Point
     
     ' the result is the measure point plus "u" vector rotated 90 degrees CW
-    GetPointByMeasOffset.Init mX + uY, mY - uX
+    calcPointByMeasOffset.init mX + uY, mY - uX
     
 End Function
 
@@ -171,59 +165,81 @@ End Function
 ' against this LineSegment
 ' Result:
 '   - MeasOffset object with the computed measure and offset distances
-'   - Nothing if the given coordinate doesn't lie within this LineSegment on this LineSegment
-Public Function GetMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
+'   - Nothing if the projection of the given coordinates doesn't lie
+'     within this LineSegment
+Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
     Dim r As Double
     
-    r = Me.GetProjectionFactor(x, y)
+    r = Me.calcProjectionFactor(x, y)
     Select Case r
         'Projection point not on this LineSegment
     Case Is < 0#, Is > 1#
-        Set GetMeasOffsetOfPoint = Nothing
+        Set calcMeasOffsetOfPoint = Nothing
     Case Else
         ' Projected point on this LineSegment
-        Dim pX As Double
-        Dim pY As Double
-        pX = Me.P1.x + r * Me.GetDX
-        pY = Me.P1.y + r * Me.GetDY
+        Dim px As Double
+        Dim py As Double
+        px = m_sX + r * m_dX
+        py = m_sY + r * m_dY
         
         'offset sign
         Dim os As Integer
-        os = GeomLib.GetOrientationIndex(Me.P1.x, Me.P1.y, Me.P2.x, Me.P2.y, x, y)
+        os = GeomLib.orientationIndex(m_sX, m_sY, m_eX, m_eY, x, y)
         
-        Set GetMeasOffsetOfPoint = New MeasOffset
-        GetMeasOffsetOfPoint.Init r * Me.GetLength, os * GeomLib.Dist2D(pX, pY, x, y)
+        Set calcMeasOffsetOfPoint = New MeasOffset
+        calcMeasOffsetOfPoint.init r * m_length, os * GeomLib.dist2D(px, py, x, y)
     End Select
 End Function
 
-' Test if this LineSegment is equivalent to another
+' Test if this LineSegment is equal to another
 ' Returns TRUE if all members are equal
-Public Function IsEqual(ls As LineSegment) As Boolean
-    IsEqual = Me.P1.x = ls.P1.x And Me.P1.y = ls.P1.y And _
-              Me.P2.x = ls.P2.x And Me.P2.y = ls.P2.y
+Public Function isEqual(ls As LineSegment) As Boolean
+    isEqual = m_sX = ls.sX And m_sY = ls.sY And _
+              m_eX = ls.eX And m_eY = ls.eY
 End Function
 
 ' Returns a string representation of the LineSegment class
-Public Function ToString() As String
-    ToString = "(" & P1.ToString & "," & P2.ToString & ")"
+Public Function toString() As String
+    toString = "((" & m_sX & "," & m_sY & "),(" & m_eX & "," & m_eY & "))"
 End Function
 
-'P1 Point property
-Public Property Get P1() As Point
-    Set P1 = m_P1
+' Start point property
+Public Property Get sX() As Double
+    sX = m_sX
 End Property
 
-Public Property Let P1(P1 As Point)
-    Set m_P1 = P1
+Public Property Get sY() As Double
+    sY = m_sY
 End Property
 
-'P2 Point property
-Public Property Get P2() As Point
-    Set P2 = m_P2
+' End point property
+Public Property Get eX() As Double
+    eX = m_eX
 End Property
 
-Public Property Let P2(P2 As Point)
-    Set m_P2 = P2
+Public Property Get eY() As Double
+    eY = m_eY
 End Property
+
+' Delta X property
+Public Property Get dX() As Double
+    dX = m_dX
+End Property
+
+' Delta Y property
+Public Property Get dY() As Double
+    dY = m_dY
+End Property
+
+' Length property
+Public Property Get length() As Double
+    length = m_length
+End Property
+
+' Theta property
+Public Property Get theta() As Double
+    theta = m_theta
+End Property
+
 
 
