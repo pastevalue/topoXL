@@ -23,14 +23,16 @@ Attribute VB_Name = "MathLib"
 Option Explicit
 Option Private Module
 
-' Compares to double values for equality.
+' Compares to double values for equality
+' Parameters:
+'   - d1, d2: doubles to be compared
+'   - epsilon: tollerance with default value of 1E-15
 ' Returns TRUE if the variance is less than tollerance (epsilon)
-Function AreDoublesEqual(ByVal d1 As Double, ByVal d2 As Double, _
+Function areDoublesEqual(ByVal d1 As Double, ByVal d2 As Double, _
                          Optional epsilon As Double = 0.000000000000001) As Boolean
     Dim absDiff As Double
     absDiff = Math.Abs(d1 - d2)
-    AreDoublesEqual = absDiff < epsilon
-    
+    areDoublesEqual = absDiff < epsilon
 End Function
 
 ' Returns a rounded a number down to the nearest integer or to the nearest
@@ -38,8 +40,8 @@ End Function
 ' Parameters:
 '   - n: the number to be rounded down
 '   - f: fhe multiple to which you want to round
-Public Function Floor(ByVal n As Double, Optional ByVal f As Double = 1) As Double
-    Floor = Int(n / f) * f
+Public Function floor(ByVal n As Double, Optional ByVal f As Double = 1) As Double
+    floor = Int(n / f) * f
 End Function
 
 ' Returns a rounded a number up to the nearest integer or to the nearest
@@ -47,6 +49,23 @@ End Function
 ' Parameters:
 '   - n: the number to be rounded up
 '   - f: fhe multiple to which you want to round
-Public Function Ceiling(ByVal n As Double, Optional ByVal f As Double = 1) As Double
-    Ceiling = -Int(-n / f) * f
+Public Function ceiling(ByVal n As Double, Optional ByVal f As Double = 1) As Double
+    ceiling = -Int(-n / f) * f
 End Function
+
+' Returns the maximum of two doubles
+Public Function max(ByVal d1 As Double, ByVal d2 As Double) As Double
+    max = IIf(d1 > d2, d1, d2)
+End Function
+
+' Returns the minimum of two values
+Public Function min(ByVal d1 As Double, ByVal d2 As Double) As Double
+    min = IIf(d1 < d2, d1, d2)
+End Function
+
+' Returns a random number between lower bound and upper bound
+Public Function rndBetween(ByVal lowerbound, ByVal upperbound) As Double
+    rndBetween = (upperbound - lowerbound) * Rnd + lowerbound
+End Function
+
+

@@ -50,9 +50,9 @@ Public Sub TestAreDoublesEqual()
     d2 = 0.333333333333333
     
     'Assert:
-    Assert.IsTrue MathLib.AreDoublesEqual(d1, d2)
-    Assert.IsTrue MathLib.AreDoublesEqual(d1, Round(d2, 3), 0.001)
-    Assert.IsFalse MathLib.AreDoublesEqual(d1, Round(d2, 3), 0.0001)
+    Assert.IsTrue MathLib.areDoublesEqual(d1, d2)
+    Assert.IsTrue MathLib.areDoublesEqual(d1, Round(d2, 3), 0.001)
+    Assert.IsFalse MathLib.areDoublesEqual(d1, Round(d2, 3), 0.0001)
 
 TestExit:
     Exit Sub
