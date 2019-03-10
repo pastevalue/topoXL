@@ -56,11 +56,11 @@ Public Sub TestToString()
     Dim expected As Variant
     
     'Act:
-    sut.Init 3.33, -3#
+    sut.init 3.33, -3#
     expected = "(3.33,-3)"
     
     'Assert:
-    Assert.AreEqual expected, sut.ToString
+    Assert.AreEqual expected, sut.toString
 
 TestExit:
     Exit Sub
@@ -82,11 +82,11 @@ Public Sub TestIsEqual()
     m = 1 / 3
     o = Math.Sqr(2)
     
-    sut.Init m, o
-    eMO.Init m, o
+    sut.init m, o
+    eMO.init m, o
 
     'Assert:
-    Assert.IsTrue sut.IsEqual(eMO), "M and O of equivalent MeasOffset are different!"
+    Assert.IsTrue sut.isEqual(eMO), "M and O of equivalent MeasOffset are different!"
 
 TestExit:
     Exit Sub
