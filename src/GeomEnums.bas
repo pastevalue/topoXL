@@ -33,9 +33,11 @@ Private Const STR_CD_NONE As String = "none"
 Private Const STR_CD_CCW As String = "counter-clockwise"
 
 Public Enum CURVE_DIR
-    CD_CW = 1                                    ' Clockwise
-    CD_NONE = 0                                  ' None
+    [_FIRST] = -2                                ' First index
     CD_CCW = -1                                  ' Counter-clockwise
+    CD_NONE = 0                                  ' None
+    CD_CW = 1                                    ' Clockwise
+    [_LAST] = 2                                  ' Last index
 End Enum
 
 Public Function curveDirToString(curveDir As CURVE_DIR) As String
@@ -65,7 +67,20 @@ Public Function curveDirFromString(s As String) As CURVE_DIR
     End Select
 End Function
 
+Public Function curveDirContains(item As Variant) As Boolean
+    Dim i As Integer
+    
+    curveDirContains = False
+    For i = CURVE_DIR.[_FIRST] + 1 To CURVE_DIR.[_LAST] - 1
+        If i = item Then
+            curveDirContains = True
+            Exit Function
+        End If
+    Next i
+End Function
+
 '-------------------------------------------------------------------------
+
 
 
 
