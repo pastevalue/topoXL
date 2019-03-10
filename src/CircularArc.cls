@@ -25,120 +25,356 @@ Attribute VB_Exposed = False
 ''========================================================================
 '' Description
 '' Represents a circular arc.
-''------------------------------------------------------------------------
-'' Called by:
-''    Modules: None
-''    Classes: None
-'' Calls:
-''    Modules: None
-''    Classes: None
+'' Full list of members
+'' m_sX, m_sY, m_cX, m_cY, m_eX, m_eY, m_length, m_curveDir, m_rad,
+'' m_sTheta, m_eTheta, m_isCircle. Some of these members are reduntant
+'' but they are all computed at the initialization stage for the purpose
+'' of increased speed in the calculation of "calcPointByMeasOffset" and
+'' "calcMeasOffsetOfPoint".
+'' Initilization methods
+'' "initFromSCLD" and "initFromSERD". Any new initialize
+'' method must compute all members of the class. If wrong parameters
+'' are used with the initialize methods, error number 5 is raised.
 ''========================================================================
 
 '@Folder("TopoXL.geom")
 
 Option Explicit
 
-Private m_s As Point                             ' start Point of the circular arc
-Private m_c As Point                             ' center Point of the circular arc
-Private m_e As Point                             ' end Point of the circular arc
+Private m_sX As Double                           ' start Point X
+Private m_sY As Double                           ' start Point Y
+Private m_cX As Double                           ' center Point X
+Private m_cY As Double                           ' center Point Y
+Private m_eX As Double                           ' end Point X
+Private m_eY As Double                           ' end Point Y
 Private m_length As Double                       ' length of the circular arc
-Private m_curveDir As CURVE_DIR                  ' circular arc curve direction
+Private m_curveDir As CURVE_DIR                  ' circular arc curve direction (CW or CCW)
 Private m_rad As Double                          ' radius of the circular arc
-Private m_cToStheta As Double                    ' theta of the center to start line
-Private m_cToEtheta As Double                    ' theta of the center to end line
+Private m_sTheta As Double                       ' theta of the center to start line
+Private m_eTheta As Double                       ' theta of the center to end line
+Private m_isCircle As Boolean                    ' the circular arc is a full circle
 
 ' Class constructor with default values
 Private Sub Class_Initialize()
-    Set m_s = New Point
-    Set m_c = New Point
-    Set m_e = New Point
+    m_sX = 0
+    m_sY = 0
+    m_cX = 0
+    m_cY = 0
+    m_eX = 0
+    m_eY = 0
     m_length = 0
     m_curveDir = CURVE_DIR.CD_NONE
     m_rad = 0
-    m_cToStheta = 0
-    m_cToEtheta = 0
+    m_sTheta = 0
+    m_eTheta = 0
+    m_isCircle = False
 End Sub
 
 ' Initialize by: start Point, center Point, length and curve direction
-Public Sub initFromScenLenDir(ByVal xs As Double, ByVal ys As Double, _
-                              ByVal xc As Double, ByVal yc As Double, _
-                              ByVal length As Double, ByVal curveDir As CURVE_DIR)
-    m_s.Init xs, ys
-    m_c.Init xc, yc
-    m_length = length
+' If length is greater than 2 * PI * radius then circular arc is
+' considered to be a full circle and length is reduced to the
+' 2 * PI * radius value
+' Raises error if:
+'   - start and center coordinates are equal
+'   - length is less than or equal to 0
+'   - curveDir is not CW (clocwise) or CCW (counter-clockwise)
+Public Sub initFromSCLD(ByVal sX As Double, ByVal sY As Double, _
+                        ByVal cX As Double, ByVal cY As Double, _
+                        ByVal length As Double, ByVal curveDir As CURVE_DIR)
+                        
+    ' Raise error if start and center coordinates are equal
+    If sX = cX And sY = cY Then
+        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Start and center point must be different!"
+    End If
+    
+    ' Raise error if length is less than or equal to 0
+    If length <= 0 Then
+        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Length is equal to 0!"
+    End If
+    
+    ' Raise error if curveDir is not defined
+    If curveDir <> CD_CW And curveDir <> CD_CCW Then
+        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Curve direction not defined!"
+    End If
+                        
+    m_sX = sX
+    m_sY = sY
+    m_cX = cX
+    m_cY = cY
     m_curveDir = curveDir
     
     ' Compute other members (m_e, m_rad, m_cToStheta, m_cToEtheta)
-    m_rad = GeomLib.Dist2D(xs, ys, xc, yc)
-    m_cToStheta = GeomLib.Atn2(xs - xc, ys - yc)
-    m_cToEtheta = GeomLib.NormalizeAngle(m_cToStheta, GeomLib.PI) - length / m_rad * curveDir
-    m_cToEtheta = GeomLib.NormalizeAngle(m_cToEtheta, 0#) ' normalize theta in 0.0
-    m_e.x = m_c.x + m_rad * Math.Cos(m_cToEtheta)
-    m_e.y = m_c.y + m_rad * Math.Sin(m_cToEtheta)
+    m_rad = GeomLib.dist2D(sX, sY, cX, cY)
+    m_sTheta = GeomLib.Atn2(sX - cX, sY - cY)
+    
+    ' If is circle
+    If length >= GeomLib.TWO_PI * m_rad Then
+        m_isCircle = True
+        m_length = GeomLib.TWO_PI * m_rad
+        m_eTheta = m_sTheta
+        m_eX = m_sX
+        m_eY = m_sY
+    Else
+        m_isCircle = False
+        m_length = length
+        m_eTheta = GeomLib.normalizeAngle(m_sTheta, GeomLib.PI) - length / m_rad * curveDir
+        m_eTheta = GeomLib.normalizeAngle(m_eTheta, 0#) ' normalize theta in 0.0
+        m_eX = m_cX + m_rad * Math.Cos(m_eTheta)
+        m_eY = m_cY + m_rad * Math.Sin(m_eTheta)
+    End If
 End Sub
 
-Public Sub initFromSEradDir(ByVal xs As Double, ByVal ys As Double, _
-                            ByVal xe As Double, ByVal ye As Double, _
-                            ByVal rad As Double, ByVal curveDir As CURVE_DIR)
-    m_s.Init xs, ys
-    m_c.Init xe, ye
+' Initialize by: start Point, end Point, radius and curve direction
+' Raises error if:
+'   - start and end coordinates are equal
+'   - radius is less than or equal to 0
+'   - curveDir is not CW (clocwise) or CCW (counter-clockwise)
+Public Sub initFromSERD(ByVal sX As Double, ByVal sY As Double, _
+                        ByVal eX As Double, ByVal eY As Double, _
+                        ByVal rad As Double, ByVal curveDir As CURVE_DIR)
+                        
+    ' Raise error if start and end coordinates are equal
+    If sX = eX And sY = eY Then
+        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Start and end point must be different!"
+    End If
+    
+    ' Raise error if length is less than or equal to 0
+    If rad <= 0 Then
+        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Radius is equal to 0!"
+    End If
+    
+    ' Raise error if curveDir is not defined
+    If curveDir <> CD_CW And curveDir <> CD_CCW Then
+        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Curve direction not defined!"
+    End If
+    
+    m_sX = sX
+    m_sY = sY
+    m_eX = eX
+    m_eY = eY
     m_rad = rad
+    m_isCircle = False
     m_curveDir = curveDir
     
     ' Compute other members (m_c, m_length, m_cToStheta, m_cToEtheta)
-    Dim q As Double  ' Distance between s (start) point and e (end) point
-    Dim x As Double  ' X of q mid point
-    Dim y As Double  ' Y of q mid point
+    Dim q As Double                              ' Distance between s (start) point and e (end) point
+    Dim x As Double                              ' X of q mid point
+    Dim y As Double                              ' Y of q mid point
     
-    q = GeomLib.Dist2D(xs, ys, xe, ye)
-    x = (xs + xe) / 2
-    y = (ys + ye) / 2
+    q = GeomLib.dist2D(sX, sY, eX, eY)
+    x = (sX + eX) / 2
+    y = (sY + eY) / 2
     
-    m_c.x = x - curveDir * Math.Sqr(rad ^ 2 - (q / 2) ^ 2) * ((ys - ye) / q)
-    m_c.y = y - curveDir * Math.Sqr(rad ^ 2 - (q / 2) ^ 2) * ((xe - xs) / q)
+    m_cX = x - curveDir * Math.Sqr(rad * rad - (q / 2) * (q / 2)) * ((sY - eY) / q)
+    m_cY = y - curveDir * Math.Sqr(rad * rad - (q / 2) * (q / 2)) * ((eX - sX) / q)
     
     m_length = rad * GeomLib.ACos(1 - q * q / (2 * rad * rad))
     
-    m_cToStheta = GeomLib.Atn2(xs - m_c.x, ys - m_c.y)
-    m_cToEtheta = GeomLib.Atn2(xe - m_c.x, ye - m_c.y)
+    m_sTheta = GeomLib.Atn2(sX - m_cX, sY - m_cY)
+    m_eTheta = GeomLib.Atn2(eX - m_cX, eY - m_cY)
 End Sub
 
-Public Function GetPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Point
+' Returns True if the theta of the ray with the start point in the
+' center of this CircularArc intersect this CircularArc,
+' False otherwise
+Public Function isThetaOnArc(ByVal t As Double) As Boolean
+    If m_isCircle Then
+        isThetaOnArc = True
+        Exit Function
+    End If
+    
+    Dim st As Double                             ' start theta
+    Dim et As Double                             ' end theta
+    
+    ' If curve direction is CW then swap start and end theta
+    Select Case m_curveDir
+    Case CD_CW
+        st = m_eTheta
+        et = m_sTheta
+    Case CD_CCW
+        st = m_sTheta
+        et = m_eTheta
+    Case Else
+        isThetaOnArc = False
+        Exit Function
+    End Select
+    
+    If st < et Then
+        isThetaOnArc = st <= t And t <= et
+    Else                                         ' wrap angle
+        isThetaOnArc = (st <= t And t <= GeomLib.PI) _
+        Or (-GeomLib.PI <= t And t <= et)
+    End If
+End Function
 
-    If Abs(m) > m_length Then
-        Set GetPointByMeasOffset = Nothing
+' Returns a Point which is at a specified offset (o) from this CircularArc
+' and has its projection on this CircularArc at a specified length (m) from
+' one of its ends
+' Parameters:
+'   - m (measure): the distance measured along this CircularArc: positive
+'                  is measured from Start and negative from End
+'   - o (offset): the perpendicular distance measured against this CircularArc
+' Result:
+'   - A Point object with the computed coordinates
+'   - Nothing if the distance in the m parameter is greater than this CircularArc
+'     length or less than 0
+Public Function calcPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Point
+
+    If m < 0 Or m > m_length Then
+        Set calcPointByMeasOffset = Nothing
         Exit Function
     End If
     
     Dim pTheta As Double                         ' Theta from the arc center to the result point
-    Dim pDist As Double                          ' Distance fromt the arc center to the result point
+    Dim pDist As Double                          ' Distance from the arc center to the result point
         
-    pTheta = GeomLib.NormalizeAngle(m_cToStheta, GeomLib.PI) - m / m_rad * curveDir
-    pTheta = GeomLib.NormalizeAngle(pTheta, 0#)  ' normalize theta in 0.0
+    pTheta = GeomLib.normalizeAngle(m_sTheta, GeomLib.PI) - m / m_rad * curveDirection
+    pTheta = GeomLib.normalizeAngle(pTheta, 0#)  ' normalize theta back to 0.0
     pDist = m_rad - o * m_curveDir
     
-    Set GetPointByMeasOffset = New Point
-    GetPointByMeasOffset.x = m_c.x + pDist * Math.Sin(pTheta)
-    GetPointByMeasOffset.y = m_c.y + pDist * Math.Cos(pTheta)
+    Set calcPointByMeasOffset = New Point
+    calcPointByMeasOffset.x = m_cX + pDist * Math.Cos(pTheta)
+    calcPointByMeasOffset.y = m_cY + pDist * Math.Sin(pTheta)
 End Function
 
-Public Function GetMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
+' Returns a MeasOffset which is linear referencing a set of coordinates
+' against this CircularArc
+' Result:
+'   - MeasOffset object with the computed measure and offset distances
+'   - Nothing if the projection of the given coordinates doesn't lie
+'     within this CircularArc
+Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
+    Dim pTheta1 As Double
+    Dim pTheta2 As Double
+    Dim refTheta As Double
+    
+    ' Return Nothing if input point is the center of the circular arc
+    If x = m_cX And y = m_cY Then
+        Set calcMeasOffsetOfPoint = Nothing
+        Exit Function
+    End If
+    
+    ' Set reference theta
+    If m_curveDir = CD_CW Then
+        refTheta = m_eTheta
+    Else
+        refTheta = m_sTheta
+    End If
+    
+    
+    pTheta1 = GeomLib.Atn2(x - m_cX, y - m_cY)   ' Theta of arc center to input point line
+    pTheta2 = GeomLib.normalizeAngle(pTheta1 + GeomLib.PI, 0) ' Theta of input point to arc center line
+                                      
+    Dim p1OnArc As Boolean                       ' pTheta1 intersects circular arc
+    Dim p2OnArc As Boolean                       ' pTheta2 intersects circular arc
+    
+    If m_isCircle Then
+        p1OnArc = True
+        p2OnArc = True
+    Else
+        p1OnArc = Me.isThetaOnArc(pTheta1)
+        p2OnArc = Me.isThetaOnArc(pTheta2)
+    End If
+       
+    ' NO intersection
+    If Not p1OnArc And Not p2OnArc Then
+        Set calcMeasOffsetOfPoint = Nothing
+        Exit Function
+    End If
+    
+    Set calcMeasOffsetOfPoint = New MeasOffset
+    Dim mAngle As Double                         ' measure angle
+    Dim p1NotOnArcAndp2OnArcFlag As Integer      ' indicator for p1 not on arc and p2 on arc
+    p1NotOnArcAndp2OnArcFlag = 1
+    
+    If p1OnArc And Not p2OnArc Then              ' ONE intersection, p1
+        mAngle = GeomLib.normalizeAngle(pTheta1, refTheta) - refTheta
+    ElseIf Not p1OnArc And p2OnArc Then          ' ONE intersection, p2
+        mAngle = GeomLib.normalizeAngle(pTheta2, refTheta) - refTheta
+        p1NotOnArcAndp2OnArcFlag = -1
+    Else                                         ' TWO intersections
+        mAngle = GeomLib.normalizeAngle(pTheta1, refTheta) - refTheta
+    End If
+            
+    mAngle = GeomLib.normalizeAngle(mAngle, GeomLib.PI)
+    
+    ' compute mTheta as difference of total angle and actual angle if start and end were swapped
+    If m_curveDir = CD_CW Then mAngle = m_length / m_rad - mAngle
+    
+    ' if measure equals to full circle back to start point
+    If Abs(mAngle) >= GeomLib.TWO_PI Then mAngle = 0
+    
+    calcMeasOffsetOfPoint.m = Abs(m_rad * mAngle) ' set measure
 
+    Dim d As Double                              ' distance from center to input point
+    d = GeomLib.dist2D(m_cX, m_cY, x, y)
+    calcMeasOffsetOfPoint.o = (m_rad - d * p1NotOnArcAndp2OnArcFlag) * m_curveDir ' set offset
 End Function
 
-' Start Point of circular arc property
-Public Property Get s() As Point
-    Set s = m_s
+' Test if this CircularArc is equal to another CircularArc object
+' Returns TRUE if all members are equal
+Public Function isEqual(other As CircularArc) As Boolean
+    isEqual = m_sX = other.sX And m_sY = other.sY And _
+              m_cX = other.cX And m_cY = other.cY And _
+              m_eX = other.eX And m_eY = other.eY And _
+              m_length = other.length And _
+              m_curveDir = other.curveDirection And _
+              m_rad = other.radius
+    m_sTheta = other.sTheta And m_eTheta = other.eTheta And _
+               m_isCircle = other.isCircle
+End Function
+
+' Returns a string representation of the this CircularArc
+Public Function toString() As String
+    Dim s As New Point
+    Dim e As New Point
+    Dim c As New Point
+    Dim dir As String
+    
+    s.init m_sX, m_sY
+    e.init m_eX, m_eY
+    c.init m_cX, m_cY
+    
+    dir = GeomEnums.curveDirToString(m_curveDir)
+    toString = "Start: " & s.toString & ";" & _
+               "End: " & e.toString & ";" & _
+               "Center: " & c.toString & ";" & _
+               "Radius: " & m_rad & ";" & _
+               "Start Theta: " & m_sTheta & ";" & _
+               "End Theta: " & m_eTheta & ";" & _
+               "Length: " & m_length & ";" & _
+               "Curve Direction: " & GeomEnums.curveDirToString(m_curveDir) & ";" & _
+               "Is Circle: " & m_isCircle
+End Function
+
+' Start Point X of circular arc property
+Public Property Get sX() As Double
+    sX = m_sX
 End Property
 
-' Start Center of circular arc property
-Public Property Get c() As Point
-    Set c = m_c
+' Start Point Y of circular arc property
+Public Property Get sY() As Double
+    sY = m_sY
 End Property
 
-' End Point of circular arc property
-Public Property Get e() As Point
-    Set e = m_e
+' Center Point X of circular arc property
+Public Property Get cX() As Double
+    cX = m_cX
+End Property
+
+' Center Point Y of circular arc property
+Public Property Get cY() As Double
+    cY = m_cY
+End Property
+
+' End Point X of circular arc property
+Public Property Get eX() As Double
+    eX = m_eX
+End Property
+
+' End Point Y of circular arc property
+Public Property Get eY() As Double
+    eY = m_eY
 End Property
 
 ' Length of circular arc property
@@ -147,23 +383,30 @@ Public Property Get length() As Double
 End Property
 
 ' Length of circular arc property
-Public Property Get curveDir() As CURVE_DIR
-    curveDir = m_curveDir
+Public Property Get curveDirection() As CURVE_DIR
+    curveDirection = m_curveDir
 End Property
 
 ' Radius of circular arc property
-Public Property Get rad() As Double
-    rad = m_rad
+Public Property Get radius() As Double
+    radius = m_rad
 End Property
 
 ' Theta of center to start point line
-Public Property Get cToStheta() As Double
-    cToStheta = m_cToStheta
+Public Property Get sTheta() As Double
+    sTheta = m_sTheta
 End Property
 
 ' Theta of center to start point line
-Public Property Get cToEtheta() As Double
-    cToEtheta = m_cToEtheta
+Public Property Get eTheta() As Double
+    eTheta = m_eTheta
 End Property
+
+' Is circle
+Public Property Get isCircle() As Double
+    isCircle = m_isCircle
+End Property
+
+
 
 

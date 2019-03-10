@@ -38,7 +38,7 @@ Public Sub ModuleCleanup()
 End Sub
 
 '@TestMethod
-Public Sub TestNewPointFromValidVariant()
+Public Sub TestNewPntValidVariant()
     On Error GoTo TestFail
     
     'Arrange:
@@ -53,7 +53,7 @@ Public Sub TestNewPointFromValidVariant()
     expected.x = 3.33
     expected.y = -6#
     
-    Set sut = GeomFactory.NewPointFromVariant(x, y)
+    Set sut = GeomFactory.newPntVar(x, y)
     
     'Assert:
     Assert.AreEqual expected.x, sut.x, "Failed to extract X Double value from Variant!"
@@ -66,7 +66,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestNewPointFromInvalidVariant()
+Public Sub TestNewPntInvalidVariant()
     On Error GoTo TestFail
     
     'Arrange:
@@ -77,10 +77,10 @@ Public Sub TestNewPointFromInvalidVariant()
     'Act:
     x = "3.33"
     y = "-6.0abc"
-    Set sut = GeomFactory.NewPointFromVariant(x, y)
+    Set sut = GeomFactory.newPntVar(x, y)
 
     'Assert:
-    Assert.IsTrue sut Is Nothing, "Nothing expected on Point initialize with invalid arguments!"
+    Assert.IsTrue sut Is Nothing, "Nothing expected on Point initialized with invalid arguments!"
 
 TestExit:
     Exit Sub
@@ -89,7 +89,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestNewMeasOffsetFromValidVariant()
+Public Sub TestNewMeasOffsetValidVariant()
     On Error GoTo TestFail
     
     'Arrange:
@@ -104,7 +104,7 @@ Public Sub TestNewMeasOffsetFromValidVariant()
     expected.m = 3.33
     expected.o = -6#
     
-    Set sut = GeomFactory.NewMeasOffsetFromVariant(m, o)
+    Set sut = GeomFactory.NewMOvar(m, o)
     
     'Assert:
     Assert.AreEqual expected.m, sut.m, "Failed to extract Measure Double value from Variant!"
@@ -117,7 +117,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestNewMeasOffsetFromInvalidVariant()
+Public Sub TestNewMeasOffsetInvalidVariant()
     On Error GoTo TestFail
     
     'Arrange:
@@ -129,10 +129,10 @@ Public Sub TestNewMeasOffsetFromInvalidVariant()
     m = "3.33"
     o = "-6.0abc"
     
-    Set sut = GeomFactory.NewMeasOffsetFromVariant(m, o)
+    Set sut = GeomFactory.NewMOvar(m, o)
     
     'Assert:
-    Assert.IsTrue sut Is Nothing, "Nothing expected on MeasOffset initialize with invalid arguments!"
+    Assert.IsTrue sut Is Nothing, "Nothing expected on MeasOffset initialized with invalid arguments!"
 
 TestExit:
     Exit Sub
@@ -141,7 +141,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestNewLineSegmentFromValidVariant()
+Public Sub TestNewLnSegValidVariant()
     On Error GoTo TestFail
     
     'Arrange:
@@ -157,15 +157,15 @@ Public Sub TestNewLineSegmentFromValidVariant()
     y1 = "-6.0"
     x2 = "3.0"
     y2 = "6.66"
-    expected.Init 3.33, -6, 3, 6.66
+    expected.init 3.33, -6, 3, 6.66
     
-    Set sut = GeomFactory.NewLineSegmentFromVariant(x1, y1, x2, y2)
+    Set sut = GeomFactory.newLnSegVar(x1, y1, x2, y2)
     
     'Assert:
-    Assert.AreEqual expected.P1.x, sut.P1.x
-    Assert.AreEqual expected.P1.y, sut.P1.y
-    Assert.AreEqual expected.P2.x, sut.P2.x
-    Assert.AreEqual expected.P2.y, sut.P2.y
+    Assert.AreEqual expected.sX, sut.sX
+    Assert.AreEqual expected.sY, sut.sY
+    Assert.AreEqual expected.eX, sut.eX
+    Assert.AreEqual expected.eY, sut.eY
 
 TestExit:
     Exit Sub
@@ -174,7 +174,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestNewLineSegmentFromInvalidVariant()
+Public Sub TestNewLnSegInvalidVariant()
     On Error GoTo TestFail
     
     'Arrange:
@@ -190,12 +190,12 @@ Public Sub TestNewLineSegmentFromInvalidVariant()
     y1 = "-6.0"
     x2 = "3.0"
     y2 = "6.66abc"
-    expected.Init 3.33, -6, 3, 6.66
+    expected.init 3.33, -6, 3, 6.66
     
-    Set sut = GeomFactory.NewLineSegmentFromVariant(x1, y1, x2, y2)
+    Set sut = GeomFactory.newLnSegVar(x1, y1, x2, y2)
     
     'Assert:
-    Assert.IsTrue sut Is Nothing, "Nothing expected on LineString initialize with invalid arguments!"
+    Assert.IsTrue sut Is Nothing, "Nothing expected on LineString initialized with invalid arguments!"
 
 TestExit:
     Exit Sub
@@ -203,3 +203,196 @@ TestFail:
     Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
 End Sub
 
+'@TestMethod
+Public Sub TestNewCircArcSCLDvalidVariant()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As CircularArc
+    Dim expected As New CircularArc
+    Dim sX As Variant
+    Dim sY As Variant
+    Dim cX As Variant
+    Dim cY As Variant
+    Dim l As Variant
+    Dim dir As Variant
+    
+    'Act:
+    sX = "0"
+    sY = "1.0"
+    cX = "0.0"
+    cY = "0"
+    l = "1"
+    dir = 1
+    
+    expected.initFromSCLD 0, 1, 0, 0, 1, CD_CW
+    
+    Set sut = GeomFactory.newCircArcSCLDvar(sX, sY, cX, cY, l, dir)
+    
+    'Assert:
+    Assert.AreEqual expected.sX, sut.sX
+    Assert.AreEqual expected.sY, sut.sY
+    Assert.AreEqual expected.cX, sut.cX
+    Assert.AreEqual expected.cY, sut.cY
+    Assert.AreEqual expected.length, sut.length
+    Assert.AreEqual expected.curveDirection, sut.curveDirection
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewCircArcSCLDinvalidVariant()
+    On Error GoTo TestFail
+    
+    Dim sut As CircularArc
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1abc", 1, 0, 0, 1, 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1", "1abc", 0, 0, 1, 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0abc", 0, 1, 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0abc", 1, 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1abc", 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1", -2)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1", 0)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1", 2)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewCircArcSCLDinvalidParams()
+    On Error GoTo TestFail
+    
+    Dim sut As CircularArc
+    
+    Set sut = GeomFactory.newCircArcSCLD(0, 0, 0, 0, 1, CD_CW)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLD(1, 0, 0, 0, -1, CD_CW)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLD(1, 0, 0, 0, 1, CD_NONE)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewCircArcSERDvalidVariant()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As CircularArc
+    Dim expected As New CircularArc
+    Dim sX As Variant
+    Dim sY As Variant
+    Dim eX As Variant
+    Dim eY As Variant
+    Dim r As Variant
+    Dim dir As Variant
+    
+    'Act:
+    sX = "0"
+    sY = "1.0"
+    eX = "1.0"
+    eY = "0"
+    r = "1"
+    dir = 1
+    
+    expected.initFromSERD 0, 1, 1, 0, 1, CD_CW
+    
+    Set sut = GeomFactory.newCircArcSERDvar(sX, sY, eX, eY, r, dir)
+    
+    'Assert:
+    Assert.AreEqual expected.sX, sut.sX
+    Assert.AreEqual expected.sY, sut.sY
+    Assert.AreEqual expected.eX, sut.eX
+    Assert.AreEqual expected.eY, sut.eY
+    Assert.AreEqual expected.length, sut.length
+    Assert.AreEqual expected.curveDirection, sut.curveDirection
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewCircArcSERDinvalidVariant()
+    On Error GoTo TestFail
+    
+    Dim sut As CircularArc
+    
+    Set sut = GeomFactory.newCircArcSERDvar("1abc", 1, 0, 0, 1, 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSERDvar("1", "1abc", 0, 0, 1, 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0abc", 0, 1, 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0", "0abc", 1, 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0", "0", "1abc", 1)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0", "0", "1", -2)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0", "0", "1", 0)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1", 2)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewCircArcSERDinvalidParams()
+    On Error GoTo TestFail
+    
+    Dim sut As CircularArc
+    
+    Set sut = GeomFactory.newCircArcSERDvar(0, 0, 0, 0, 1, CD_CCW)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSERDvar(0, 1, 1, 0, -1, CD_CCW)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+    Set sut = GeomFactory.newCircArcSERDvar(0, 1, 1, 0, 1, CD_NONE)
+    Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
+    
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
