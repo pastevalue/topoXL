@@ -46,11 +46,11 @@ Public Sub TestToString()
     Dim expected As Variant
     
     'Act:
-    sut.Init 3.33, -3#
+    sut.init 3.33, -3#
     expected = "(3.33,-3)"
     
     'Assert:
-    Assert.AreEqual expected, sut.ToString
+    Assert.AreEqual expected, sut.toString
 
 TestExit:
     Exit Sub
@@ -72,11 +72,11 @@ Public Sub TestIsEqual()
     x = 1 / 3
     y = Math.Sqr(2)
     
-    sut.Init x, y
-    eP.Init x, y
+    sut.init x, y
+    eP.init x, y
 
     'Assert:
-    Assert.IsTrue sut.IsEqual(eP), "X and Y of equivalent points are different!"
+    Assert.IsTrue sut.isEqual(eP), "X and Y of equivalent points are different!"
 
 TestExit:
     Exit Sub

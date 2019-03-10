@@ -48,20 +48,20 @@ Private Sub Class_Initialize()
 End Sub
 
 ' Class initialization
-Public Sub Init(ByVal x As Double, ByVal y As Double)
+Public Sub init(ByVal x As Double, ByVal y As Double)
     m_X = x
     m_Y = y
 End Sub
 
 ' Test if this Point is equivalent to another
 ' Returns TRUE if all members are equal
-Public Function IsEqual(p As Point) As Boolean
-    IsEqual = m_X = p.x And m_Y = p.y
+Public Function isEqual(p As Point) As Boolean
+    isEqual = m_X = p.x And m_Y = p.y
 End Function
 
 ' Returns a string representation of the Point class
-Public Function ToString() As String
-    ToString = "(" & m_X & "," & m_Y & ")"
+Public Function toString() As String
+    toString = "(" & m_X & "," & m_Y & ")"
 End Function
 
 ' X property
