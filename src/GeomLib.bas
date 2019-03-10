@@ -25,13 +25,14 @@ Option Explicit
 Option Private Module
 
 Public Const PI As Double = 3.14159265358979
-Public Const TWO_PI As Double = 6.28318530717959
+' Rounded (more precise value) of 6.28318530717959 not used so it fits with math in code where 2*PI equals 6.28318530717958
+Public Const TWO_PI As Double = 6.28318530717958
 Private Const MODULE_NAME As String = "GeomLib"
 
 ' Returns the distance between two sets of 2D grid coordinates
-Public Function Dist2D(ByVal x1 As Double, ByVal y1 As Double, _
+Public Function dist2D(ByVal x1 As Double, ByVal y1 As Double, _
                        ByVal x2 As Double, ByVal y2 As Double) As Double
-    Dist2D = Math.Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
+    dist2D = Math.Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
 End Function
 
 ' Returns the arcsine of a number.
@@ -91,19 +92,19 @@ End Function
 ' Returns -1 if coordinates are on the left, 0 if the coordinates are on the line
 ' and +1 if coordinates are on the right
 ' Left and right are considered relative to the start and end coordinates of the line
-Public Function GetOrientationIndex(ByVal x1 As Double, ByVal y1 As Double, _
-                                    ByVal x2 As Double, ByVal y2 As Double, _
-                                    ByVal x As Double, ByVal y As Double) As Integer
-    GetOrientationIndex = Sgn((y2 - y1) * (x - x1) - (x2 - x1) * (y - y1))
+Public Function orientationIndex(ByVal x1 As Double, ByVal y1 As Double, _
+                                 ByVal x2 As Double, ByVal y2 As Double, _
+                                 ByVal x As Double, ByVal y As Double) As Integer
+    orientationIndex = Sgn((y2 - y1) * (x - x1) - (x2 - x1) * (y - y1))
 End Function
 
 ' Returns the circumference of a circle defined by its radius
 ' Parameters:
 '   - r: the radius of the circle
 ' Raises error for negative r (radius)
-Public Function GetCircleCircumference(ByVal r As Double) As Double
+Public Function circleCircumference(ByVal r As Double)
     If r >= 0 Then
-        GetCircleCircumference = TWO_PI * r
+        circleCircumference = TWO_PI * r
     Else
         Err.Raise 5, MODULE_NAME & ".GetCircleCircumference", _
                   "Can't compute circumference of a circle with negative radius!"
@@ -114,9 +115,8 @@ End Function
 ' Parameters:
 '   - a: angle to  be normalized
 '   - c: center of the desired 2*PI interval for the result
-Public Function NormalizeAngle(ByVal a As Double, ByVal c As Double) As Double
-    NormalizeAngle = a - TWO_PI * MathLib.Floor((a + PI - c) / TWO_PI)
+Public Function normalizeAngle(ByVal a As Double, ByVal c As Double) As Double
+    normalizeAngle = a - TWO_PI * Int((a + PI - c) / TWO_PI)
 End Function
-
 
 
