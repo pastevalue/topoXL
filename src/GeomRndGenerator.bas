@@ -21,7 +21,7 @@ Attribute VB_Name = "GeomRndGenerator"
 '' and comparison against the geom elements before refactoring process
 ''========================================================================
 
-'@Folder("TopoXL")
+'@Folder("TopoXL.CL.geom")
 
 Option Explicit
 Option Private Module
@@ -30,7 +30,7 @@ Option Private Module
 Public Function PointRnd(ByVal minCoo As Double, _
                          ByVal maxCoo As Double) As Point
     Set PointRnd = New Point
-    PointRnd.init MathLib.rndBetween(minCoo, maxCoo), MathLib.rndBetween(minCoo, maxCoo)
+    PointRnd.init LibMath.rndBetween(minCoo, maxCoo), LibMath.rndBetween(minCoo, maxCoo)
 End Function
 
 ' Generates a random LineSegment
@@ -44,10 +44,10 @@ Public Function LineSegmentRnd(ByVal minMidCoo As Double, ByVal maxMidCoo As Dou
     Dim dx_half As Double
     Dim dy_half As Double
     
-    midX = MathLib.rndBetween(minMidCoo, maxMidCoo)
-    midY = MathLib.rndBetween(minMidCoo, maxMidCoo)
-    length = MathLib.rndBetween(minLength, maxLength)
-    theta = MathLib.rndBetween(GeomLib.normalizeAngle(minTheta, 0), GeomLib.normalizeAngle(maxTheta, 0))
+    midX = LibMath.rndBetween(minMidCoo, maxMidCoo)
+    midY = LibMath.rndBetween(minMidCoo, maxMidCoo)
+    length = LibMath.rndBetween(minLength, maxLength)
+    theta = LibMath.rndBetween(LibGeom.normalizeAngle(minTheta, 0), LibGeom.normalizeAngle(maxTheta, 0))
     
     dx_half = length * Math.Cos(theta)
     dy_half = length * Math.Sin(theta)
@@ -71,13 +71,13 @@ Public Function CircularArcRnd(ByVal minCenCoo As Double, ByVal maxCenCoo As Dou
     Dim sX As Double
     Dim sY As Double
     
-    cenX = MathLib.rndBetween(minCenCoo, maxCenCoo)
-    cenY = MathLib.rndBetween(minCenCoo, maxCenCoo)
+    cenX = LibMath.rndBetween(minCenCoo, maxCenCoo)
+    cenY = LibMath.rndBetween(minCenCoo, maxCenCoo)
     
-    sTheta = MathLib.rndBetween(GeomLib.normalizeAngle(minStartTheta, 0), _
-                                GeomLib.normalizeAngle(maxStartTheta, 0))
-    radius = MathLib.rndBetween(minRadius, maxRadius)
-    length = MathLib.rndBetween(minLength, maxLength)
+    sTheta = LibMath.rndBetween(LibGeom.normalizeAngle(minStartTheta, 0), _
+                                LibGeom.normalizeAngle(maxStartTheta, 0))
+    radius = LibMath.rndBetween(minRadius, maxRadius)
+    length = LibMath.rndBetween(minLength, maxLength)
     
     sX = cenX + radius * Math.Cos(sTheta)
     sY = cenY + radius * Math.Sin(sTheta)
@@ -85,6 +85,8 @@ Public Function CircularArcRnd(ByVal minCenCoo As Double, ByVal maxCenCoo As Dou
     Set CircularArcRnd = New CircularArc
     CircularArcRnd.initFromSCLD sX, sY, cenX, cenY, length, curveDirection
 End Function
+
+
 
 
 
