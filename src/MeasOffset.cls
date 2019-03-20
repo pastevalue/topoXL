@@ -40,7 +40,7 @@ Attribute VB_Exposed = False
 ''    Classes: None
 ''=======================================================
 
-'@Folder("TopoXL.geom")
+'@Folder("TopoXL.CL")
 Option Explicit
 
 Private m_m As Double                            'Measure: the measure of a distance on a geometric element
@@ -74,7 +74,7 @@ Public Property Get m() As Double
     m = m_m
 End Property
 
-Public Property Let m(m As Double)
+Public Property Let m(ByVal m As Double)
     m_m = m
 End Property
 
@@ -83,7 +83,7 @@ Public Property Get o() As Double
     o = m_o
 End Property
 
-Public Property Let o(o As Double)
+Public Property Let o(ByVal o As Double)
     m_o = o
 End Property
 

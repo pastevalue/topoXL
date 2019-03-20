@@ -35,7 +35,7 @@ Attribute VB_Exposed = False
 ''    Classes: None
 ''=======================================================
 
-'@Folder("TopoXL.geom")
+'@Folder("TopoXL.CL")
 Option Explicit
 
 Private m_X As Double                            'Abscissa: distance measured parallel to the horizontal axis
@@ -69,7 +69,7 @@ Public Property Get x() As Double
     x = m_X
 End Property
 
-Public Property Let x(x As Double)
+Public Property Let x(ByVal x As Double)
     m_X = x
 End Property
 
@@ -78,7 +78,7 @@ Public Property Get y() As Double
     y = m_Y
 End Property
 
-Public Property Let y(y As Double)
+Public Property Let y(ByVal y As Double)
     m_Y = y
 End Property
 
