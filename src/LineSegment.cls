@@ -37,9 +37,10 @@ Attribute VB_Exposed = False
 '' error number 5 is raised.
 ''========================================================================
 
-'@Folder("TopoXL.geom")
+'@Folder("TopoXL.CL.geom")
 
 Option Explicit
+Implements IGeom
 
 Private m_sX As Double                           ' start Point X
 Private m_sY As Double                           ' start Point Y
@@ -82,8 +83,8 @@ Public Sub init(ByVal sX As Double, ByVal sY As Double, _
     ' Compute other members (m_dX, m_dY, m_length, m_theta)
     m_dX = eX - sX
     m_dY = eY - sY
-    m_length = GeomLib.dist2D(sX, sY, eX, eY)
-    m_theta = GeomLib.Atn2(m_dX, m_dY)
+    m_length = LibGeom.dist2D(sX, sY, eX, eY)
+    m_theta = LibGeom.Atn2(m_dX, m_dY)
 End Sub
 
 ' Tests whether this LineSegment is vertical
@@ -184,10 +185,10 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
         
         'offset sign
         Dim os As Integer
-        os = GeomLib.orientationIndex(m_sX, m_sY, m_eX, m_eY, x, y)
+        os = LibGeom.orientationIndex(m_sX, m_sY, m_eX, m_eY, x, y)
         
         Set calcMeasOffsetOfPoint = New MeasOffset
-        calcMeasOffsetOfPoint.init r * m_length, os * GeomLib.dist2D(px, py, x, y)
+        calcMeasOffsetOfPoint.init r * m_length, os * LibGeom.dist2D(px, py, x, y)
     End Select
 End Function
 
@@ -240,6 +241,31 @@ End Property
 Public Property Get theta() As Double
     theta = m_theta
 End Property
+
+' IGeom interface
+Private Function IGeom_calcPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Point
+    Set IGeom_calcPointByMeasOffset = Me.calcPointByMeasOffset(m, o)
+End Function
+
+Private Function IGeom_calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
+    Set IGeom_calcMeasOffsetOfPoint = Me.calcMeasOffsetOfPoint(x, y)
+End Function
+
+Private Property Get IGeom_length() As Double
+    IGeom_length = Me.length
+End Property
+
+Public Property Get IGeom_geomTypeName() As String
+    IGeom_geomTypeName = ConstCL.LS_NAME
+End Property
+
+
+
+
+
+
+
+
 
 
 

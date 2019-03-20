@@ -1,4 +1,4 @@
-Attribute VB_Name = "MathLib"
+Attribute VB_Name = "LibMath"
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2019 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
@@ -14,12 +14,13 @@ Attribute VB_Name = "MathLib"
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-''=======================================================
+''========================================================================
 '' Description:
 '' Stores basic math functions
-''=======================================================
+''========================================================================
 
-'@Folder("TopoXL")
+'@Folder("TopoXL.libs")
+
 Option Explicit
 Option Private Module
 
@@ -29,7 +30,7 @@ Option Private Module
 '   - epsilon: tollerance with default value of 1E-15
 ' Returns TRUE if the variance is less than tollerance (epsilon)
 Function areDoublesEqual(ByVal d1 As Double, ByVal d2 As Double, _
-                         Optional epsilon As Double = 0.000000000000001) As Boolean
+                         Optional ByVal epsilon As Double = 0.000000000000001) As Boolean
     Dim absDiff As Double
     absDiff = Math.Abs(d1 - d2)
     areDoublesEqual = absDiff < epsilon
@@ -64,7 +65,7 @@ Public Function min(ByVal d1 As Double, ByVal d2 As Double) As Double
 End Function
 
 ' Returns a random number between lower bound and upper bound
-Public Function rndBetween(ByVal lowerbound, ByVal upperbound) As Double
+Public Function rndBetween(ByVal lowerbound As Double, ByVal upperbound As Double) As Double
     rndBetween = (upperbound - lowerbound) * Rnd + lowerbound
 End Function
 

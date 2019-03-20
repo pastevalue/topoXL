@@ -1,4 +1,4 @@
-Attribute VB_Name = "TestGeomFactory"
+Attribute VB_Name = "TestFactoryGeom"
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2019 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ Public Sub TestNewPntValidVariant()
     expected.x = 3.33
     expected.y = -6#
     
-    Set sut = GeomFactory.newPntVar(x, y)
+    Set sut = FactoryGeom.newPntVar(x, y)
     
     'Assert:
     Assert.AreEqual expected.x, sut.x, "Failed to extract X Double value from Variant!"
@@ -77,7 +77,7 @@ Public Sub TestNewPntInvalidVariant()
     'Act:
     x = "3.33"
     y = "-6.0abc"
-    Set sut = GeomFactory.newPntVar(x, y)
+    Set sut = FactoryGeom.newPntVar(x, y)
 
     'Assert:
     Assert.IsTrue sut Is Nothing, "Nothing expected on Point initialized with invalid arguments!"
@@ -104,7 +104,7 @@ Public Sub TestNewMeasOffsetValidVariant()
     expected.m = 3.33
     expected.o = -6#
     
-    Set sut = GeomFactory.NewMOvar(m, o)
+    Set sut = FactoryGeom.NewMOvar(m, o)
     
     'Assert:
     Assert.AreEqual expected.m, sut.m, "Failed to extract Measure Double value from Variant!"
@@ -129,7 +129,7 @@ Public Sub TestNewMeasOffsetInvalidVariant()
     m = "3.33"
     o = "-6.0abc"
     
-    Set sut = GeomFactory.NewMOvar(m, o)
+    Set sut = FactoryGeom.NewMOvar(m, o)
     
     'Assert:
     Assert.IsTrue sut Is Nothing, "Nothing expected on MeasOffset initialized with invalid arguments!"
@@ -159,7 +159,7 @@ Public Sub TestNewLnSegValidVariant()
     y2 = "6.66"
     expected.init 3.33, -6, 3, 6.66
     
-    Set sut = GeomFactory.newLnSegVar(x1, y1, x2, y2)
+    Set sut = FactoryGeom.newLnSegVar(x1, y1, x2, y2)
     
     'Assert:
     Assert.AreEqual expected.sX, sut.sX
@@ -192,10 +192,98 @@ Public Sub TestNewLnSegInvalidVariant()
     y2 = "6.66abc"
     expected.init 3.33, -6, 3, 6.66
     
-    Set sut = GeomFactory.newLnSegVar(x1, y1, x2, y2)
+    Set sut = FactoryGeom.newLnSegVar(x1, y1, x2, y2)
     
     'Assert:
     Assert.IsTrue sut Is Nothing, "Nothing expected on LineString initialized with invalid arguments!"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewLnSegValidColl()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As LineSegment
+    Dim expected As New LineSegment
+    Dim coll As New Collection
+    Dim sX As Variant
+    Dim sY As Variant
+    Dim eX As Variant
+    Dim eY As Variant
+    
+    'Act:
+    sX = "3.33"
+    sY = "-6.0"
+    eX = "3.0"
+    eY = "6.66"
+    expected.init sX, sY, eX, eY
+    
+    coll.Add ConstCL.LS_NAME, ConstCL.GEOM_TYPE
+    coll.Add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
+    coll.Add sX, ConstCL.LS_M_START_X
+    coll.Add sY, ConstCL.LS_M_START_Y
+    coll.Add eX, ConstCL.LS_M_END_X
+    coll.Add eY, ConstCL.LS_M_END_Y
+    Set sut = FactoryGeom.newLnSegColl(coll)
+    
+    'Assert:
+    Assert.IsTrue sut.isEqual(expected)
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewLnSegInvalidColl()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As LineSegment
+    Dim coll As New Collection
+    Dim sX As Variant
+    Dim sY As Variant
+    Dim eX As Variant
+    Dim eY As Variant
+    
+    'Act:
+    sX = "3.33"
+    sY = "-6.0"
+    eX = "3.0"
+    eY = "6.66"
+    
+    coll.Add sX, ConstCL.LS_M_START_X
+    coll.Add sY, ConstCL.LS_M_START_Y
+    coll.Add eX, ConstCL.LS_M_END_X
+    coll.Add eY, ConstCL.LS_M_END_Y
+    coll.Add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
+    coll.Add "Wrong Geom Type", ConstCL.GEOM_TYPE
+    Set sut = FactoryGeom.newLnSegColl(coll)
+    Assert.IsTrue sut Is Nothing, "LineSegment initialized with wrong GeomType!"
+        
+    coll.Remove ConstCL.GEOM_TYPE
+    coll.Remove ConstCL.GEOM_INIT_TYPE
+    coll.Add ConstCL.LS_NAME, ConstCL.GEOM_TYPE
+    coll.Add "Wrong init type", ConstCL.GEOM_INIT_TYPE
+    Set sut = FactoryGeom.newLnSegColl(coll)
+    Assert.IsTrue sut Is Nothing, "LineSegment initialized with wrong Init Type GeomType!"
+    
+    coll.Remove ConstCL.LS_M_START_X
+    coll.Remove ConstCL.GEOM_INIT_TYPE
+    coll.Add "1abc", ConstCL.LS_M_START_X
+    coll.Add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
+    Set sut = FactoryGeom.newLnSegColl(coll)
+    Assert.IsTrue sut Is Nothing, "LineSegment initialized wrong value for member GeomType!"
+    
+    coll.Remove ConstCL.LS_M_START_X
+    Set sut = FactoryGeom.newLnSegColl(coll)
+    Assert.IsTrue sut Is Nothing, "LineSegment initialized without a value for a member key GeomType!"
 
 TestExit:
     Exit Sub
@@ -227,7 +315,7 @@ Public Sub TestNewCircArcSCLDvalidVariant()
     
     expected.initFromSCLD 0, 1, 0, 0, 1, CD_CW
     
-    Set sut = GeomFactory.newCircArcSCLDvar(sX, sY, cX, cY, l, dir)
+    Set sut = FactoryGeom.newCircArcSCLDvar(sX, sY, cX, cY, l, dir)
     
     'Assert:
     Assert.AreEqual expected.sX, sut.sX
@@ -249,28 +337,28 @@ Public Sub TestNewCircArcSCLDinvalidVariant()
     
     Dim sut As CircularArc
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1abc", 1, 0, 0, 1, 1)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1abc", 1, 0, 0, 1, 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1", "1abc", 0, 0, 1, 1)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1", "1abc", 0, 0, 1, 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0abc", 0, 1, 1)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1", "1", "0abc", 0, 1, 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0abc", 1, 1)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1", "1", "0", "0abc", 1, 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1abc", 1)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1", "1", "0", "0", "1abc", 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1", -2)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1", "1", "0", "0", "1", -2)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1", 0)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1", "1", "0", "0", "1", 0)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1", 2)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1", "1", "0", "0", "1", 2)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
 TestExit:
@@ -285,13 +373,13 @@ Public Sub TestNewCircArcSCLDinvalidParams()
     
     Dim sut As CircularArc
     
-    Set sut = GeomFactory.newCircArcSCLD(0, 0, 0, 0, 1, CD_CW)
+    Set sut = FactoryGeom.newCircArcSCLD(0, 0, 0, 0, 1, CD_CW)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLD(1, 0, 0, 0, -1, CD_CW)
+    Set sut = FactoryGeom.newCircArcSCLD(1, 0, 0, 0, -1, CD_CW)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLD(1, 0, 0, 0, 1, CD_NONE)
+    Set sut = FactoryGeom.newCircArcSCLD(1, 0, 0, 0, 1, CD_NONE)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
 TestExit:
@@ -320,11 +408,11 @@ Public Sub TestNewCircArcSERDvalidVariant()
     eX = "1.0"
     eY = "0"
     r = "1"
-    dir = 1
+    dir = "1"
     
     expected.initFromSERD 0, 1, 1, 0, 1, CD_CW
     
-    Set sut = GeomFactory.newCircArcSERDvar(sX, sY, eX, eY, r, dir)
+    Set sut = FactoryGeom.newCircArcSERDvar(sX, sY, eX, eY, r, dir)
     
     'Assert:
     Assert.AreEqual expected.sX, sut.sX
@@ -346,28 +434,28 @@ Public Sub TestNewCircArcSERDinvalidVariant()
     
     Dim sut As CircularArc
     
-    Set sut = GeomFactory.newCircArcSERDvar("1abc", 1, 0, 0, 1, 1)
+    Set sut = FactoryGeom.newCircArcSERDvar("1abc", 1, 0, 0, 1, 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSERDvar("1", "1abc", 0, 0, 1, 1)
+    Set sut = FactoryGeom.newCircArcSERDvar("1", "1abc", 0, 0, 1, 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0abc", 0, 1, 1)
+    Set sut = FactoryGeom.newCircArcSERDvar("1", "1", "0abc", 0, 1, 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0", "0abc", 1, 1)
+    Set sut = FactoryGeom.newCircArcSERDvar("1", "1", "0", "0abc", 1, 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0", "0", "1abc", 1)
+    Set sut = FactoryGeom.newCircArcSERDvar("1", "1", "0", "0", "1abc", 1)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0", "0", "1", -2)
+    Set sut = FactoryGeom.newCircArcSERDvar("1", "1", "0", "0", "1", -2)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSERDvar("1", "1", "0", "0", "1", 0)
+    Set sut = FactoryGeom.newCircArcSERDvar("1", "1", "0", "0", "1", 0)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSCLDvar("1", "1", "0", "0", "1", 2)
+    Set sut = FactoryGeom.newCircArcSCLDvar("1", "1", "0", "0", "1", 2)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
 TestExit:
@@ -382,13 +470,13 @@ Public Sub TestNewCircArcSERDinvalidParams()
     
     Dim sut As CircularArc
     
-    Set sut = GeomFactory.newCircArcSERDvar(0, 0, 0, 0, 1, CD_CCW)
+    Set sut = FactoryGeom.newCircArcSERDvar(0, 0, 0, 0, 1, CD_CCW)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSERDvar(0, 1, 1, 0, -1, CD_CCW)
+    Set sut = FactoryGeom.newCircArcSERDvar(0, 1, 1, 0, -1, CD_CCW)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
-    Set sut = GeomFactory.newCircArcSERDvar(0, 1, 1, 0, 1, CD_NONE)
+    Set sut = FactoryGeom.newCircArcSERDvar(0, 1, 1, 0, 1, CD_NONE)
     Assert.IsTrue sut Is Nothing, "Nothing expected on CircularArc initialized with invalid arguments!"
     
 TestExit:
@@ -396,3 +484,198 @@ TestExit:
 TestFail:
     Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
 End Sub
+
+'@TestMethod
+Public Sub TestNewCircArcSCLDValidColl()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As CircularArc
+    Dim expected As New CircularArc
+    Dim coll As New Collection
+    Dim sX As Variant
+    Dim sY As Variant
+    Dim cX As Variant
+    Dim cY As Variant
+    Dim l As Variant
+    Dim dir As Variant
+    
+    'Act:
+    sX = "1"
+    sY = "0"
+    cX = "0.0"
+    cY = "0.0"
+    l = LibGeom.PI / 2
+    dir = CURVE_DIR.CD_CCW
+    expected.initFromSCLD sX, sY, cX, cY, l, dir
+    
+    coll.Add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
+    coll.Add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
+    coll.Add sX, ConstCL.CA_M_START_X
+    coll.Add sY, ConstCL.CA_M_START_Y
+    coll.Add cX, ConstCL.CA_M_CENTER_X
+    coll.Add cY, ConstCL.CA_M_CENTER_Y
+    coll.Add l, ConstCL.CA_M_LENGTH
+    coll.Add dir, ConstCL.CA_M_CURVE_DIR
+    Set sut = FactoryGeom.newCircArcColl(coll)
+    
+    'Assert:
+    Assert.IsTrue sut.isEqual(expected)
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+
+'@TestMethod
+Public Sub TestNewCircArcSCLDInvalidColl()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As CircularArc
+    Dim coll As New Collection
+    Dim sX As Variant
+    Dim sY As Variant
+    Dim cX As Variant
+    Dim cY As Variant
+    Dim l As Variant
+    Dim dir As Variant
+    
+    'Act:
+    sX = "1"
+    sY = "0"
+    cX = "0.0"
+    cY = "0.0"
+    l = LibGeom.PI / 2
+    dir = CURVE_DIR.CD_CCW
+    
+    coll.Add sX, ConstCL.CA_M_START_X
+    coll.Add sY, ConstCL.CA_M_START_Y
+    coll.Add cX, ConstCL.CA_M_CENTER_X
+    coll.Add cY, ConstCL.CA_M_CENTER_Y
+    coll.Add l, ConstCL.CA_M_LENGTH
+    coll.Add dir, ConstCL.CA_M_CURVE_DIR
+    coll.Add "Wrong Geometry Type", ConstCL.GEOM_TYPE
+    coll.Add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
+    Set sut = FactoryGeom.newCircArcColl(coll)
+    Assert.IsTrue sut Is Nothing, "CircularArc initialized with wrong GeomType!"
+   
+    coll.Remove ConstCL.GEOM_TYPE
+    coll.Remove ConstCL.GEOM_INIT_TYPE
+    coll.Add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
+    coll.Add "Wrong init type", ConstCL.GEOM_INIT_TYPE
+    Set sut = FactoryGeom.newCircArcColl(coll)
+    Assert.IsTrue sut Is Nothing, "CircularArc initialized with wrong Init Type GeomType!"
+    
+    coll.Remove ConstCL.CA_M_START_X
+    coll.Remove ConstCL.GEOM_INIT_TYPE
+    coll.Add "1abc", ConstCL.CA_M_START_X
+    coll.Add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
+    Set sut = FactoryGeom.newCircArcColl(coll)
+    Assert.IsTrue sut Is Nothing, "CircularArc initialized wrong value for member GeomType!"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestNewCircArcSERDValidColl()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As CircularArc
+    Dim expected As New CircularArc
+    Dim coll As New Collection
+    Dim sX As Variant
+    Dim sY As Variant
+    Dim eX As Variant
+    Dim eY As Variant
+    Dim r As Variant
+    Dim dir As Variant
+    
+    'Act:
+    sX = "1"
+    sY = "0"
+    eX = "0.0"
+    eY = "1"
+    r = 1
+    dir = CURVE_DIR.CD_CCW
+    expected.initFromSERD sX, sY, eX, eY, r, dir
+    
+    coll.Add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
+    coll.Add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
+    coll.Add sX, ConstCL.CA_M_START_X
+    coll.Add sY, ConstCL.CA_M_START_Y
+    coll.Add eX, ConstCL.CA_M_END_X
+    coll.Add eY, ConstCL.CA_M_END_Y
+    coll.Add r, ConstCL.CA_M_RADIUS
+    coll.Add dir, ConstCL.CA_M_CURVE_DIR
+    Set sut = FactoryGeom.newCircArcColl(coll)
+    
+    'Assert:
+    Assert.IsTrue sut.isEqual(expected)
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+
+'@TestMethod
+Public Sub TestNewCircArcSERDInvalidColl()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim sut As CircularArc
+    Dim coll As New Collection
+    Dim sX As Variant
+    Dim sY As Variant
+    Dim eX As Variant
+    Dim eY As Variant
+    Dim r As Variant
+    Dim dir As Variant
+    
+    'Act:
+    sX = "1"
+    sY = "0"
+    eX = "0.0"
+    eY = "1.0"
+    r = 1
+    dir = CURVE_DIR.CD_CCW
+    
+    coll.Add sX, ConstCL.CA_M_START_X
+    coll.Add sY, ConstCL.CA_M_START_Y
+    coll.Add eX, ConstCL.CA_M_END_X
+    coll.Add eY, ConstCL.CA_M_END_Y
+    coll.Add r, ConstCL.CA_M_LENGTH
+    coll.Add dir, ConstCL.CA_M_CURVE_DIR
+    coll.Add "Wrong Geometry Type", ConstCL.GEOM_TYPE
+    coll.Add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
+    Set sut = FactoryGeom.newCircArcColl(coll)
+    Assert.IsTrue sut Is Nothing, "CircularArc initialized with wrong GeomType!"
+   
+    coll.Remove ConstCL.GEOM_TYPE
+    coll.Remove ConstCL.GEOM_INIT_TYPE
+    coll.Add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
+    coll.Add "Wrong init type", ConstCL.GEOM_INIT_TYPE
+    Set sut = FactoryGeom.newCircArcColl(coll)
+    Assert.IsTrue sut Is Nothing, "CircularArc initialized with wrong Init Type GeomType!"
+    
+    coll.Remove ConstCL.CA_M_START_X
+    coll.Remove ConstCL.GEOM_INIT_TYPE
+    coll.Add "1abc", ConstCL.CA_M_START_X
+    coll.Add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
+    Set sut = FactoryGeom.newCircArcColl(coll)
+    Assert.IsTrue sut Is Nothing, "CircularArc initialized wrong value for member GeomType!"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+

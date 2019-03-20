@@ -1,4 +1,4 @@
-Attribute VB_Name = "GeomLib"
+Attribute VB_Name = "LibGeom"
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2019 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ Attribute VB_Name = "GeomLib"
 '' Stores basic geometry functions
 ''========================================================================
 
-'@Folder("TopoXL.geom")
+'@Folder("TopoXL.libs")
 
 Option Explicit
 Option Private Module
@@ -102,7 +102,7 @@ End Function
 ' Parameters:
 '   - r: the radius of the circle
 ' Raises error for negative r (radius)
-Public Function circleCircumference(ByVal r As Double)
+Public Function circleCircumference(ByVal r As Double) As Double
     If r >= 0 Then
         circleCircumference = TWO_PI * r
     Else

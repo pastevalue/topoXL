@@ -80,7 +80,7 @@ Public Sub TestInit()
     Assert.AreEqual 3#, sut.dX, "dX must be 3!"
     Assert.AreEqual 4#, sut.dY, "dy must be 4!"
     Assert.AreEqual 5#, sut.length, "Length must be 4!"
-    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.Atn2(3, 4), sut.theta, epsilon), "Theta of line segment must be" & GeomLib.Atn2(3, 4) & "!"
+    Assert.IsTrue LibMath.areDoublesEqual(LibGeom.Atn2(3, 4), sut.theta, epsilon), "Theta of line segment must be" & LibGeom.Atn2(3, 4) & "!"
     
 TestExit:
     Exit Sub
@@ -120,28 +120,28 @@ Public Sub TestTheta()
     
     'Assert:
     sut.init 0, 0, 1, 0
-    Assert.IsTrue MathLib.areDoublesEqual(0#, sut.theta, eps), "Expected 0!"
+    Assert.IsTrue LibMath.areDoublesEqual(0#, sut.theta, eps), "Expected 0!"
     
     sut.init 0, 0, 1, 1
-    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI / 4, sut.theta, eps), "Expected PI/4!"
+    Assert.IsTrue LibMath.areDoublesEqual(LibGeom.PI / 4, sut.theta, eps), "Expected PI/4!"
     
     sut.init 0, 0, 0, 1
-    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI / 2, sut.theta, eps), "Expected PI/2!"
+    Assert.IsTrue LibMath.areDoublesEqual(LibGeom.PI / 2, sut.theta, eps), "Expected PI/2!"
     
     sut.init 0, 0, -1, 1
-    Assert.IsTrue MathLib.areDoublesEqual(3 * GeomLib.PI / 4, sut.theta, eps), "Expected 3/4*PI"
+    Assert.IsTrue LibMath.areDoublesEqual(3 * LibGeom.PI / 4, sut.theta, eps), "Expected 3/4*PI"
     
     sut.init 0, 0, -1, 0
-    Assert.IsTrue MathLib.areDoublesEqual(GeomLib.PI, sut.theta, eps), "Expected PI"
+    Assert.IsTrue LibMath.areDoublesEqual(LibGeom.PI, sut.theta, eps), "Expected PI"
     
     sut.init 0, 0, 1, -1
-    Assert.IsTrue MathLib.areDoublesEqual(-GeomLib.PI / 4, sut.theta, eps), "Expected -PI/4"
+    Assert.IsTrue LibMath.areDoublesEqual(-LibGeom.PI / 4, sut.theta, eps), "Expected -PI/4"
     
     sut.init 0, 0, 0, -1
-    Assert.IsTrue MathLib.areDoublesEqual(-GeomLib.PI / 2, sut.theta, eps), "Expected -PI/2"
+    Assert.IsTrue LibMath.areDoublesEqual(-LibGeom.PI / 2, sut.theta, eps), "Expected -PI/2"
     
     sut.init 0, 0, -1, -1
-    Assert.IsTrue MathLib.areDoublesEqual(-3 * GeomLib.PI / 4, sut.theta, eps), "Expected -3/4*PI"
+    Assert.IsTrue LibMath.areDoublesEqual(-3 * LibGeom.PI / 4, sut.theta, eps), "Expected -3/4*PI"
 
 TestExit:
     Exit Sub

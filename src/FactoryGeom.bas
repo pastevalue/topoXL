@@ -1,4 +1,4 @@
-Attribute VB_Name = "GeomFactory"
+Attribute VB_Name = "FactoryGeom"
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2019 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ Attribute VB_Name = "GeomFactory"
 '' classes instances (Point, LineSegment, CircularArc)
 ''========================================================================
 
-'@Folder("TopoXL.geom")
+'@Folder("TopoXL.CL.geom")
 
 Option Explicit
 Option Private Module
@@ -82,6 +82,33 @@ ErrHandler:
     Set newLnSegVar = Nothing
 End Function
 
+' Creates a LineSegment from a key: value list (collection)
+' Keys are defined in ConstCL
+' Returns:
+'   - a new LineSegment object
+'   - Nothing if creation fails: wrong values or missing keys
+Public Function newLnSegColl(coll As Collection) As LineSegment
+    On Error GoTo FailNewLS
+    
+    If coll.item(ConstCL.GEOM_TYPE) <> ConstCL.LS_NAME Then GoTo FailNewLS
+    
+    ' Select init type
+    Select Case coll.item(ConstCL.GEOM_INIT_TYPE)
+        ' Case Start and End point
+    Case ConstCL.LS_INIT_SE
+        Set newLnSegColl = newLnSegVar(coll.item(ConstCL.LS_M_START_X), _
+                                       coll.item(ConstCL.LS_M_START_Y), _
+                                       coll.item(ConstCL.LS_M_END_X), _
+                                       coll.item(ConstCL.LS_M_END_Y))
+    Case Else
+        GoTo FailNewLS
+    End Select
+
+    Exit Function
+FailNewLS:
+    Set newLnSegColl = Nothing
+End Function
+
 ' Creates a CircularArc from Start and Center point coordinates, length and curve direction
 ' Returns:
 '   - a new CircularArc object
@@ -105,13 +132,14 @@ End Function
 Public Function newCircArcSCLDvar(ByVal sX As Variant, ByVal sY As Variant, _
                                   ByVal cX As Variant, ByVal cY As Variant, _
                                   ByVal length As Variant, ByVal curveDir As Variant) As CircularArc
+    Dim tmpCurveDir As CURVE_DIR
+    tmpCurveDir = ConstCL.curveDirFromVariant(curveDir)
     On Error GoTo ErrHandler
-    If Not GeomEnums.curveDirContains(curveDir) Or curveDir = CD_NONE Then
+    If tmpCurveDir = CD_NONE Then
         Set newCircArcSCLDvar = Nothing
         Exit Function
     End If
-    
-    Set newCircArcSCLDvar = newCircArcSCLD(CDbl(sX), CDbl(sY), CDbl(cX), CDbl(cY), CDbl(length), curveDir)
+    Set newCircArcSCLDvar = newCircArcSCLD(CDbl(sX), CDbl(sY), CDbl(cX), CDbl(cY), CDbl(length), tmpCurveDir)
     Exit Function
 ErrHandler:
     Set newCircArcSCLDvar = Nothing
@@ -140,15 +168,58 @@ End Function
 Public Function newCircArcSERDvar(ByVal sX As Variant, ByVal sY As Variant, _
                                   ByVal eX As Variant, ByVal eY As Variant, _
                                   ByVal rad As Variant, ByVal curveDir As Variant) As CircularArc
+    Dim tmpCurveDir As CURVE_DIR
+    tmpCurveDir = ConstCL.curveDirFromVariant(curveDir)
     On Error GoTo ErrHandler
-    If Not GeomEnums.curveDirContains(curveDir) Or curveDir = CD_NONE Then
+    If tmpCurveDir = CD_NONE Then
         Set newCircArcSERDvar = Nothing
         Exit Function
     End If
-    Set newCircArcSERDvar = newCircArcSERD(CDbl(sX), CDbl(sY), CDbl(eX), CDbl(eY), CDbl(rad), curveDir)
+    Set newCircArcSERDvar = newCircArcSERD(CDbl(sX), CDbl(sY), CDbl(eX), CDbl(eY), CDbl(rad), tmpCurveDir)
     Exit Function
 ErrHandler:
     Set newCircArcSERDvar = Nothing
 End Function
+
+' Creates a CircularArc from a key: value list (collection)
+' Keys are defined in ConstCL
+' Returns:
+'   - a new CircularArc object
+'   - Nothing if creation fails: wrong values or missing keys
+Public Function newCircArcColl(coll As Collection) As CircularArc
+    On Error GoTo FailNewCA
+    
+    If coll.item(ConstCL.GEOM_TYPE) <> ConstCL.CA_NAME Then GoTo FailNewCA
+    
+    ' Select init type
+    Select Case coll.item(ConstCL.GEOM_INIT_TYPE)
+        ' Case Start, Center, Length and Curve Direction
+    Case ConstCL.CA_INIT_SCLD
+        Set newCircArcColl = newCircArcSCLDvar(coll.item(ConstCL.CA_M_START_X), _
+                                               coll.item(ConstCL.CA_M_START_Y), _
+                                               coll.item(ConstCL.CA_M_CENTER_X), _
+                                               coll.item(ConstCL.CA_M_CENTER_Y), _
+                                               coll.item(ConstCL.CA_M_LENGTH), _
+                                               coll.item(ConstCL.CA_M_CURVE_DIR))
+        ' Case Start, End, Radius and Curve Direction
+    Case ConstCL.CA_INIT_SERD
+        Set newCircArcColl = newCircArcSERDvar(coll.item(ConstCL.CA_M_START_X), _
+                                               coll.item(ConstCL.CA_M_START_Y), _
+                                               coll.item(ConstCL.CA_M_END_X), _
+                                               coll.item(ConstCL.CA_M_END_Y), _
+                                               coll.item(ConstCL.CA_M_RADIUS), _
+                                               coll.item(ConstCL.CA_M_CURVE_DIR))
+    
+    Case Else
+        GoTo FailNewCA
+    End Select
+
+    Exit Function
+FailNewCA:
+    Set newCircArcColl = Nothing
+End Function
+
+
+
 
 

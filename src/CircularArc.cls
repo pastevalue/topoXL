@@ -27,7 +27,7 @@ Attribute VB_Exposed = False
 '' Represents a circular arc.
 '' Full list of members
 '' m_sX, m_sY, m_cX, m_cY, m_eX, m_eY, m_length, m_curveDir, m_rad,
-'' m_sTheta, m_eTheta, m_isCircle. Some of these members are reduntant
+'' m_sTheta, m_eTheta, m_isCircle. Some of these members are redundant
 '' but they are all computed at the initialization stage for the purpose
 '' of increased speed in the calculation of "calcPointByMeasOffset" and
 '' "calcMeasOffsetOfPoint".
@@ -37,9 +37,10 @@ Attribute VB_Exposed = False
 '' are used with the initialize methods, error number 5 is raised.
 ''========================================================================
 
-'@Folder("TopoXL.geom")
+'@Folder("TopoXL.CL.geom")
 
 Option Explicit
+Implements IGeom
 
 Private m_sX As Double                           ' start Point X
 Private m_sY As Double                           ' start Point Y
@@ -89,7 +90,7 @@ Public Sub initFromSCLD(ByVal sX As Double, ByVal sY As Double, _
     
     ' Raise error if length is less than or equal to 0
     If length <= 0 Then
-        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Length is equal to 0!"
+        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Length is less than or equal to 0!"
     End If
     
     ' Raise error if curveDir is not defined
@@ -104,21 +105,21 @@ Public Sub initFromSCLD(ByVal sX As Double, ByVal sY As Double, _
     m_curveDir = curveDir
     
     ' Compute other members (m_e, m_rad, m_cToStheta, m_cToEtheta)
-    m_rad = GeomLib.dist2D(sX, sY, cX, cY)
-    m_sTheta = GeomLib.Atn2(sX - cX, sY - cY)
+    m_rad = LibGeom.dist2D(sX, sY, cX, cY)
+    m_sTheta = LibGeom.Atn2(sX - cX, sY - cY)
     
     ' If is circle
-    If length >= GeomLib.TWO_PI * m_rad Then
+    If length >= LibGeom.TWO_PI * m_rad Then
         m_isCircle = True
-        m_length = GeomLib.TWO_PI * m_rad
+        m_length = LibGeom.TWO_PI * m_rad
         m_eTheta = m_sTheta
         m_eX = m_sX
         m_eY = m_sY
     Else
         m_isCircle = False
         m_length = length
-        m_eTheta = GeomLib.normalizeAngle(m_sTheta, GeomLib.PI) - length / m_rad * curveDir
-        m_eTheta = GeomLib.normalizeAngle(m_eTheta, 0#) ' normalize theta in 0.0
+        m_eTheta = LibGeom.normalizeAngle(m_sTheta, LibGeom.PI) - length / m_rad * curveDir
+        m_eTheta = LibGeom.normalizeAngle(m_eTheta, 0#) ' normalize theta in 0.0
         m_eX = m_cX + m_rad * Math.Cos(m_eTheta)
         m_eY = m_cY + m_rad * Math.Sin(m_eTheta)
     End If
@@ -140,7 +141,7 @@ Public Sub initFromSERD(ByVal sX As Double, ByVal sY As Double, _
     
     ' Raise error if length is less than or equal to 0
     If rad <= 0 Then
-        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Radius is equal to 0!"
+        Err.Raise 5, TypeName(Me), "Can't initiate circular arc. Radius is less than or equal to 0!"
     End If
     
     ' Raise error if curveDir is not defined
@@ -161,17 +162,17 @@ Public Sub initFromSERD(ByVal sX As Double, ByVal sY As Double, _
     Dim x As Double                              ' X of q mid point
     Dim y As Double                              ' Y of q mid point
     
-    q = GeomLib.dist2D(sX, sY, eX, eY)
+    q = LibGeom.dist2D(sX, sY, eX, eY)
     x = (sX + eX) / 2
     y = (sY + eY) / 2
     
     m_cX = x - curveDir * Math.Sqr(rad * rad - (q / 2) * (q / 2)) * ((sY - eY) / q)
     m_cY = y - curveDir * Math.Sqr(rad * rad - (q / 2) * (q / 2)) * ((eX - sX) / q)
     
-    m_length = rad * GeomLib.ACos(1 - q * q / (2 * rad * rad))
+    m_length = rad * LibGeom.ACos(1 - q * q / (2 * rad * rad))
     
-    m_sTheta = GeomLib.Atn2(sX - m_cX, sY - m_cY)
-    m_eTheta = GeomLib.Atn2(eX - m_cX, eY - m_cY)
+    m_sTheta = LibGeom.Atn2(sX - m_cX, sY - m_cY)
+    m_eTheta = LibGeom.Atn2(eX - m_cX, eY - m_cY)
 End Sub
 
 ' Returns True if the theta of the ray with the start point in the
@@ -202,8 +203,8 @@ Public Function isThetaOnArc(ByVal t As Double) As Boolean
     If st < et Then
         isThetaOnArc = st <= t And t <= et
     Else                                         ' wrap angle
-        isThetaOnArc = (st <= t And t <= GeomLib.PI) _
-        Or (-GeomLib.PI <= t And t <= et)
+        isThetaOnArc = (st <= t And t <= LibGeom.PI) _
+        Or (-LibGeom.PI <= t And t <= et)
     End If
 End Function
 
@@ -228,8 +229,8 @@ Public Function calcPointByMeasOffset(ByVal m As Double, ByVal o As Double) As P
     Dim pTheta As Double                         ' Theta from the arc center to the result point
     Dim pDist As Double                          ' Distance from the arc center to the result point
         
-    pTheta = GeomLib.normalizeAngle(m_sTheta, GeomLib.PI) - m / m_rad * curveDirection
-    pTheta = GeomLib.normalizeAngle(pTheta, 0#)  ' normalize theta back to 0.0
+    pTheta = LibGeom.normalizeAngle(m_sTheta, LibGeom.PI) - m / m_rad * curveDirection
+    pTheta = LibGeom.normalizeAngle(pTheta, 0#)  ' normalize theta back to 0.0
     pDist = m_rad - o * m_curveDir
     
     Set calcPointByMeasOffset = New Point
@@ -262,8 +263,8 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
     End If
     
     
-    pTheta1 = GeomLib.Atn2(x - m_cX, y - m_cY)   ' Theta of arc center to input point line
-    pTheta2 = GeomLib.normalizeAngle(pTheta1 + GeomLib.PI, 0) ' Theta of input point to arc center line
+    pTheta1 = LibGeom.Atn2(x - m_cX, y - m_cY)   ' Theta of arc center to input point line
+    pTheta2 = LibGeom.normalizeAngle(pTheta1 + LibGeom.PI, 0) ' Theta of input point to arc center line
                                       
     Dim p1OnArc As Boolean                       ' pTheta1 intersects circular arc
     Dim p2OnArc As Boolean                       ' pTheta2 intersects circular arc
@@ -288,26 +289,26 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
     p1NotOnArcAndp2OnArcFlag = 1
     
     If p1OnArc And Not p2OnArc Then              ' ONE intersection, p1
-        mAngle = GeomLib.normalizeAngle(pTheta1, refTheta) - refTheta
+        mAngle = LibGeom.normalizeAngle(pTheta1, refTheta) - refTheta
     ElseIf Not p1OnArc And p2OnArc Then          ' ONE intersection, p2
-        mAngle = GeomLib.normalizeAngle(pTheta2, refTheta) - refTheta
+        mAngle = LibGeom.normalizeAngle(pTheta2, refTheta) - refTheta
         p1NotOnArcAndp2OnArcFlag = -1
     Else                                         ' TWO intersections
-        mAngle = GeomLib.normalizeAngle(pTheta1, refTheta) - refTheta
+        mAngle = LibGeom.normalizeAngle(pTheta1, refTheta) - refTheta
     End If
             
-    mAngle = GeomLib.normalizeAngle(mAngle, GeomLib.PI)
+    mAngle = LibGeom.normalizeAngle(mAngle, LibGeom.PI)
     
     ' compute mTheta as difference of total angle and actual angle if start and end were swapped
     If m_curveDir = CD_CW Then mAngle = m_length / m_rad - mAngle
     
     ' if measure equals to full circle back to start point
-    If Abs(mAngle) >= GeomLib.TWO_PI Then mAngle = 0
+    If Abs(mAngle) >= LibGeom.TWO_PI Then mAngle = 0
     
     calcMeasOffsetOfPoint.m = Abs(m_rad * mAngle) ' set measure
 
     Dim d As Double                              ' distance from center to input point
-    d = GeomLib.dist2D(m_cX, m_cY, x, y)
+    d = LibGeom.dist2D(m_cX, m_cY, x, y)
     calcMeasOffsetOfPoint.o = (m_rad - d * p1NotOnArcAndp2OnArcFlag) * m_curveDir ' set offset
 End Function
 
@@ -335,7 +336,7 @@ Public Function toString() As String
     e.init m_eX, m_eY
     c.init m_cX, m_cY
     
-    dir = GeomEnums.curveDirToString(m_curveDir)
+    dir = ConstCL.curveDirToString(m_curveDir)
     toString = "Start: " & s.toString & ";" & _
                "End: " & e.toString & ";" & _
                "Center: " & c.toString & ";" & _
@@ -343,7 +344,7 @@ Public Function toString() As String
                "Start Theta: " & m_sTheta & ";" & _
                "End Theta: " & m_eTheta & ";" & _
                "Length: " & m_length & ";" & _
-               "Curve Direction: " & GeomEnums.curveDirToString(m_curveDir) & ";" & _
+               "Curve Direction: " & ConstCL.curveDirToString(m_curveDir) & ";" & _
                "Is Circle: " & m_isCircle
 End Function
 
@@ -406,6 +407,24 @@ End Property
 Public Property Get isCircle() As Double
     isCircle = m_isCircle
 End Property
+
+' IGeom interface
+Private Function IGeom_calcPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Point
+    Set IGeom_calcPointByMeasOffset = Me.calcPointByMeasOffset(m, o)
+End Function
+
+Private Function IGeom_calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
+    Set IGeom_calcMeasOffsetOfPoint = Me.calcMeasOffsetOfPoint(x, y)
+End Function
+
+Private Property Get IGeom_length() As Double
+    IGeom_length = Me.length
+End Property
+
+Public Property Get IGeom_geomTypeName() As String
+    IGeom_geomTypeName = ConstCL.CA_NAME
+End Property
+
 
 
 
