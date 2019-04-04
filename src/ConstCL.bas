@@ -68,6 +68,18 @@ Public Const CA_M_START_T As String = "StartTheta"
 Public Const CA_M_END_T As String = "EndTheta"
 ' ------------------------------------------------------------------------
 
+' ClotdoidArc relevant constants -----------------------------------------
+Public Const CL_NAME As String = "ClothoidArc"
+Public Const CL_INIT_SLRDT As String = "SLRDT"
+
+Public Const CL_M_START_X As String = "StartX"
+Public Const CL_M_START_Y As String = "StartY"
+Public Const CL_M_LENGTH As String = "Length"
+Public Const CL_M_END_RADIUS As String = "EndRadius"
+Public Const CL_M_CURVE_DIR As String = "CurveDirection"
+Public Const CL_M_START_T As String = "StartTheta"
+' ------------------------------------------------------------------------
+
 ' Curve direction enumeration --------------------------------------------
 Private Const STR_CD_CW As String = "clockwise"
 Private Const STR_CD_NONE As String = "none"
