@@ -39,13 +39,7 @@ End Function
 'Left and right are considered relative to the start and end coordinates of the line
 Public Function cogoGetSide(startX As Double, startY As Double, endX As Double, endY As Double, px As Double, py As Double) As Integer
     Application.Volatile False
-    startX = Round(startX, 8)
-    startY = Round(startY, 8)
-    endX = Round(endX, 8)
-    endY = Round(endY, 8)
-    px = Round(px, 8)
-    py = Round(py, 8)
-    cogoGetSide = Sgn((endY - startY) * (px - startX) - (endX - startX) * (py - startY))
+    cogoGetSide = Sgn(Round((endY - startY) * (px - startX) - (endX - startX) * (py - startY), 11))
 End Function
 
 'get azimuth between two sets of 2D coordinates
