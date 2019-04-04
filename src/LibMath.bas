@@ -31,9 +31,7 @@ Option Private Module
 ' Returns TRUE if the variance is less than tollerance (epsilon)
 Function areDoublesEqual(ByVal d1 As Double, ByVal d2 As Double, _
                          Optional ByVal epsilon As Double = 0.000000000000001) As Boolean
-    Dim absDiff As Double
-    absDiff = Math.Abs(d1 - d2)
-    areDoublesEqual = absDiff < epsilon
+    areDoublesEqual = Math.Abs(d1 - d2) < epsilon
 End Function
 
 ' Returns a rounded a number down to the nearest integer or to the nearest
