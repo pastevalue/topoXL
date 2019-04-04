@@ -59,7 +59,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'Initialize class
-Public Sub Init(clothoidIn As Coo2D, peak As Coo2D, length As Double, radius As Double, curveDirection As CURVE_DIRECTION)
+Public Sub init(clothoidIn As Coo2D, peak As Coo2D, length As Double, radius As Double, curveDirection As CURVE_DIRECTION)
     Set m_startCoo = clothoidIn
     Set m_peak = peak
     m_rad = radius
@@ -210,26 +210,27 @@ Public Function getY(x As Double) As Double
 End Function
 
 'For a set of coordinates returns the radial distance to the arc clothoid and the arc length from radial point to the start of the arc clothoid
-Public Function getRadialDistFromPoint(ByVal px As Double, ByVal py As Double, ByRef distFromStart As Double, ByRef distFromArcClothoid As Double) As Boolean
+Public Function getRadialDistFromPoint(ByVal pX As Double, ByVal pY As Double, ByRef distFromStart As Double, ByRef distFromArcClothoid As Double) As Boolean
     Const doublePrecision As Double = 0.000000001
     
     Dim sideOfPntCenterToStart As Integer 'specifies on which side of the CenterToStart line the input point (px, py) is (-1 to the left, 1 to the right, 0 on the line)
     Dim sideOfPntCenterToEnd As Integer   'specifies on which side of the CenterToEnd line the input point is (-1 to the left, 1 to the right, 0 on the line)
     
-    sideOfPntCenterToStart = cogoGetSide(m_center.x, m_center.y, m_startCoo.x, m_startCoo.y, px, py)
-    sideOfPntCenterToEnd = cogoGetSide(m_center.x, m_center.y, m_endCoo.x, m_endCoo.y, px, py)
+    sideOfPntCenterToStart = cogoGetSide(m_center.x, m_center.y, m_startCoo.x, m_startCoo.y, pX, pY)
+    sideOfPntCenterToEnd = cogoGetSide(m_center.x, m_center.y, m_endCoo.x, m_endCoo.y, pX, pY)
     
-    'Select case for radial point from input point
-    Select Case sideOfPntCenterToStart * sideOfPntCenterToEnd
-        
-    'point is not on the arc clothoid
-    Case 1
+    If sideOfPntCenterToStart * sideOfPntCenterToEnd = 1 _
+    And sideOfPntCenterToStart = -m_curveDir Then
+        'point is not on the arc clothoid
         distFromStart = 0
         distFromArcClothoid = 0
         getRadialDistFromPoint = False
+    End If
     
-    'point is on the arc clothoid
-    Case -1
+    'Select case for radial point from input point
+    Select Case sideOfPntCenterToStart * sideOfPntCenterToEnd
+    ' -1 point is definitely on the arc clothoid; 1 - point can be on the arc clothoid
+    Case -1, 1
         Dim tempStartToPeakSlope As Double         'the slope of startToPeak line (for finding the foot of the perpendicular from input point to this line)
         Dim tempPerpOnStartToPeakLine As New Coo2D 'the foot of the perpendicular from the input point to startToPeak line
         Dim tempArc As Double                      'the distance from the start point to the tempPerpOnStartToPeakLine point (used in calculation and _
@@ -252,11 +253,16 @@ Public Function getRadialDistFromPoint(ByVal px As Double, ByVal py As Double, B
         
         If sideOfPntCenterToStart <> cogoGetSide(m_center.x, m_center.y, m_startCoo.x, m_startCoo.y, m_endCoo.x, m_endCoo.y) Then _
             inputPointIsBeyondCenter = True Else inputPointIsBeyondCenter = False
-        tempSide = -cogoGetSide(m_startCoo.x, m_startCoo.y, m_peak.x, m_peak.y, px, py) * m_curveDir
+        tempSide = -cogoGetSide(m_startCoo.x, m_startCoo.y, m_peak.x, m_peak.y, pX, pY) * m_curveDir
         If tempSide <> 0 Then 'the input point is not on the startToPeak line
-            tempStartToPeakSlope = (m_peak.y - m_startCoo.y) / (m_peak.x - m_startCoo.x)
-            tempPerpOnStartToPeakLine.x = m_peak.x + (py - m_peak.y + 1 / tempStartToPeakSlope * (px - m_peak.x)) / (tempStartToPeakSlope + 1 / tempStartToPeakSlope)
-            tempPerpOnStartToPeakLine.y = tempStartToPeakSlope * (tempPerpOnStartToPeakLine.x - m_peak.x) + m_peak.y
+            If m_peak.x = m_startCoo.x Then
+                tempPerpOnStartToPeakLine.x = m_startCoo.x
+                tempPerpOnStartToPeakLine.y = pY
+            Else
+                tempStartToPeakSlope = (m_peak.y - m_startCoo.y) / (m_peak.x - m_startCoo.x)
+                tempPerpOnStartToPeakLine.x = m_peak.x + (pY - m_peak.y + 1 / tempStartToPeakSlope * (pX - m_peak.x)) / (tempStartToPeakSlope + 1 / tempStartToPeakSlope)
+                tempPerpOnStartToPeakLine.y = tempStartToPeakSlope * (tempPerpOnStartToPeakLine.x - m_peak.x) + m_peak.y
+            End If
             tempArc = cogoDistance2D(m_startCoo.x, m_startCoo.y, tempPerpOnStartToPeakLine.x, tempPerpOnStartToPeakLine.y)
             
             'the first assumed length of the clothoid arc from start to radial point (varLength)
@@ -267,7 +273,7 @@ Public Function getRadialDistFromPoint(ByVal px As Double, ByVal py As Double, B
             End If
             
             tempAlpha = varLength ^ 2 / m_clothConst
-            tempOffset = cogoDistance2D(px, py, tempPerpOnStartToPeakLine.x, tempPerpOnStartToPeakLine.y)
+            tempOffset = cogoDistance2D(pX, pY, tempPerpOnStartToPeakLine.x, tempPerpOnStartToPeakLine.y)
             
             'the Fresnel sine and cosine integrals are aproximated by Taylor series expansion
             dX = clothoidFresnelCosineDx(varLength, tempAlpha)
@@ -295,7 +301,16 @@ Public Function getRadialDistFromPoint(ByVal px As Double, ByVal py As Double, B
             End If
                         
             sumDist = Tan(tempAlpha) * (j * tempOffset + k * dX) + k * dY
-            varLength = Sqr(tempAlpha * tempArc / Abs(sumDist) * m_clothConst)
+            If sumDist = 0 Then
+                varLength = 0
+            Else
+                varLength = Sqr(tempAlpha * tempArc / Abs(sumDist) * m_clothConst)
+            End If
+            If varLength > m_len Then varLength = m_len
+            If tempOffset > varLength * 2 And varLength > tempOffset / 10 And varLength < m_len / 2 Then
+                'Adjust for a sharp angle. Start from middle of the arc
+                varLength = m_len / 2
+            End If
             For i = 0 To 100
                 If Abs(sumDist - tempArc) < doublePrecision Then Exit For 'exit for if precision is achieved
                 tempAlpha = varLength ^ 2 / m_clothConst
@@ -313,6 +328,8 @@ Public Function getRadialDistFromPoint(ByVal px As Double, ByVal py As Double, B
                         Else
                             varLength = varLength + diff / 2
                         End If
+                    ElseIf tempDiff = 0 Then
+                        Exit For 'result cannot get any better
                     Else
                         varLength = tempVarLength
                     End If
@@ -320,7 +337,7 @@ Public Function getRadialDistFromPoint(ByVal px As Double, ByVal py As Double, B
             Next i
             distFromArcClothoid = -m_curveDir * tempSide / Cos(tempAlpha) * (tempOffset + tempSide * dX)
          Else 'the input point is on the startToPeak line
-            tempArc = cogoDistance2D(m_startCoo.x, m_startCoo.y, px, py)
+            tempArc = cogoDistance2D(m_startCoo.x, m_startCoo.y, pX, pY)
             If tempArc > m_len Then
                 varLength = m_len
              Else
@@ -349,14 +366,14 @@ Public Function getRadialDistFromPoint(ByVal px As Double, ByVal py As Double, B
         'point is on the center to start line
         If sideOfPntCenterToStart = 0 Then
             distFromStart = 0
-            distFromArcClothoid = -m_curveDir * cogoDistance2D(m_startCoo.x, m_startCoo.y, px, py) * _
-                                  cogoGetSide(m_startCoo.x, m_startCoo.y, m_endCoo.x, m_endCoo.y, px, py)
+            distFromArcClothoid = cogoDistance2D(m_startCoo.x, m_startCoo.y, pX, pY) * _
+                                  cogoGetSide(m_startCoo.x, m_startCoo.y, m_endCoo.x, m_endCoo.y, pX, pY)
             getRadialDistFromPoint = True
          'point is on the center to end line
          Else
             distFromStart = m_len
-            distFromArcClothoid = -m_curveDir * cogoDistance2D(m_endCoo.x, m_endCoo.y, px, py) * _
-                                  cogoGetSide(m_startCoo.x, m_startCoo.y, m_endCoo.x, m_endCoo.y, px, py)
+            distFromArcClothoid = cogoDistance2D(m_endCoo.x, m_endCoo.y, pX, pY) * _
+                                  cogoGetSide(m_startCoo.x, m_startCoo.y, m_endCoo.x, m_endCoo.y, pX, pY)
             getRadialDistFromPoint = True
         End If
     End Select
