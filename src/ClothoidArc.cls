@@ -121,8 +121,8 @@ Public Sub init(ByVal startX As Double, ByVal startY As Double, _
     m_intPt.x = intPt.x
     m_intPt.y = intPt.y
 
-    m_peakPt.x = m_startPt.x + m_startTheta.cos_ * m_length * 50
-    m_peakPt.y = m_startPt.y + m_startTheta.sin_ * m_length * 50
+    m_peakPt.x = m_startPt.x + m_startTheta.cos_ * m_length
+    m_peakPt.y = m_startPt.y + m_startTheta.sin_ * m_length
 End Sub
 
 '*******************************************************************************
