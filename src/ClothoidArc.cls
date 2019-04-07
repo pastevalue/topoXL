@@ -68,7 +68,7 @@ Private m_peakPt As POINT_STRUCT                 ' any point on the internal X (
 Private m_startTheta As ANGLE_STRUCT             ' internal X (abscissa) axis theta
 Private m_length As Double                       ' length of the clothoid arc
 Private m_endRadius As Double                    ' radius value at the end point
-Private m_curveDir As CURVE_DIR            ' clothoid arc curve direction (CW or CCW)
+Private m_curveDir As CURVE_DIR                  ' clothoid arc curve direction (CW or CCW)
 Private m_const As Double                        ' clothoid constant = 2 * rad * len
 '*******************************************************************************
 
@@ -121,8 +121,8 @@ Public Sub init(ByVal startX As Double, ByVal startY As Double, _
     m_intPt.x = intPt.x
     m_intPt.y = intPt.y
 
-    m_peakPt.x = m_startPt.x + m_startTheta.cos_ * m_length
-    m_peakPt.y = m_startPt.y + m_startTheta.sin_ * m_length
+    m_peakPt.x = m_startPt.x + m_startTheta.cos_ * m_length * 50
+    m_peakPt.y = m_startPt.y + m_startTheta.sin_ * m_length * 50
 End Sub
 
 '*******************************************************************************
@@ -163,7 +163,7 @@ End Function
 '   - startToFootDist must equal the sum of 3 distances:
 '     1) dy
 '     2) dx * Math.Tan(tempAlpha)
-'     3) tempOffset * Math.Tan(tempAlpha)
+'     3) perpDist * Math.Tan(tempAlpha)
 '   - Depending on the location of the input point, the 3 distances above
 '       have + or - sign in calculus
 '   - If the input point is located on the start to peak line that the
@@ -173,7 +173,7 @@ End Function
 '       within this ClothoidArc or the required precision was not fulfilled
 '*******************************************************************************
 Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
-    Const epsilon As Double = 0.0000000001
+    Const epsilon As Double = 0.00000001
     Const maxIterations As Integer = 100
     
     Dim sideIntStart As Integer                  ' side of the input point related to intToStart line
@@ -200,7 +200,7 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
 
     Dim sideStartPeek As Integer                 ' side of the input point related to startToPeak line
     Dim startToFootDist As Double                ' the distance from the start point to the projection of the input point on the start to peak line
-    Dim tempMeas As Double                       ' the length of the clothoid arc (improved by iterations)
+    Dim measure As Double                        ' the length of the clothoid arc (improved by iterations)
     Dim tempAlpha As Double                      ' the angle formed by clothoid's tangent and startToPeak line
     Dim dX As Double                             ' abscissa (local)
     Dim dY As Double                             ' ordinate (local)
@@ -213,74 +213,56 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
     If sideStartPeek = 0 Then
         ' The input point is on the startToPeak line
         startToFootDist = LibGeom.dist2D(m_startPt.x, m_startPt.y, x, y)
-        tempMeas = LibMath.min(startToFootDist, m_length)
+        measure = LibMath.min(startToFootDist, m_length)
         For i = 1 To maxIterations
-            tempAlpha = alphaAt(tempMeas)
-            dX = tempMeas * fresnelCosine(tempAlpha)
-            dY = tempMeas * fresnelSine(tempAlpha)
+            tempAlpha = alphaAt(measure)
+            dX = measure * fresnelCosine(tempAlpha)
+            dY = measure * fresnelSine(tempAlpha)
             sumDist = dX * Math.Tan(tempAlpha) + dY
-            tempMeas = tempMeas + startToFootDist - sumDist
+            measure = measure + startToFootDist - sumDist
             isMeasFound = LibMath.areDoublesEqual(sumDist, startToFootDist, epsilon)
             If isMeasFound Then Exit For
         Next i
         If Not isMeasFound Then Exit Function    ' return Nothing
         '
         Set calcMeasOffsetOfPoint = New MeasOffset
-        calcMeasOffsetOfPoint.m = tempMeas
+        calcMeasOffsetOfPoint.m = measure
         calcMeasOffsetOfPoint.o = -m_curveDir * dX / Math.Cos(tempAlpha)
         Exit Function
     End If
 
-    Dim tempFootPt As Point                      ' the foot of the perpendicular from the input point to startToPeak line
-    Dim tempOffset As Double                     ' the distance from the input point to tempFootPt point
-    Dim diff As Double                           ' the difference between the previous and the current calculated arc length
-    Dim tempVarLength As Double                  ' temporary variables to keep track if the iterations are improving the result
-    Dim tempDiff As Double
-    Dim j As Integer                             ' sign for tempOffset
+    Dim footPt As Point                          ' the foot of the perpendicular from the input point to startToPeak line
+    Dim perpDist As Double                       ' the distance from the input point to footPt point
+    Dim tempMeas As Double                       ' temporary measure
+    Dim diff As Double                           ' the difference between the previous and the current calculated measure
+    Dim j As Integer                             ' sign for perpDist
     Dim k As Integer                             ' sign for dX and dY
     
-    Set tempFootPt = LibGeom.footOfPerpendicular(m_startPt.x, m_startPt.y, m_peakPt.x, m_peakPt.y, x, y, epsilon)
-    startToFootDist = LibGeom.dist2D(m_startPt.x, m_startPt.y, tempFootPt.x, tempFootPt.y)
-    tempOffset = LibGeom.dist2D(x, y, tempFootPt.x, tempFootPt.y)
-    tempMeas = LibMath.min(startToFootDist, m_length)
-    If tempOffset > tempMeas * 5 And m_length / 2 > tempMeas Then tempMeas = m_length / 2 ' adjust for a sharp angle
+    Set footPt = LibGeom.footOfPerpendicular(m_startPt.x, m_startPt.y, m_peakPt.x, m_peakPt.y, x, y, epsilon)
+    startToFootDist = LibGeom.dist2D(m_startPt.x, m_startPt.y, footPt.x, footPt.y)
+    perpDist = LibGeom.dist2D(x, y, footPt.x, footPt.y)
+    measure = LibMath.min(startToFootDist, m_length)
+    If perpDist > measure * 5 And m_length / 2 > measure Then measure = m_length / 2 ' adjust for a sharp angle
     k = sideIntStart * m_curveDir
     j = k * sideStartPeek
     
     For i = 1 To maxIterations
-        tempAlpha = alphaAt(tempMeas)
-        dX = tempMeas * fresnelCosine(tempAlpha)
-        dY = tempMeas * fresnelSine(tempAlpha)
-        sumDist = Math.Tan(tempAlpha) * (j * tempOffset + k * dX) + k * dY
-        If sumDist = 0 Then
-            tempVarLength = 0
-        Else
-            tempVarLength = Math.Sqr(tempAlpha * startToFootDist / Abs(sumDist) * m_const)
-        End If
-        If i = 1 Then
-            diff = Math.Abs(tempMeas - tempVarLength)
-        Else
-            tempDiff = Math.Abs(tempMeas - tempVarLength)
-            If tempDiff > diff Then
-                If tempMeas > tempVarLength Then
-                    tempMeas = tempMeas - diff / 2
-                Else
-                    tempMeas = tempMeas + diff / 2
-                End If
-            ElseIf tempDiff = 0 Then Exit For    ' stuck. Result will not improve anymore
-            Else
-                tempMeas = tempVarLength
-            End If
-            If tempMeas > m_length Then tempMeas = m_length
-        End If
+        tempAlpha = alphaAt(measure)
+        dX = measure * fresnelCosine(tempAlpha)
+        dY = measure * fresnelSine(tempAlpha)
+        sumDist = Math.Tan(tempAlpha) * (j * perpDist + k * dX) + k * dY
+        tempMeas = Math.Sqr(tempAlpha * startToFootDist / Math.Abs(sumDist) * m_const)
+        diff = Math.Abs(measure - tempMeas)
+        measure = LibMath.min(tempMeas, m_length)
         isMeasFound = LibMath.areDoublesEqual(sumDist, startToFootDist, epsilon)
         If isMeasFound Then Exit For
+        If diff = 0 Then Exit For                ' stuck. Result will not improve anymore
     Next i
     If Not isMeasFound Then Exit Function        ' return nothing
     
     Set calcMeasOffsetOfPoint = New MeasOffset
-    calcMeasOffsetOfPoint.m = tempMeas
-    calcMeasOffsetOfPoint.o = -m_curveDir * sideStartPeek / Cos(tempAlpha) * (tempOffset + sideStartPeek * dX)
+    calcMeasOffsetOfPoint.m = measure
+    calcMeasOffsetOfPoint.o = -m_curveDir * sideStartPeek / Cos(tempAlpha) * (perpDist + sideStartPeek * dX)
 End Function
 
 '*******************************************************************************
@@ -329,17 +311,17 @@ Private Function fresnelCosine(ByVal alpha As Double) As Double
                     alpha ^ 11 / 918086400#
 End Function
 
-' Start Point X of circular arc
+' Start Point X of clothoid arc
 Public Property Get sX() As Double
     sX = m_startPt.x
 End Property
 
-' Start Point Y of circular arc
+' Start Point Y of clothoid arc
 Public Property Get sY() As Double
     sY = m_startPt.y
 End Property
 
-' Length of circular arc
+' Length of clothoid arc
 Public Property Get length() As Double
     length = m_length
 End Property
@@ -375,4 +357,3 @@ End Property
 Public Property Get IGeom_geomTypeName() As String
     IGeom_geomTypeName = ConstCL.CL_NAME
 End Property
-
