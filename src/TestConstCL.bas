@@ -45,7 +45,8 @@ Public Sub TestCurveDirFromVariant()
     Assert.AreEqual CURVE_DIR.CD_CCW, ConstCL.curveDirFromVariant(-1), "Failed number to curve direction!"
     Assert.AreEqual CURVE_DIR.CD_CCW, ConstCL.curveDirFromVariant(-1#), "Failed number to curve direction!"
     Assert.AreEqual CURVE_DIR.CD_CCW, ConstCL.curveDirFromVariant("-1"), "Failed number as string to curve direction!"
-    Assert.AreEqual CURVE_DIR.CD_CCW, ConstCL.curveDirFromVariant("counter-clockwise"), "Failed string to curve direction!"
+    Assert.AreEqual CURVE_DIR.CD_CCW, ConstCL.curveDirFromVariant("CCW"), "Failed string to curve direction!"
+    Assert.AreEqual CURVE_DIR.CD_CW, ConstCL.curveDirFromVariant("CW"), "Failed string to curve direction!"
     
     Assert.AreEqual CURVE_DIR.CD_NONE, ConstCL.curveDirFromVariant(-2), "Failed CD_NONE on value out of named values!"
     Assert.AreEqual CURVE_DIR.CD_NONE, ConstCL.curveDirFromVariant(-1.1), "Failed CD_NONE on value out of named values!"
