@@ -43,6 +43,9 @@ Public Sub TestDist2D()
 
     'Assert:
     Assert.AreEqual 5#, dist2D(0, 0, 3, 4)
+    Assert.AreEqual 0#, dist2D(0, 0, 0, 0)
+    Assert.AreEqual 0#, dist2D(1#, 1#, 1#, 1#)
+    Assert.AreEqual 0#, dist2D(-1#, -1#, -1#, -1#)
 
 TestExit:
     Exit Sub
@@ -102,6 +105,11 @@ End Sub
 '@TestMethod
 Public Sub TestOrientationIndex()
     On Error GoTo TestFail
+    'Arrange:
+    Dim eps As Double
+    
+    'Act
+    eps = 0.000000000001 '1E-12
     
     'Assert:
     ' Horizontal line
@@ -122,7 +130,12 @@ Public Sub TestOrientationIndex()
     Assert.AreEqual 0, LibGeom.orientationIndex(0, 0, 1, 1, 0.5, 0.5), "Point is on the sloped line!"
     Assert.AreEqual 1, LibGeom.orientationIndex(0, 0, 1, 1, 1, 0), "Point is on the right of the sloped line!"
     Assert.AreEqual 1, LibGeom.orientationIndex(1, 1, 0, 0, 0, 1), "Point is on the right of the sloped line!"
-
+    
+    ' Point close to the input line
+    Assert.AreEqual -1, LibGeom.orientationIndex(0, 0, 0, 1, 0 - eps * 10, 0.5, eps), "Point is very close on the left of the vertical line!"
+    Assert.AreEqual 0, LibGeom.orientationIndex(0, 0, 0, 1, 0 + eps / 10, 0.5, eps), "Point is very close on the vertical line!"
+    Assert.AreEqual 1, LibGeom.orientationIndex(0, 0, 0, 1, 0 + eps * 10, 0.5, eps), "Point is very close on the right of the vertical line!"
+    
 TestExit:
     Exit Sub
 TestFail:
