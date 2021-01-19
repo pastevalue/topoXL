@@ -53,6 +53,8 @@ Public Sub TestAreDoublesEqual()
     Assert.IsTrue LibMath.areDoublesEqual(d1, d2)
     Assert.IsTrue LibMath.areDoublesEqual(d1, Round(d2, 3), 0.001)
     Assert.IsFalse LibMath.areDoublesEqual(d1, Round(d2, 3), 0.0001)
+    Assert.IsTrue LibMath.areDoublesEqual(d1, d2, 0.000000000000001) ' epsilon = 1E-15
+    Assert.IsFalse LibMath.areDoublesEqual(d1, Round(d2, 14), 0.000000000000001) ' epsilon = 1E-15
 
 TestExit:
     Exit Sub
