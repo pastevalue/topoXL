@@ -17,7 +17,7 @@ Attribute VB_Name = "FactoryGeom"
 ''========================================================================
 '' Description
 '' Factory module used to create geometry related
-'' classes instances (Point, LineSegment, CircularArc)
+'' classes instances (Point, LineSegment, CircularArc, ClothoidArc)
 ''========================================================================
 
 '@Folder("TopoXL.CL.geom")
@@ -219,7 +219,69 @@ FailNewCA:
     Set newCircArcColl = Nothing
 End Function
 
+' Creates a ClothoidArc from: start coordinates, start theta, length, end radius and curve direction
+' Returns:
+'   - a new ClothoidArc object
+'   - Nothing if wrong input parameters are passed
+Public Function newClothArc(ByVal sX As Double, ByVal sY As Double, ByVal sTheta As Double, _
+                            ByVal length As Double, ByVal eRad As Double, _
+                            ByVal curveDir As CURVE_DIR) As ClothoidArc
+                            
+    On Error GoTo ErrHandler
+    Set newClothArc = New ClothoidArc
+    newClothArc.init sX, sY, sTheta, length, eRad, curveDir
+    Exit Function
+ErrHandler:
+    Set newClothArc = Nothing
 
+End Function
 
+' Creates a ClothoidArc from: start coordinates, start theta, length, end radius and curve direction
+' Parameters are defined as Variant values
+' Returns:
+'   - a new ClothoidArc object
+'   - Nothing if conversion of Variant to relevant type fails or wrong input parameters are passed
+Public Function newClothArcVar(ByVal sX As Variant, ByVal sY As Variant, ByVal sTheta As Variant, _
+                               ByVal length As Variant, ByVal eRad As Variant, _
+                               ByVal curveDir As Variant) As ClothoidArc
+    Dim tmpCurveDir As CURVE_DIR
+    tmpCurveDir = ConstCL.curveDirFromVariant(curveDir)
+    On Error GoTo ErrHandler
+    If tmpCurveDir = CD_NONE Then
+        Set newClothArcVar = Nothing
+        Exit Function
+    End If
+    Set newClothArcVar = newClothArc(CDbl(sX), CDbl(sY), CDbl(sTheta), CDbl(length), CDbl(eRad), tmpCurveDir)
+    Exit Function
+ErrHandler:
+    Set newClothArcVar = Nothing
+End Function
 
+' Creates a ClothoidArc from a key: value list (collection)
+' Keys are defined in ConstCL
+' Returns:
+'   - a new ClothoidArc object
+'   - Nothing if creation fails: wrong values or missing keys
+Public Function newClothArcColl(coll As Collection) As ClothoidArc
+    On Error GoTo FailNewCLA
+    
+    If coll.item(ConstCL.GEOM_TYPE) <> ConstCL.CLA_NAME Then GoTo FailNewCLA
+    
+    ' Select init type
+    Select Case coll.item(ConstCL.GEOM_INIT_TYPE)
+    ' Case Start, Center, Length and Curve Direction
+    Case ConstCL.CLA_INIT_SLRDT
+        Set newClothArcColl = newClothArcVar(coll.item(ConstCL.CLA_M_START_X), _
+                                             coll.item(ConstCL.CLA_M_START_Y), _
+                                             coll.item(ConstCL.CLA_M_START_T), _
+                                             coll.item(ConstCL.CLA_M_LENGTH), _
+                                             coll.item(ConstCL.CLA_M_END_RADIUS), _
+                                             coll.item(ConstCL.CLA_M_CURVE_DIR))
+    Case Else
+        GoTo FailNewCLA
+    End Select
 
+    Exit Function
+FailNewCLA:
+    Set newClothArcColl = Nothing
+End Function
