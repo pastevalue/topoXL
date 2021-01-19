@@ -29,6 +29,9 @@ Attribute VB_Exposed = False
 '' measures to have a defined starting position by convention:
 ''  - start measure = 0 of the geom element
 ''  - end measure = start measure + geom length
+'' Reversed geometry means that start measure is applied at the end
+'' of the geometry (m_geom). This is to deal with ClothoidArc geometries
+'' which are designed to exit a curve
 ''========================================================================
 
 '@Folder("TopoXL.CL")
@@ -38,17 +41,19 @@ Option Explicit
 Private m_geom As IGeom
 Private m_startM As Double                       ' Start measure
 Private m_endM As Double                         ' End measure
+Private m_reversed As Boolean                    ' Reversed geometry
 
 ' Class constructor with default values
 Private Sub Class_Initialize()
     Set m_geom = Nothing
     m_startM = 0
     m_endM = 0
+    m_reversed = False
 End Sub
 
 ' Initialize by geometry object and start measure
 ' Raise error if geom parameter is Nothing
-Public Sub init(geom As IGeom, ByVal startM As Double)
+Public Sub init(geom As IGeom, ByVal startM As Double, Optional reversed As Boolean = False)
 
     ' Raise error if start and center coordinates are equal
     If geom Is Nothing Then
@@ -57,6 +62,7 @@ Public Sub init(geom As IGeom, ByVal startM As Double)
     Set m_geom = geom
     m_startM = startM
     m_endM = startM + geom.length
+    m_reversed = reversed
 End Sub
 
 ' Sets a new value to start measure
@@ -66,14 +72,24 @@ End Sub
 
 ' Returns calcPointByMeasOffset of geom member for the assigned start measure
 Public Function calcPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Point
-    Set calcPointByMeasOffset = m_geom.calcPointByMeasOffset(m - m_startM, o)
+    ' If geometry is reversed then call calcPointByMeasOffset of the geom obj with adjusted values
+    If m_reversed Then
+        Set calcPointByMeasOffset = m_geom.calcPointByMeasOffset(m_geom.length - (m - m_startM), -o)
+    Else
+        Set calcPointByMeasOffset = m_geom.calcPointByMeasOffset(m - m_startM, o)
+    End If
 End Function
 
 ' Returns calcMeasOffsetOfPoint of geom member for the assigned start measure
 Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
     Set calcMeasOffsetOfPoint = m_geom.calcMeasOffsetOfPoint(x, y)
     If Not calcMeasOffsetOfPoint Is Nothing Then
-        calcMeasOffsetOfPoint.m = calcMeasOffsetOfPoint.m + m_startM
+        If m_reversed Then
+            calcMeasOffsetOfPoint.m = m_startM + m_geom.length - calcMeasOffsetOfPoint.m
+            calcMeasOffsetOfPoint.o = -calcMeasOffsetOfPoint.o
+        Else
+            calcMeasOffsetOfPoint.m = calcMeasOffsetOfPoint.m + m_startM
+        End If
     End If
 End Function
 
