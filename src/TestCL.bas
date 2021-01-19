@@ -23,7 +23,7 @@ Option Private Module
 Private Assert As Object
 Private Fakes As Object
 
-Private cl_tst As cl ' sample test ax "L" shaped matching positive coordinate axis
+Private cl_tst As CL ' sample test ax "L" shaped matching positive coordinate axis
 
 '@ModuleInitialize
 Public Sub ModuleInitialize()
@@ -52,7 +52,7 @@ Public Sub TestInitialize()
     ls1.init 0, 1, 0, 0
     ls2.init 0, 0, 1, 0
     
-    Set cl_tst = New cl
+    Set cl_tst = New CL
     cl_tst.init "TstCenterLine"
     
     currentStartM = 0
