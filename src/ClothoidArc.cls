@@ -355,5 +355,5 @@ Private Property Get IGeom_length() As Double
 End Property
 
 Public Property Get IGeom_geomTypeName() As String
-    IGeom_geomTypeName = ConstCL.CL_NAME
+    IGeom_geomTypeName = ConstCL.CLA_NAME
 End Property

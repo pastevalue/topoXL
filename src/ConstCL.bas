@@ -29,6 +29,7 @@ Option Private Module
 
 ' CL classes relevant constants ------------------------------------------
 Public Const CL_MEASURE As String = "Measure"
+Public Const CL_REVERSED As String = "Reversed"
 ' ------------------------------------------------------------------------
 
 ' Geometry classes relevant constants ------------------------------------
@@ -68,22 +69,22 @@ Public Const CA_M_START_T As String = "StartTheta"
 Public Const CA_M_END_T As String = "EndTheta"
 ' ------------------------------------------------------------------------
 
-' ClotdoidArc relevant constants -----------------------------------------
-Public Const CL_NAME As String = "ClothoidArc"
-Public Const CL_INIT_SLRDT As String = "SLRDT"
+' ClothoidArc relevant constants -----------------------------------------
+Public Const CLA_NAME As String = "ClothoidArc"
+Public Const CLA_INIT_SLRDT As String = "SLRDT"
 
-Public Const CL_M_START_X As String = "StartX"
-Public Const CL_M_START_Y As String = "StartY"
-Public Const CL_M_LENGTH As String = "Length"
-Public Const CL_M_END_RADIUS As String = "EndRadius"
-Public Const CL_M_CURVE_DIR As String = "CurveDirection"
-Public Const CL_M_START_T As String = "StartTheta"
+Public Const CLA_M_START_X As String = "StartX"
+Public Const CLA_M_START_Y As String = "StartY"
+Public Const CLA_M_LENGTH As String = "Length"
+Public Const CLA_M_END_RADIUS As String = "Radius"
+Public Const CLA_M_CURVE_DIR As String = "CurveDirection"
+Public Const CLA_M_START_T As String = "StartTheta"
 ' ------------------------------------------------------------------------
 
 ' Curve direction enumeration --------------------------------------------
-Private Const STR_CD_CW As String = "clockwise"
+Private Const STR_CD_CW As String = "CW"
 Private Const STR_CD_NONE As String = "none"
-Private Const STR_CD_CCW As String = "counter-clockwise"
+Private Const STR_CD_CCW As String = "CCW"
 
 Public Enum CURVE_DIR
     [_FIRST] = -2                                ' First index
@@ -114,9 +115,9 @@ Public Function curveDirFromVariant(ByVal v As Variant) As CURVE_DIR
         curveDirFromVariant = v
     Else                                         ' try if string matches
         Select Case LCase(v)
-        Case STR_CD_CW
+        Case LCase(STR_CD_CW)
             curveDirFromVariant = CURVE_DIR.CD_CW
-        Case STR_CD_CCW
+        Case LCase(STR_CD_CCW)
             curveDirFromVariant = CURVE_DIR.CD_CCW
         Case Else
             curveDirFromVariant = CURVE_DIR.CD_NONE
