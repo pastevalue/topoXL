@@ -41,7 +41,7 @@ End Sub
 
 ' Adds a new CL object to the CLs collection
 ' Returns True if the CL was added successfully
-Public Function addCL(clObj As cl) As Boolean
+Public Function addCL(clObj As CL) As Boolean
     On Error GoTo ErrHandler
     m_CLs.Add clObj, clObj.name
     addCL = True
@@ -51,7 +51,7 @@ ErrHandler:
 End Function
 
 ' Returns a CL object by its name
-Public Function getCL(ByVal name As String) As cl
+Public Function getCL(ByVal name As String) As CL
     On Error GoTo ErrHandler
     Set getCL = m_CLs.item(name)
     Exit Function
