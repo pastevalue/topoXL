@@ -184,7 +184,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetProjectionFactor()
+Public Sub TestCalcProjectionFactor()
     On Error GoTo TestFail
     
     'Arrange:
@@ -245,7 +245,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetPointByMeasOffset()
+Public Sub TestCalcPointByMeasOffset()
     On Error GoTo TestFail
     
     'Arrange:
@@ -357,7 +357,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetPointByMeasOffsetOutside()
+Public Sub TestCalcPointByMeasOffsetOutside()
     On Error GoTo TestFail
     
     'Arrange:
@@ -379,7 +379,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetMeasOffsetOfPoint()
+Public Sub TestCalcMeasOffsetOfPoint()
     On Error GoTo TestFail
     
     'Arrange:
@@ -490,7 +490,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetMeasOffsetOfPointOutside()
+Public Sub TestCalcMeasOffsetOfPointOutside()
     On Error GoTo TestFail
     
     'Arrange:
@@ -507,6 +507,189 @@ Public Sub TestGetMeasOffsetOfPointOutside()
     Assert.IsNothing ls.calcMeasOffsetOfPoint(0 - e, 0)
     Assert.IsNothing ls.calcMeasOffsetOfPoint(0, 0 - e)
 
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+
+'@TestMethod
+Public Sub TestCalcXatYonHorizontal()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim lsH As New LineSegment
+    Dim lsHe As New LineSegment
+    Dim e As Double
+    
+    'Act:
+    e = 0.000000000000001            '1E-15
+    lsH.init 0, 1, 1, 1
+    lsHe.init 0, 1, 1, 1 + e
+    
+    'Assert:
+    Assert.IsTrue IsNull(lsH.calcXatY(1)), "Null expected for horizontal lines"
+    Assert.IsFalse IsNull(lsHe.calcXatY(1)), "Not Null expected for non-horizontal line"
+    
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcXatYonVertical()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim lsV As New LineSegment
+    Dim lsVe As New LineSegment
+    Dim e As Double
+    
+    'Act:
+    e = 0.000000000000001 '1E-15
+    lsV.init 1, 0, 1, 1
+    lsVe.init 1, 0, 1 + e, 1
+    
+    'Assert:
+    Assert.AreEqual 1#, lsV.calcXatY(0), "Same value expected for all Ys on vertical lines"
+    Assert.AreEqual 1#, lsV.calcXatY(0.5), "Same value expected for all Ys on vertical lines"
+    Assert.AreEqual 1#, lsV.calcXatY(1), "Same value expected for all Ys on vertical lines"
+    Assert.AreNotEqual 1#, lsVe.calcXatY(0.5), "Different value expected for if line is not perfectly vertical"
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcXatYoutOfRange()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ls As New LineSegment
+    Dim e As Double
+    
+    'Act:
+    e = 0.000000000000001            '1E-15
+    ls.init 0, 0, 1, 1
+    
+    'Assert:
+    Assert.IsTrue IsNull(ls.calcXatY(0 - e)), "Null expected - outside of Y range on left"
+    Assert.IsTrue IsNull(ls.calcXatY(1 + e)), "Null expected - outside of Y range on right"
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcXatYvalid()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ls As New LineSegment
+    Dim e As Double
+    
+    'Act:
+    ls.init 0, 0, 2, 1
+    
+    'Assert:
+    Assert.AreEqual 1#, ls.calcXatY(0.5)
+    Assert.AreEqual 0#, ls.calcXatY(0)
+    Assert.AreEqual 2#, ls.calcXatY(1)
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+'''''
+'@TestMethod
+Public Sub TestCalcYatXonVertical()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim lsV As New LineSegment
+    Dim lsVe As New LineSegment
+    Dim e As Double
+    
+    'Act:
+    e = 0.000000000000001            '1E-15
+    lsV.init 1, 0, 1, 1
+    lsVe.init 1, 0, 1 + e, 1
+    
+    'Assert:
+    Assert.IsTrue IsNull(lsV.calcYatX(1)), "Null expected for horizontal lines"
+    Assert.IsFalse IsNull(lsVe.calcYatX(1)), "Not Null expected for non-horizontal line"
+    
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcYatXonHorizontal()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim lsH As New LineSegment
+    Dim lsHe As New LineSegment
+    Dim e As Double
+    
+    'Act:
+    e = 0.000000000000001 '1E-15
+    lsH.init 0, 1, 1, 1
+    lsHe.init 0, 1, 1, 1 + e
+    
+    'Assert:
+    Assert.AreEqual 1#, lsH.calcYatX(0), "Same value expected for all Ys on vertical lines"
+    Assert.AreEqual 1#, lsH.calcYatX(0.5), "Same value expected for all Ys on vertical lines"
+    Assert.AreEqual 1#, lsH.calcYatX(1), "Same value expected for all Ys on vertical lines"
+    Assert.AreNotEqual 1#, lsHe.calcYatX(0.5), "Different value expected for if line is not perfectly vertical"
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcYatXoutOfRange()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ls As New LineSegment
+    Dim e As Double
+    
+    'Act:
+    e = 0.000000000000001            '1E-15
+    ls.init 0, 0, 1, 1
+    
+    'Assert:
+    Assert.IsTrue IsNull(ls.calcYatX(0 - e)), "Null expected - outside of X range on left"
+    Assert.IsTrue IsNull(ls.calcYatX(1 + e)), "Null expected - outside of X range on right"
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcYatXvalid()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ls As New LineSegment
+    Dim e As Double
+    
+    'Act:
+    ls.init 0, 0, 1, 2
+    
+    'Assert:
+    Assert.AreEqual 1#, ls.calcYatX(0.5)
+    Assert.AreEqual 0#, ls.calcYatX(0)
+    Assert.AreEqual 2#, ls.calcYatX(1)
 TestExit:
     Exit Sub
 TestFail:

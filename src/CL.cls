@@ -78,6 +78,36 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
     Next elem
 End Function
 
+' Returns the calculated X value for a given Y value.
+' It checks the elements of the CL (center line) in the
+' order which they were added and returns a value once
+' X can be computed, that is,a ray parallel to Y axis (vertical)
+' at a value of y intersects the center line element
+Public Function calcXatY(ByVal y As Double) As Variant
+    Dim elem As CLelem
+    
+    calcXatY = Null ' set result to Null as default
+    For Each elem In m_elems
+        calcXatY = elem.calcXatY(y)
+        If Not IsNull(calcXatY) Then Exit Function  ' return first valid value if found
+    Next elem
+End Function
+
+' Returns the calculated Y value for a given X value.
+' It checks the elements of the CL (center line) in the
+' order which they were added and returns a value once
+' Y can be computed, that is,a ray parallel to X axis (horizontal)
+' at a value of x intersects the center line element
+Public Function calcYatX(ByVal x As Double) As Variant
+    Dim elem As CLelem
+    
+    calcYatX = Null ' set result to Null as default
+    For Each elem In m_elems
+        calcYatX = elem.calcYatX(x)
+        If Not IsNull(calcYatX) Then Exit Function  ' return first valid value if found
+    Next elem
+End Function
+
 Public Property Get name() As String
     name = m_name
 End Property

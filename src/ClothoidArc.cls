@@ -350,6 +350,16 @@ Private Function IGeom_calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Doubl
     Set IGeom_calcMeasOffsetOfPoint = Me.calcMeasOffsetOfPoint(x, y)
 End Function
 
+Private Function IGeom_calcXatY(ByVal y As Double) As Variant
+    ' Not implemented yet (not required)
+    IGeom_calcXatY = Null
+End Function
+
+Private Function IGeom_calcYatX(ByVal x As Double) As Variant
+    ' Not implemented yet (not required)
+    IGeom_calcYatX = Null
+End Function
+
 Private Property Get IGeom_length() As Double
     IGeom_length = Me.length
 End Property

@@ -38,6 +38,12 @@ End Function
 Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
 End Function
 
+Public Function calcXatY(ByVal y As Double) As Variant
+End Function
+
+Public Function calcYatX(ByVal x As Double) As Variant
+End Function
+
 Public Property Get length() As Double
 End Property
 

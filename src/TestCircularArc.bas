@@ -486,7 +486,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetPointByMeasOffset()
+Public Sub TestCalcPointByMeasOffset()
     On Error GoTo TestFail
     
     'Arrange:
@@ -604,7 +604,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetMeasOffsetOfPointOnFullCircle()
+Public Sub TestCalcMeasOffsetOfPointOnFullCircle()
     On Error GoTo TestFail
     
     'Arrange:
@@ -709,7 +709,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetMeasOffsetOfPoint()
+Public Sub TestCalcMeasOffsetOfPoint()
     On Error GoTo TestFail
     
     'Arrange:
@@ -850,7 +850,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetMeasOffsetOfPointInCenter()
+Public Sub TestCalcMeasOffsetOfPointInCenter()
     On Error GoTo TestFail
     
     'Arrange:
@@ -870,7 +870,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetMeasOffsetOfPointBeyondCenter()
+Public Sub TestCalcMeasOffsetOfPointBeyondCenter()
     On Error GoTo TestFail
     
     'Arrange:
@@ -953,7 +953,7 @@ TestFail:
 End Sub
 
 '@TestMethod
-Public Sub TestGetMeasOffsetOfPointInRnd()
+Public Sub TestCalcMeasOffsetOfPointInRnd()
     On Error GoTo TestFail
     
     'Arrange:
@@ -980,6 +980,175 @@ TestFail:
     Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
 End Sub
 
+'@TestMethod
+Public Sub TestCalcXatYonFullCircle()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ca As New CircularArc  ' circular arc used for testing
+       
+    'Assert:
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI * 1, CURVE_DIR.CD_CCW
+    
+    Assert.IsTrue IsNull(ca.calcXatY(0.5)), "Null expected - two Xs as circular arc is defined as full circle"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
 
 
+'@TestMethod
+Public Sub TestCalcXatYoutOfRange()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ca As New CircularArc  ' circular arc used for testing
+    Dim eps As Double
+    
+    'Act:
+     eps = 0.000000000000001    ' 1E-15
+     
+    'Assert:
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI / 4, CURVE_DIR.CD_CCW
+    
+    Assert.IsTrue IsNull(ca.calcXatY(1 + eps)), "Null expected - Y out of range"
+    Assert.IsTrue IsNull(ca.calcXatY(0 - eps)), "Null expected - Y out of range"
 
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcXatYtwoIntersections()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ca As New CircularArc  ' circular arc used for testing
+    
+    'Assert:
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI / 2, CURVE_DIR.CD_CCW
+    Assert.IsTrue IsNull(ca.calcXatY(0.5)), "Null expected - X has two solutions (intersections with circular arc)"
+    
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI / 2, CURVE_DIR.CD_CW
+    Assert.IsTrue IsNull(ca.calcXatY(-0.5)), "Null expected - X has two solutions (intersections with circular arc)"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcXatYvalid()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ca As New CircularArc  ' circular arc used for testing
+        
+    'Assert:
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI / 2, CURVE_DIR.CD_CCW  ' half circle - tangent test
+    Assert.AreEqual 0#, ca.calcXatY(1), "Value expected - Y tangent to circular arc"
+    
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI / 4, CURVE_DIR.CD_CW
+    Assert.AreEqual 1#, ca.calcXatY(0), "Start X expected for start Y as input"
+    Assert.AreEqual 0#, ca.calcXatY(-1), "End X expected for end Y as input"
+    
+    ca.initFromSCLD 5, 0, 0, 0, LibGeom.TWO_PI / 4 * 5, CURVE_DIR.CD_CCW
+    Assert.AreEqual 3#, ca.calcXatY(4), "Value expected"
+    Assert.AreEqual 4#, ca.calcXatY(3), "Value expected"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcYatXonFullCircle()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ca As New CircularArc  ' circular arc used for testing
+       
+    'Assert:
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI * 1, CURVE_DIR.CD_CCW
+    
+    Assert.IsTrue IsNull(ca.calcYatX(0.5)), "Null expected - two Ys as circular arc is defined as full circle"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcYatXoutOfRange()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ca As New CircularArc  ' circular arc used for testing
+    Dim eps As Double
+    
+    'Act:
+     eps = 0.00000000000001    ' 1E-14
+     
+    'Assert:
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI / 4, CURVE_DIR.CD_CCW
+    
+    Assert.IsTrue IsNull(ca.calcYatX(1 + eps)), "Null expected - X out of range"
+    Assert.IsTrue IsNull(ca.calcYatX(0 - eps)), "Null expected - X out of range"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcYatXtwoIntersections()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ca As New CircularArc  ' circular arc used for testing
+    
+    'Assert:
+    ca.initFromSCLD 0, -1, 0, 0, LibGeom.TWO_PI / 2, CURVE_DIR.CD_CCW
+    Assert.IsTrue IsNull(ca.calcYatX(0.5)), "Null expected - Y has two solutions (intersections with circular arc)"
+    
+    ca.initFromSCLD 0, -1, 0, 0, LibGeom.TWO_PI / 2, CURVE_DIR.CD_CW
+    Assert.IsTrue IsNull(ca.calcYatX(-0.5)), "Null expected - Y has two solutions (intersections with circular arc)"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCalcYatXvalid()
+    On Error GoTo TestFail
+    
+    'Arrange:
+    Dim ca As New CircularArc  ' circular arc used for testing
+        
+    'Assert:
+    ca.initFromSCLD 0, -1, 0, 0, LibGeom.TWO_PI / 2, CURVE_DIR.CD_CCW  ' half circle - tangent test
+    Assert.AreEqual 0#, ca.calcYatX(1), "Value expected - Y tangent to circular arc"
+    
+    ca.initFromSCLD 1, 0, 0, 0, LibGeom.TWO_PI / 4, CURVE_DIR.CD_CW
+    Assert.AreEqual 0#, ca.calcYatX(1), "Start Y expected for start X as input"
+    Assert.AreEqual -1#, ca.calcYatX(0), "End Y expected for end X as input"
+    
+    ca.initFromSCLD 5, 0, 0, 0, LibGeom.TWO_PI / 4 * 5, CURVE_DIR.CD_CCW
+    Assert.AreEqual 3#, ca.calcYatX(4), "Value expected"
+    Assert.AreEqual 4#, ca.calcYatX(3), "Value expected"
+
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub

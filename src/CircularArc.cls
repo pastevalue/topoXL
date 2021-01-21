@@ -176,7 +176,7 @@ Public Sub initFromSERD(ByVal sX As Double, ByVal sY As Double, _
 End Sub
 
 ' Returns True if the theta of the ray with the start point in the
-' center of this CircularArc intersect this CircularArc,
+' center of this CircularArc intersects this CircularArc,
 ' False otherwise
 Public Function isThetaOnArc(ByVal t As Double) As Boolean
     If m_isCircle Then
@@ -312,6 +312,102 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
     calcMeasOffsetOfPoint.o = (m_rad - d * p1NotOnArcAndp2OnArcFlag) * m_curveDir ' set offset
 End Function
 
+' Returns the X value at a given Y value
+' Computation based on the circle equation (X-Xc)^2 + (Y-Yc)^2 = r^2
+' Result:
+'   - X value computed at the given Y value
+'   - Null if Y value is out of range
+'   - Null if multiple Xs can be returned (Y line intersects circular arc in two points)
+Public Function calcXatY(ByVal y As Double) As Variant
+    If m_isCircle Then
+        calcXatY = Null
+        Exit Function
+    End If
+        
+    ' IF Y is between Ys of the circle defining the arc THEN compute X ELSE return Null
+    If m_cY - m_rad <= y And y <= m_cY + m_rad Then
+        Dim dXabs As Double ' delta X modulus (absolute value)
+        Dim x1 As Double ' first solution of circle equation
+        Dim t1 As Double ' theta to x1
+        Dim x1onArc As Boolean
+        Dim x2 As Double ' second solution of circle equation
+        Dim t2 As Double ' theta to x2
+        Dim x2onArc As Boolean
+        
+        dXabs = VBA.Sqr(m_rad * m_rad - (y - m_cY) * (y - m_cY))
+        x1 = m_cX - dXabs
+        t1 = LibGeom.Atn2(x1 - m_cX, y - m_cY)
+        x1onArc = Me.isThetaOnArc(t1)
+        x2 = m_cX + dXabs
+        t2 = LibGeom.Atn2(x2 - m_cX, y - m_cY)
+        x2onArc = Me.isThetaOnArc(t2)
+        
+        If x1onArc And Not x2onArc Then         ' one intersection: x1
+            calcXatY = x1
+        ElseIf Not x1onArc And x2onArc Then     ' one intersection: x2
+            calcXatY = x2
+        ElseIf x1onArc And x2onArc Then
+            If Abs(x1 - x2) < 0.000000000000001 Then
+                calcXatY = x1                   ' two intersection almost coincident (1E-15): return one of them
+            Else
+                calcXatY = Null                 ' two distinct intersections: return Null
+            End If
+        Else                                    ' no intersection: return Null
+            calcXatY = Null
+        End If
+    Else
+        calcXatY = Null                         ' out of range: return Null
+    End If
+End Function
+
+' Returns the Y value at a given X value
+' Computation based on the circle equation (X-Xc)^2 + (Y-Yc)^2 = r^2
+' Result:
+'   - Y value computed at the given X value
+'   - Null if X value is out of range
+'   - Null if multiple Ys can be returned (Y line intersects circular arc in two points)
+Public Function calcYatX(ByVal x As Double) As Variant
+    If m_isCircle Then
+        calcYatX = Null
+        Exit Function
+    End If
+        
+    ' IF X is between Xs of the circle defining the arc THEN compute Y ELSE return Null
+    If m_cX - m_rad <= x And x <= m_cX + m_rad Then
+        Dim dYabs As Double ' delta X modulus (absolute value)
+        Dim y1 As Double ' first solution of circle equation
+        Dim t1 As Double ' theta to x1
+        Dim y1onArc As Boolean
+        Dim y2 As Double ' second solution of circle equation
+        Dim t2 As Double ' theta to x2
+        Dim y2onArc As Boolean
+        
+        dYabs = VBA.Sqr(m_rad * m_rad - (x - m_cX) * (x - m_cX))
+        y1 = m_cY - dYabs
+        t1 = LibGeom.Atn2(x - m_cX, y1 - m_cY)
+        y1onArc = Me.isThetaOnArc(t1)
+        y2 = m_cY + dYabs
+        t2 = LibGeom.Atn2(x - m_cX, y2 - m_cY)
+        y2onArc = Me.isThetaOnArc(t2)
+        
+        If y1onArc And Not y2onArc Then         ' one intersection: y1
+            calcYatX = y1
+        ElseIf Not y1onArc And y2onArc Then     ' one intersection: y2
+            calcYatX = y2
+        ElseIf y1onArc And y2onArc Then
+            If Abs(y1 - y2) < 0.000000000000001 Then
+                calcYatX = y1                   ' two intersection almost coincident (1E-15): return one of them
+            Else
+                calcYatX = Null                 ' two distinct intersections: return Null
+            End If
+        Else                                    ' no intersection: return Null
+            calcYatX = Null
+        End If
+    Else
+        calcYatX = Null                         ' out of range: return Null
+    End If
+End Function
+
 ' Test if this CircularArc is equal to another CircularArc object
 ' Returns TRUE if all members are equal
 Public Function isEqual(other As CircularArc) As Boolean
@@ -415,6 +511,14 @@ End Function
 
 Private Function IGeom_calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
     Set IGeom_calcMeasOffsetOfPoint = Me.calcMeasOffsetOfPoint(x, y)
+End Function
+
+Private Function IGeom_calcXatY(ByVal y As Double) As Variant
+    IGeom_calcXatY = Me.calcXatY(y)
+End Function
+
+Private Function IGeom_calcYatX(ByVal x As Double) As Variant
+    IGeom_calcYatX = Me.calcYatX(x)
 End Function
 
 Private Property Get IGeom_length() As Double

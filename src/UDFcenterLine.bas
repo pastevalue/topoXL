@@ -54,12 +54,12 @@ Public Function clPntByMeasOffset(ByVal clName As String, _
     If tmpCL Is Nothing Then
         clPntByMeasOffset = CVErr(xlErrNA) ' CL name not found
     Else
-        Dim tmpP As Point
-        Set tmpP = tmpCL.calcPointByMeasOffset(measure, offset)
-        If tmpP Is Nothing Then
+        Dim p As Point
+        Set p = tmpCL.calcPointByMeasOffset(measure, offset)
+        If p Is Nothing Then
             clPntByMeasOffset = CVErr(xlErrNum) ' Measure out of range
         Else
-            clPntByMeasOffset = UDFcenterLine.PointToXLarray(tmpP) ' Return calculated coordinates
+            clPntByMeasOffset = UDFcenterLine.PointToXLarray(p) ' Return calculated coordinates
         End If
     End If
 End Function
@@ -68,12 +68,54 @@ Public Function clMeasOffsetOfPnt(ByVal clName As String, _
                                   ByVal x As Double, ByVal y As Double) As Variant
     Application.Volatile False
     
-    Dim mo As MeasOffset
-    Set mo = userCLs.getCL(clName).calcMeasOffsetOfPoint(x, y)
-    If mo Is Nothing Then
-        clMeasOffsetOfPnt = CVErr(xlErrNA)
+    Dim tmpCL As CL
+    Set tmpCL = userCLs.getCL(clName)
+    If tmpCL Is Nothing Then
+        clMeasOffsetOfPnt = CVErr(xlErrNA) ' CL name not found
     Else
-        clMeasOffsetOfPnt = MeasOffsetToXLarray(mo)
+        Dim mo As MeasOffset
+        Set mo = tmpCL.calcMeasOffsetOfPoint(x, y)
+        If mo Is Nothing Then
+            clMeasOffsetOfPnt = CVErr(xlErrNum)
+        Else
+            clMeasOffsetOfPnt = UDFcenterLine.MeasOffsetToXLarray(mo)
+        End If
+    End If
+End Function
+
+Public Function clXatY(ByVal clName As String, ByVal y As Double) As Variant
+    Application.Volatile False
+    
+    Dim tmpCL As CL
+    Set tmpCL = userCLs.getCL(clName)
+    If tmpCL Is Nothing Then
+        clXatY = CVErr(xlErrNA)         ' CL name not found
+    Else
+        Dim result As Variant
+        result = tmpCL.calcXatY(y)
+        If IsNull(result) Then
+            clXatY = CVErr(xlErrNA)     ' y value not valid
+        Else
+            clXatY = result             ' return calculated value
+        End If
+    End If
+End Function
+
+Public Function clYatX(ByVal clName As String, ByVal x As Double) As Variant
+    Application.Volatile False
+    
+    Dim tmpCL As CL
+    Set tmpCL = userCLs.getCL(clName)
+    If tmpCL Is Nothing Then
+        clYatX = CVErr(xlErrNA)         ' CL name not found
+    Else
+        Dim result As Variant
+        result = tmpCL.calcYatX(x)
+        If IsNull(result) Then
+            clYatX = CVErr(xlErrNA)     ' x value not valid
+        Else
+            clYatX = result             ' return calculated value
+        End If
     End If
 End Function
 

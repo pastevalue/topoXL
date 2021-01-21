@@ -192,6 +192,44 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
     End Select
 End Function
 
+' Returns the X value at a given Y value
+' Result:
+'   - Y value computed at the given X value
+'   - Null if Y value is out of range
+'   - Null if multiple Xs can be returned (horizontal line)
+Public Function calcXatY(ByVal y As Double) As Variant
+    If Me.isHorizontal Then
+        calcXatY = Null
+        Exit Function
+    End If
+    
+    ' IF Y is between Ys of line segment geometry THEN compute X ELSE return Null
+    If min(m_sY, m_eY) <= y And y <= max(m_sY, m_eY) Then
+        calcXatY = m_sX + m_dX * (y - m_sY) / m_dY
+    Else
+        calcXatY = Null
+    End If
+End Function
+
+' Returns the Y value at a given X value
+' Result:
+'   - X value computed at the given Y value
+'   - Null if X value is out of range
+'   - Null if multiple Ys can be returned (vertical line)
+Public Function calcYatX(ByVal x As Double) As Variant
+    If Me.isVertical Then
+        calcYatX = Null
+        Exit Function
+    End If
+    
+    ' IF X is between Xs of line segment geometry THEN compute Y ELSE return Null
+    If min(m_sX, m_eX) <= x And x <= max(m_sX, m_eX) Then
+        calcYatX = m_sY + m_dY * (x - m_sX) / m_dX
+    Else
+        calcYatX = Null
+    End If
+End Function
+
 ' Test if this LineSegment is equal to another
 ' Returns TRUE if all members are equal
 Public Function isEqual(ls As LineSegment) As Boolean
@@ -249,6 +287,14 @@ End Function
 
 Private Function IGeom_calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As MeasOffset
     Set IGeom_calcMeasOffsetOfPoint = Me.calcMeasOffsetOfPoint(x, y)
+End Function
+
+Private Function IGeom_calcXatY(ByVal y As Double) As Variant
+    IGeom_calcXatY = Me.calcXatY(y)
+End Function
+
+Private Function IGeom_calcYatX(ByVal x As Double) As Variant
+    IGeom_calcYatX = Me.calcYatX(x)
 End Function
 
 Private Property Get IGeom_length() As Double

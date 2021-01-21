@@ -93,6 +93,16 @@ Public Function calcMeasOffsetOfPoint(ByVal x As Double, ByVal y As Double) As M
     End If
 End Function
 
+'Returns X coordinate value for specified Y coordinate
+Public Function calcXatY(ByVal y As Double) As Variant
+    calcXatY = m_geom.calcXatY(y)
+End Function
+
+'Returns Y coordinate value for specified X coordinate
+Public Function calcYatX(ByVal x As Double) As Variant
+    calcYatX = m_geom.calcYatX(x)
+End Function
+
 ' Start measure of the element
 Public Property Get startM() As Double
     startM = m_startM
