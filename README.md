@@ -7,5 +7,26 @@ The *TopoXL* project is aimed to provide basic functionality for working with sp
 To be written
 
 # Documentation
+## Centerline Functions
+###### Summary
+Centerline referencing functions used to compute:
 
-To be written
+- XY coordinates based on measure and offset values
+- Measure and offset values based on coordinates
+- X coordinate at a given Y
+- Y coordinate at a given X
+
+### Centerline Point by Measure and Offset
+###### Name
+clPntByMeasOffset
+###### Parameters
+- *clName* (text): the name of the reference centerline used for computation
+- *measure* (number): the measure value at which the output point coordinates are computed
+- *offset* (number): the offset value at which the output point coordinates are computed
+
+###### Result
+Returns (*Excel* array – two numbers) the coordinates of the point  calculated at the given measure and offset
+
+###### Errors returned:
+- #N/A: no centerline with the name = clName was found
+- #NUM!: measure value is out of range, that is, there is no *centerline element* in the specified centerline such that *start measure <= measure <= end measure*
