@@ -21,7 +21,7 @@ The *TopoXL* project is aimed to provide basic functionality for working with sp
 
 # Installation
 
-The *TopoXL.xlsm* file is the macro-enabled file which contains all the functionality of *TopoXL*. Click [here](https://github.com/pastevalue/topoXL/blob/master/topoXL.xlsm) to download it.
+The *TopoXL.xlsm* file is the macro-enabled file which contains all the functionality of *TopoXL*. Click [here](https://github.com/pastevalue/topoXL/raw/master/TopoXL.xlsm) to download it.
  
 
 # UDF Documentation
