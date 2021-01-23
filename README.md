@@ -14,26 +14,15 @@ The *TopoXL* project is aimed to provide basic functionality for working with sp
       - [Initialisation Table Description](#initialisation-table-description)
     + [Functions Help](#functions-help)
       - [*clPntByMeasOffset* - Centerline Point by Measure and Offset](#-clpntbymeasoffset----centerline-point-by-measure-and-offset)
-        * [Parameters](#parameters)
-        * [Result](#result)
-        * [Error(s) returned:](#error-s--returned-)
       - [*clMeasOffsetOfPnt* - Centerline Measure and Offset of Point](#-clmeasoffsetofpnt----centerline-measure-and-offset-of-point)
-        * [Parameters](#parameters-1)
-        * [Result](#result-1)
-        * [Error(s) returned:](#error-s--returned--1)
       - [*clYatX* - Centerline Y Value at X Value](#-clyatx----centerline-y-value-at-x-value)
-        * [Parameters](#parameters-2)
-        * [Result](#result-2)
-        * [Error(s) returned:](#error-s--returned--2)
       - [*clXatY* - Centerline X Value at Y Value](#-clxaty----centerline-x-value-at-y-value)
-        * [Parameters](#parameters-3)
-        * [Result](#result-3)
-        * [Error(s) returned:](#error-s--returned--3)
 
 
 # Installation
 
-To be written
+The *TopoXL.xlsm* file is the macro-enabled file which contains all the functionality of *TopoXL*. Click [here](https://github.com/pastevalue/topoXL/blob/master/topoXL.xlsm) to download it.
+ 
 
 # UDF Documentation
 ## General Notes
@@ -53,7 +42,7 @@ The *measure* of a point along a geometry element is the distance to the point m
 The *offset* of a point along a geometry element is the perpendicular distance between the point and the element. Offset values are negative if the points are on the left hand side (LHS) along the geometry element and positive if they are on the right hand side (RHS).
 
 The geometry element, measure, offset and their properties are shown in the figure below.
-![](https://github.com/pastevalue/topoXL/blob/develop/docs/udf_cl/geom_elem.png)
+![](https://github.com/pastevalue/topoXL/blob/master/docs/udf_cl/geom_elem.png)
 
 
 ### Summary
@@ -127,7 +116,7 @@ The *centerline* functions are stored in the *UDF_CL* module. Their names are pr
 Result type: *Excel Array* – two numbers
 
 Returns the coordinates of the point calculated at the given *measure* and *offset*
-##### Errors returned:
+##### Errors returned
 - *#N/A*: no *centerline* with the name *clName* was found
 - *#NUM!*: *measure* value is out of range, that is, the *centerline* has no element such that *start measure <= measure <= end measure*
 
@@ -142,7 +131,7 @@ Result type: *Excel Array* – two numbers
 
 Returns the centerline reference, *measure* and *offset*, of the given coordinates
 
-##### Errors returned:
+##### Errors returned
 - *#N/A*: no *centerline* with the name *clName* was found
 - *#NUM!*: coordinates not covered by the *centerline*, that is, the *centerline* has no element such that a perpendicular from the given coordinates to one of its elements exists
 
@@ -157,7 +146,7 @@ Result type: number
 
 Returns the Y value computed at the given X value. In the scenario of multiple *centerline* elements which satisfy the condition *Xmin <= X <= Xmax*, the first one found is used for computation.
 
-##### Errors returned:
+##### Errors returned
 - *#N/A*: no centerline with the name *clName* was found
 - *#NUM!*: X value not covered by the *centerline*, that is, the *centerline* has no element such that *Xmin <= X <= Xmax*
 
@@ -172,7 +161,7 @@ Result type: number
 
 Returns the X value computed at the given Y value. In the scenario of multiple *centerline* elements which satisfy the condition *Ymin <= Y <= Ymax*, the first one found is used for computation.
 
-##### Errors returned:
+##### Errors returned
 - *#N/A*: no centerline with the name *clName* was found
 - *#NUM!*: Y value not covered by the *centerline*, that is, the *centerline* has no element such that *Ymin <= Y <= Ymax*
 
