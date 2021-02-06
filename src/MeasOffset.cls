@@ -22,7 +22,7 @@ Attribute VB_Exposed = False
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-''=======================================================
+''========================================================================
 '' Description
 '' Represents a location defined by linear reference. It
 '' is described by:
@@ -31,16 +31,10 @@ Attribute VB_Exposed = False
 ''    - Offset: a perpendicular distance on the geometrical
 ''      element applied at the end of the "Measure"
 ''      (-/+, left/right)
-''-------------------------------------------------------
-'' Called by:
-''    Modules: None
-''    Classes: None
-'' Calls:
-''    Modules: None
-''    Classes: None
-''=======================================================
+''========================================================================
 
 '@Folder("TopoXL.CL")
+
 Option Explicit
 
 Private m_m As Double                            'Measure: the measure of a distance on a geometric element
@@ -67,6 +61,11 @@ End Function
 ' Returns a string representation of the Point class
 Public Function toString() As String
     toString = "(" & m_m & "," & m_o & ")"
+End Function
+
+' Returns an array of the measure and offset
+Public Function toArray() As Variant
+    toArray = Array(m_m, m_o)
 End Function
 
 ' Measure property
