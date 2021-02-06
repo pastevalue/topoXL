@@ -27,12 +27,24 @@ Option Private Module
 Public Const PI As Double = 3.14159265358979
 ' Rounded (more precise value) of 6.28318530717959 not used so it fits with math in code where 2*PI equals 6.28318530717958
 Public Const TWO_PI As Double = 6.28318530717958
-Private Const MODULE_NAME As String = "GeomLib"
+Private Const MODULE_NAME As String = "LibGeom"
 
-' Returns the distance between two sets of 2D grid coordinates
+' Returns the 2D distance between two sets of 2D grid coordinates
+' Parameters:
+'   - x1, y1: 2D grid coordinates of first point
+'   - x2, y2: 2D grid coordinates of first point
 Public Function dist2D(ByVal x1 As Double, ByVal y1 As Double, _
                        ByVal x2 As Double, ByVal y2 As Double) As Double
     dist2D = Math.Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
+End Function
+
+' Returns the 3D distance between two sets of 3D grid coordinates
+' Parameters:
+'   - x1, y1, z1: 3D grid coordinates of first point
+'   - x2, y2, z2: 3D grid coordinates of first point
+Public Function dist3D(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, _
+                       ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double) As Double
+    dist3D = Math.Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2))
 End Function
 
 ' Returns the arcsine of a number.
@@ -177,4 +189,22 @@ Public Function intOf2LinesByTheta(ByVal x1 As Double, ByVal y1 As Double, _
         intOf2LinesByTheta.x = (x1 * ctg2 - x2 * ctg1 - ctg1 * ctg2 * (y1 - y2)) / (ctg2 - ctg1)
         intOf2LinesByTheta.y = (intOf2LinesByTheta.x - x1) / ctg1 + y1
     End If
+End Function
+
+' Returns TRUE if input coordinates are inside or on the edges
+' of the input bounding box, FALSE otherwise
+' If the input coordinates are o
+' Parameters:
+'   - x, y: coordinates to be checked if they are inside a bounding box
+'   - x1, y1, x2, y2: coordinates to define the bounding box (oposite corners)
+Public Function cooInBB(ByVal x As Double, ByVal y As Double, _
+                        ByVal x1 As Double, ByVal y1 As Double, _
+                        ByVal x2 As Double, ByVal y2 As Double) As Variant
+    Dim xInside As Boolean
+    Dim yInside As Boolean
+    
+    xInside = (x >= x1 And x <= x2) Or (x >= x2 And x <= x1)
+    yInside = (y >= y1 And y <= y2) Or (y <= y1 And y >= y2)
+    
+    cooInBB = xInside And yInside
 End Function
