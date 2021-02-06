@@ -22,46 +22,52 @@ Attribute VB_Exposed = False
 ''' You should have received a copy of the GNU General Public License
 ''' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-''===================================================================
+''========================================================================
 '' Description
-'' Represents a location defined by a set of 2D grid
-'' coordinates
-''-------------------------------------------------------
-'' Called by:
-''    Modules: None
-''    Classes: None
-'' Calls:
-''    Modules: None
-''    Classes: None
-''=======================================================
+'' Represents a location defined by a set of 3D grid coordinates
+''========================================================================
 
 '@Folder("TopoXL.CL")
+
 Option Explicit
 
 Private m_X As Double                            'Abscissa: distance measured parallel to the horizontal axis
 Private m_Y As Double                            'Ordinate: distance measured parallel to the vertical axis
+Private m_Z As Double                            'Ordinate: distance measured from XY plan
 
 ' Class constructor
 Private Sub Class_Initialize()
     m_X = 0
     m_Y = 0
+    m_Z = 0
 End Sub
 
 ' Class initialization
-Public Sub init(ByVal x As Double, ByVal y As Double)
+Public Sub init(ByVal x As Double, ByVal y As Double, Optional ByVal z As Double = 0#)
     m_X = x
     m_Y = y
+    m_Z = z
 End Sub
 
 ' Test if this Point is equivalent to another
 ' Returns TRUE if all members are equal
 Public Function isEqual(p As Point) As Boolean
-    isEqual = m_X = p.x And m_Y = p.y
+    isEqual = m_X = p.x And m_Y = p.y And m_Z = p.z
 End Function
 
-' Returns a string representation of the Point class
-Public Function toString() As String
-    toString = "(" & m_X & "," & m_Y & ")"
+' Returns a string representation of the Point class (2D - X and Y only)
+Public Function toStringXY() As String
+    toStringXY = "(" & m_X & "," & m_Y & ")"
+End Function
+
+' Returns a string representation of the Point class (3D - X,Y and Z)
+Public Function toStringXYZ() As String
+    toStringXYZ = "(" & m_X & "," & m_Y & "," & m_Z & ")"
+End Function
+
+' Returns an array of the X and Y coordinates
+Public Function toArrayXY() As Variant
+    toArrayXY = Array(m_X, m_Y)
 End Function
 
 ' X property
@@ -81,4 +87,14 @@ End Property
 Public Property Let y(ByVal y As Double)
     m_Y = y
 End Property
+
+' Z property
+Public Property Get z() As Double
+    z = m_Z
+End Property
+
+Public Property Let z(ByVal z As Double)
+    m_Z = z
+End Property
+
 

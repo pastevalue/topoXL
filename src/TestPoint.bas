@@ -42,15 +42,21 @@ Public Sub TestToString()
     On Error GoTo TestFail
     
     'Arrange:
-    Dim sut As New Point
-    Dim expected As Variant
+    Dim sut2D As New Point
+    Dim sut3D As New Point
+    Dim expected2D As Variant
+    Dim expected3D As Variant
     
     'Act:
-    sut.init 3.33, -3#
-    expected = "(3.33,-3)"
+    sut2D.init 3.33, -3#
+    expected2D = "(3.33,-3)"
+    
+    sut3D.init 3.33, -3#, 1
+    expected3D = "(3.33,-3,1)"
     
     'Assert:
-    Assert.AreEqual expected, sut.toString
+    Assert.AreEqual expected2D, sut2D.toStringXY
+    Assert.AreEqual expected3D, sut3D.toStringXYZ
 
 TestExit:
     Exit Sub
@@ -63,21 +69,29 @@ Public Sub TestIsEqual()
     On Error GoTo TestFail
     
     'Arrange:
-    Dim sut As New Point
-    Dim eP As New Point                          'equivalent Point
+    Dim sut2D As New Point
+    Dim eP2D As New Point                          'equivalent Point
+    Dim sut3D As New Point
+    Dim eP3D As New Point                          'equivalent Point
     Dim x As Double
     Dim y As Double
+    Dim z As Double
     
     'Act:
     x = 1 / 3
     y = Math.Sqr(2)
+    z = 1
     
-    sut.init x, y
-    eP.init x, y
+    sut2D.init x, y
+    eP2D.init x, y
+    
+    sut3D.init x, y, z
+    eP3D.init x, y, z
 
     'Assert:
-    Assert.IsTrue sut.isEqual(eP), "X and Y of equivalent points are different!"
-
+    Assert.IsTrue sut2D.isEqual(eP2D), "X or Y of equivalent points are different!"
+    Assert.IsTrue sut3D.isEqual(eP3D), "X or Y or Z of equivalent points are different!"
+    
 TestExit:
     Exit Sub
 TestFail:
