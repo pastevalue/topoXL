@@ -114,7 +114,7 @@ End Function
 Private Function isValidCLtable(tbl As ListObject) As Boolean
         
     'check if Table name is valid
-    If Left(tbl.name, 5) <> CL_TBL_NAME_PREFIX Then
+    If VBA.Left(tbl.name, 5) <> CL_TBL_NAME_PREFIX Then
         isValidCLtable = False
         Exit Function
     End If
