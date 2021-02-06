@@ -334,7 +334,7 @@ Public Function calcXatY(ByVal y As Double) As Variant
         Dim t2 As Double ' theta to x2
         Dim x2onArc As Boolean
         
-        dXabs = VBA.Sqr(m_rad * m_rad - (y - m_cY) * (y - m_cY))
+        dXabs = Math.Sqr(m_rad * m_rad - (y - m_cY) * (y - m_cY))
         x1 = m_cX - dXabs
         t1 = LibGeom.Atn2(x1 - m_cX, y - m_cY)
         x1onArc = Me.isThetaOnArc(t1)
@@ -382,7 +382,7 @@ Public Function calcYatX(ByVal x As Double) As Variant
         Dim t2 As Double ' theta to x2
         Dim y2onArc As Boolean
         
-        dYabs = VBA.Sqr(m_rad * m_rad - (x - m_cX) * (x - m_cX))
+        dYabs = Math.Sqr(m_rad * m_rad - (x - m_cX) * (x - m_cX))
         y1 = m_cY - dYabs
         t1 = LibGeom.Atn2(x - m_cX, y1 - m_cY)
         y1onArc = Me.isThetaOnArc(t1)
@@ -433,9 +433,9 @@ Public Function toString() As String
     c.init m_cX, m_cY
     
     dir = ConstCL.curveDirToString(m_curveDir)
-    toString = "Start: " & s.toString & ";" & _
-               "End: " & e.toString & ";" & _
-               "Center: " & c.toString & ";" & _
+    toString = "Start: " & s.toStringXY & ";" & _
+               "End: " & e.toStringXY & ";" & _
+               "Center: " & c.toStringXY & ";" & _
                "Radius: " & m_rad & ";" & _
                "Start Theta: " & m_sTheta & ";" & _
                "End Theta: " & m_eTheta & ";" & _
