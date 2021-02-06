@@ -204,7 +204,7 @@ Public Function calcXatY(ByVal y As Double) As Variant
     End If
     
     ' IF Y is between Ys of line segment geometry THEN compute X ELSE return Null
-    If min(m_sY, m_eY) <= y And y <= max(m_sY, m_eY) Then
+    If LibMath.min(m_sY, m_eY) <= y And y <= LibMath.max(m_sY, m_eY) Then
         calcXatY = m_sX + m_dX * (y - m_sY) / m_dY
     Else
         calcXatY = Null
@@ -223,7 +223,7 @@ Public Function calcYatX(ByVal x As Double) As Variant
     End If
     
     ' IF X is between Xs of line segment geometry THEN compute Y ELSE return Null
-    If min(m_sX, m_eX) <= x And x <= max(m_sX, m_eX) Then
+    If LibMath.min(m_sX, m_eX) <= x And x <= LibMath.max(m_sX, m_eX) Then
         calcYatX = m_sY + m_dY * (x - m_sX) / m_dX
     Else
         calcYatX = Null
