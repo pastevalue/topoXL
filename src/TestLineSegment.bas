@@ -259,47 +259,47 @@ Public Sub TestCalcPointByMeasOffset()
     ' left offset in start point
     Set sut = ls.calcPointByMeasOffset(0, -1)
     expected.init 0, 1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' no offset in start point
     Set sut = ls.calcPointByMeasOffset(0, 0)
     expected.init 0, 0
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' right offset in start point
     Set sut = ls.calcPointByMeasOffset(0, 1)
     expected.init 0, -1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' left offset in mid point
     Set sut = ls.calcPointByMeasOffset(0.5, -1)
     expected.init 0.5, 1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' no offset in mid point
     Set sut = ls.calcPointByMeasOffset(0.5, 0)
     expected.init 0.5, 0
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' right offset in mid point
     Set sut = ls.calcPointByMeasOffset(0.5, 1)
     expected.init 0.5, -1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' left offset in end point
     Set sut = ls.calcPointByMeasOffset(1, -1)
     expected.init 1, 1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' no offset in end point
     Set sut = ls.calcPointByMeasOffset(1, 0)
     expected.init 1, 0
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' right offset in end point
     Set sut = ls.calcPointByMeasOffset(1, 1)
     expected.init 1, -1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     
     ' Vertical line segment
@@ -308,47 +308,47 @@ Public Sub TestCalcPointByMeasOffset()
     ' left offset in start point
     Set sut = ls.calcPointByMeasOffset(0, -1)
     expected.init 1, 1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' no offset in start point
     Set sut = ls.calcPointByMeasOffset(0, 0)
     expected.init 0, 1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' right offset in start point
     Set sut = ls.calcPointByMeasOffset(0, 1)
     expected.init -1, 1
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' left offset in mid point
     Set sut = ls.calcPointByMeasOffset(0.5, -1)
     expected.init 1, 0.5
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' no offset in mid point
     Set sut = ls.calcPointByMeasOffset(0.5, 0)
     expected.init 0, 0.5
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' right offset in mid point
     Set sut = ls.calcPointByMeasOffset(0.5, 1)
     expected.init -1, 0.5
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' left offset in end point
     Set sut = ls.calcPointByMeasOffset(1, -1)
     expected.init 1, 0
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' no offset in end point
     Set sut = ls.calcPointByMeasOffset(1, 0)
     expected.init 0, 0
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
     ' right offset in end point
     Set sut = ls.calcPointByMeasOffset(1, 1)
     expected.init -1, 0
-    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toString & ", sut: " & sut.toString
+    Assert.IsTrue sut.isEqual(expected), "Expected: " & expected.toStringXY & ", sut: " & sut.toStringXY
     
 TestExit:
     Exit Sub
