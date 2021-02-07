@@ -1,4 +1,5 @@
 Attribute VB_Name = "TestLibAcadScr"
+'@IgnoreModule LineLabelNotUsed
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2021 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
@@ -111,34 +112,6 @@ TestFail:
 End Sub
 
 '@TestMethod("PntScr")
-Private Sub TestPntScrInvalidDimOfArray()
-    Const ExpectedError As Long = 5
-    On Error GoTo TestFail
-    
-    'Arrange:
-    Dim coos(1) As Variant
-    Dim result As String
-
-    'Act:
-    coos(0) = 1
-    coos(1) = 2
-    
-    result = LibAcadScr.pnt(coos)
-
-Assert:
-    Assert.Fail "Expected error was not raised."
-
-TestExit:
-    Exit Sub
-TestFail:
-    If Err.Number = ExpectedError Then
-        Resume TestExit
-    Else
-        Resume Assert
-    End If
-End Sub
-
-'@TestMethod("PntScr")
 Private Sub TestPntScrInvalidSize1OfArray()
     Const ExpectedError As Long = 5
     On Error GoTo TestFail
@@ -223,32 +196,7 @@ TestFail:
     End If
 End Sub
 
-'@TestMethod("PntScr")
-Private Sub TestPntScrInputNotArray()
-    Const ExpectedError As Long = 5
-    On Error GoTo TestFail
-    
-    'Arrange:
-    Dim coos As Variant
-    Dim result As String
 
-    'Act:
-    coos = 1
-
-    result = LibAcadScr.pnt(coos)
-
-Assert:
-    Assert.Fail "Expected error was not raised."
-
-TestExit:
-    Exit Sub
-TestFail:
-    If Err.Number = ExpectedError Then
-        Resume TestExit
-    Else
-        Resume Assert
-    End If
-End Sub
 
 '@TestMethod("PlineScr")
 Private Sub TestPlineScrValid()
@@ -297,33 +245,6 @@ TestFail:
 End Sub
 
 
-'@TestMethod("PlineScr")
-Private Sub TestPlineScrInvalidDimOfArray()
-    Const ExpectedError As Long = 5
-    On Error GoTo TestFail
-    
-    'Arrange:
-    Dim coos(1) As Variant
-    Dim result As String
-
-    'Act:
-    coos(0) = 1
-    coos(1) = 2
-    
-    result = LibAcadScr.pline(coos)
-
-Assert:
-    Assert.Fail "Expected error was not raised."
-
-TestExit:
-    Exit Sub
-TestFail:
-    If Err.Number = ExpectedError Then
-        Resume TestExit
-    Else
-        Resume Assert
-    End If
-End Sub
 
 '@TestMethod("PlineScr")
 Private Sub TestPlineScrInvalidCooCountOfArray()
@@ -401,33 +322,6 @@ Private Sub TestPlineScrInvalidNumber()
     coos(0, 1) = 2
     coos(1, 0) = 3
     coos(1, 1) = "x"
-
-    result = LibAcadScr.pline(coos)
-
-Assert:
-    Assert.Fail "Expected error was not raised."
-
-TestExit:
-    Exit Sub
-TestFail:
-    If Err.Number = ExpectedError Then
-        Resume TestExit
-    Else
-        Resume Assert
-    End If
-End Sub
-
-'@TestMethod("PlineScr")
-Private Sub TestPlineScrInputNotArray()
-    Const ExpectedError As Long = 5
-    On Error GoTo TestFail
-    
-    'Arrange:
-    Dim coos As Variant
-    Dim result As String
-
-    'Act:
-    coos = 1
 
     result = LibAcadScr.pline(coos)
 
