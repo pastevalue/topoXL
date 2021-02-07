@@ -426,7 +426,6 @@ Public Function toString() As String
     Dim s As New Point
     Dim e As New Point
     Dim c As New Point
-    Dim dir As String
     
     s.init m_sX, m_sY
     e.init m_eX, m_eY
