@@ -39,26 +39,11 @@ Private Const ACAD_CMD_INSERT As String = "-insert"
 ' Example: point 1,2,3
 '
 ' Parameters:
-'   - cooArr: coordinate array
+'   - cooArr: coordinate array (dimension = 2)
 ' Raises error if:
-'   - cooArr is not of array type
-'   - cooArr is not of dimension 2
 '   - the second dimension of cooArr is not of size 2 or 3
 '   - cooArr values are not numbers
-Public Function pnt(ByRef cooArr As Variant) As String
-    ' Raise error if cooArr is not of array type
-    If Not VBA.IsArray(cooArr) Then
-        Err.Raise 5, MODULE_NAME, "cooArr parameter must be of array type!"
-    End If
-    
-    Dim arrDim As Long
-    arrDim = LibArr.GetArrayDimsCount(cooArr)
-    
-    ' Raise error if cooArr is not of dimension 2
-    If arrDim <> 2 Then
-        Err.Raise 5, MODULE_NAME, "cooArr must be an array of dimension 2!"
-    End If
-    
+Public Function pnt(ByVal cooArr As Variant) As String
     Dim i As Long
     Dim cooDim As Long
     Dim jLBound As Long
@@ -90,27 +75,12 @@ End Function
 ' 4,5,6
 '
 ' Parameters:
-'   - cooArr: coordinate array
+'   - cooArr: coordinate array (dimension = 2)
 ' Raises error if:
-'   - cooArr is not of array type
-'   - cooArr is not of dimension 2
 '   - the first dimension of the array is of a size less than 2
 '   - the second dimension of cooArr is not of size 2 or 3
 '   - cooArr values are not numbers
-Public Function pline(ByRef cooArr As Variant) As String
-    ' Raise error if cooArr is not of array type
-    If Not VBA.IsArray(cooArr) Then
-        Err.Raise 5, MODULE_NAME, "cooArr parameter must be of array type!"
-    End If
-    
-    Dim arrDim As Long
-    arrDim = LibArr.GetArrayDimsCount(cooArr)
-    
-    ' Raise error if cooArr is not of dimension 2
-    If arrDim <> 2 Then
-        Err.Raise 5, MODULE_NAME, "cooArr must be an array of dimension 2!"
-    End If
-    
+Public Function pline(ByVal cooArr As Variant) As String
     ' Raise error if cooArr dimension 1 is not at least of size 2 (2 sets of coo at least)
     If UBound(cooArr, 1) - LBound(cooArr, 1) + 1 < 2 Then
         Err.Raise 5, MODULE_NAME, "Must have at least two sets of coo!"
@@ -153,26 +123,11 @@ End Function
 ' 1
 ' 0
 ' Parameters:
-'   - values: values array (name, coordinates, x scale, y scale, rotation)
+'   - values: values array (two dimension array) (name, coordinates, x scale, y scale, rotation)
 ' Raises error if:
-'   - values is not of array type
-'   - values is not of dimension 2
 '   - the second dimension of cooArr is not of size 6 or 7
 '   - coordinate, scale and rotation values are not numbers
-Public Function blkInsert(ByRef values As Variant) As String
-    ' Raise error if cooArr is not of array type
-    If Not VBA.IsArray(values) Then
-        Err.Raise 5, MODULE_NAME, "values parameter must be of array type!"
-    End If
-    
-    Dim arrDim As Long
-    arrDim = LibArr.GetArrayDimsCount(values)
-    
-    ' Raise error if values is not of dimension 2
-    If arrDim <> 2 Then
-        Err.Raise 5, MODULE_NAME, "values must be an array of dimension 2!"
-    End If
-    
+Public Function blkInsert(ByVal values As Variant) As String
     Dim i As Long
     Dim valuesDim As Long
     Dim jLBound As Long
@@ -208,26 +163,11 @@ End Function
 ' Example:
 ' -text 1,2,3 1 0 "Sample"
 ' Parameters:
-'   - values: values array (coordinates, height, rotation, text)
+'   - values: values array (2D array) (coordinates, height, rotation, text)
 ' Raises error if:
-'   - values is not of array type
-'   - values is not of dimension 2
 '   - the second dimension of cooArr is not of size 5 or 6
 '   - cooArr values are not numbers
-Public Function sText(ByRef values As Variant) As String
-    ' Raise error if cooArr is not of array type
-    If Not VBA.IsArray(values) Then
-        Err.Raise 5, MODULE_NAME, "values parameter must be of array type!"
-    End If
-    
-    Dim arrDim As Long
-    arrDim = LibArr.GetArrayDimsCount(values)
-    
-    ' Raise error if values is not of dimension 2
-    If arrDim <> 2 Then
-        Err.Raise 5, MODULE_NAME, "values must be an array of dimension 2!"
-    End If
-    
+Public Function sText(ByVal values As Variant) As String
     Dim i As Long
     Dim valuesDim As Long
     Dim jLBound As Long
@@ -266,7 +206,7 @@ End Function
 ' Raises error if:
 '   - lyrName can't be casted to String
 '   - lyrName is 0 length string
-Public Function chngLayer(ByVal lyrName As Variant) As Variant
+Public Function chngLayer(ByVal lyrName As Variant) As String
     chngLayer = ACAD_CMD_LAYER & " m " & getStringValue(lyrName) & vbNewLine
 End Function
 

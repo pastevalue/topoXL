@@ -23,25 +23,15 @@ Attribute VB_Name = "UDF_ACADscr"
 '@Folder("TopoXL.UDF")
 Option Explicit
 
-Public Function acadScrPnt(ByRef arr As Variant) As Variant
+Public Function acadScrPnt(ByVal values As Variant) As Variant
     Application.Volatile False
-        
-    ' Case input is Excel Range
-    If VBA.TypeName(arr) = "Range" Then
-        If arr.Areas.count > 1 Then
-            GoTo failInput
-        Else
-            arr = arr.Value2
-        End If
-    End If
     
-    ' Case input is array (array may be result of the Range.Value2 content from above)
-    If VBA.IsArray(arr) Then
-        On Error GoTo failInput
-        acadScrPnt = LibAcadScr.pnt(arr)
-    Else
+    If Not LibUDF.getInAs2DArray(values) Then
         GoTo failInput
     End If
+    
+    On Error GoTo failInput
+    acadScrPnt = LibAcadScr.pnt(values)
     Exit Function
 failInput:
     acadScrPnt = CVErr(xlErrNum)
@@ -49,75 +39,45 @@ failInput:
 End Function
 
 
-Public Function acadScrPLine(ByRef arr As Variant) As Variant
+Public Function acadScrPLine(ByVal values As Variant) As Variant
     Application.Volatile False
         
-    ' Case input is Excel Range
-    If VBA.TypeName(arr) = "Range" Then
-        If arr.Areas.count > 1 Then
-            GoTo failInput
-        Else
-            arr = arr.Value2
-        End If
-    End If
-    
-    ' Case input is array (array may be result of the Range.Value2 content from above)
-    If VBA.IsArray(arr) Then
-        On Error GoTo failInput
-        acadScrPLine = LibAcadScr.pline(arr)
-    Else
+    If Not LibUDF.getInAs2DArray(values) Then
         GoTo failInput
     End If
+    
+    On Error GoTo failInput
+    acadScrPLine = LibAcadScr.pline(values)
     Exit Function
 failInput:
     acadScrPLine = CVErr(xlErrNum)
     Exit Function
 End Function
 
-Public Function acadScrInsBl(ByRef arr As Variant) As Variant
+Public Function acadScrInsBl(ByVal values As Variant) As Variant
     Application.Volatile False
         
-    ' Case input is Excel Range
-    If VBA.TypeName(arr) = "Range" Then
-        If arr.Areas.count > 1 Then
-            GoTo failInput
-        Else
-            arr = arr.Value2
-        End If
-    End If
-    
-    ' Case input is array (array may be result of the Range.Value2 content from above)
-    If VBA.IsArray(arr) Then
-        On Error GoTo failInput
-        acadScrInsBl = LibAcadScr.blkInsert(arr)
-    Else
+    If Not LibUDF.getInAs2DArray(values) Then
         GoTo failInput
     End If
+    
+    On Error GoTo failInput
+    acadScrInsBl = LibAcadScr.blkInsert(values)
     Exit Function
 failInput:
     acadScrInsBl = CVErr(xlErrNum)
     Exit Function
 End Function
 
-Public Function acadScrSText(ByRef arr As Variant) As Variant
+Public Function acadScrSText(ByVal values As Variant) As Variant
     Application.Volatile False
         
-    ' Case input is Excel Range
-    If VBA.TypeName(arr) = "Range" Then
-        If arr.Areas.count > 1 Then
-            GoTo failInput
-        Else
-            arr = arr.Value2
-        End If
-    End If
-    
-    ' Case input is array (array may be result of the Range.Value2 content from above)
-    If VBA.IsArray(arr) Then
-        On Error GoTo failInput
-        acadScrSText = LibAcadScr.sText(arr)
-    Else
+    If Not LibUDF.getInAs2DArray(values) Then
         GoTo failInput
     End If
+    
+    On Error GoTo failInput
+    acadScrSText = LibAcadScr.sText(values)
     Exit Function
 failInput:
     acadScrSText = CVErr(xlErrNum)
