@@ -1,4 +1,5 @@
 Attribute VB_Name = "TestLibGeom"
+'@IgnoreModule LineLabelNotUsed
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2019 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
@@ -136,6 +137,106 @@ Public Sub TestOrientationIndex()
     Assert.AreEqual 0, LibGeom.orientationIndex(0, 0, 0, 1, 0 + eps / 10, 0.5, eps), "Point is very close on the vertical line!"
     Assert.AreEqual 1, LibGeom.orientationIndex(0, 0, 0, 1, 0 + eps * 10, 0.5, eps), "Point is very close on the right of the vertical line!"
     
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestCooInBB()
+    On Error GoTo TestFail
+    'Arrange:
+    Dim eps As Double
+    
+    'Act
+    eps = 0.000000000000001 '1E-15
+    
+    'Assert:
+    Assert.IsTrue LibGeom.cooInBB(1, 1, 0, 0, 2, 2), "Point is inside the bounding box!"
+    Assert.IsTrue LibGeom.cooInBB(0, 1, 0, 0, 2, 2), "Point is on the left edge of the bounding box!"
+    Assert.IsTrue LibGeom.cooInBB(1, 0, 0, 0, 2, 2), "Point is on the bottom edge of the bounding box!"
+    Assert.IsTrue LibGeom.cooInBB(2, 1, 0, 0, 2, 2), "Point is on the right edge of the bounding box!"
+    Assert.IsTrue LibGeom.cooInBB(1, 2, 0, 0, 2, 2), "Point is on the top edge of the bounding box!"
+    Assert.IsFalse LibGeom.cooInBB(-1, -1, 0, 0, 2, 2), "Point is outside of the bounding box!"
+    Assert.IsFalse LibGeom.cooInBB(3, 3, 0, 0, 2, 2), "Point is outside of the bounding box!"
+    
+    Assert.IsTrue LibGeom.cooInBB(-1, -1, 0, 0, -2, -2), "Point is inside the bounding box!"
+    Assert.IsTrue LibGeom.cooInBB(1, 1, 2, 2, 0, 0), "Point is inside the bounding box!"
+    
+    ' Coordinates close to BB
+    Assert.IsTrue LibGeom.cooInBB(0 + eps, 0, 0, 0, 2, 2), "Point is inside the bounding box!"
+    Assert.IsTrue LibGeom.cooInBB(0, 0 + eps, 0, 0, 2, 2), "Point is inside the bounding box!"
+    Assert.IsFalse LibGeom.cooInBB(0 - eps, 0, 0, 0, 2, 2), "Point is outside of the bounding box!"
+    Assert.IsFalse LibGeom.cooInBB(0, 0 - eps, 0, 0, 2, 2), "Point is outside of the bounding box!"
+    
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestIntLSbyCoo()
+    On Error GoTo TestFail
+    'Arrange:
+    Dim eps As Double
+    
+    'Act
+    eps = 0.000000000000001 '1E-15
+    
+    'Assert:
+    Assert.IsNothing LibGeom.intLSbyCoo(0, 0, 2, 0, 0, 0, 2, 0)   ' identical line segments
+    Assert.IsNothing LibGeom.intLSbyCoo(0, 0, 2, 0, 0, 0 + eps, 2, 0 + eps)   ' almost identical line segments
+    Assert.IsNothing LibGeom.intLSbyCoo(0, 0, 2, 0, 0, 1, 2, 1)   ' parallel line segments
+    Assert.IsNothing LibGeom.intLSbyCoo(0, 0, 2, 0, -2, 0, -1, 0)
+    Assert.IsNothing LibGeom.intLSbyCoo(0, 0, 2, 0, 1, 2, 1, 1)
+    Assert.IsNothing LibGeom.intLSbyCoo(0, 0, 2, 2, 0, 1, 0.5, 1)
+    Assert.IsTrue LibGeom.intLSbyCoo(0, 0, 2, 0, 1, 1, 1, -1).isEqual(FactoryGeom.newPnt(1, 0))
+    Assert.IsTrue LibGeom.intLSbyCoo(0, 0, 2, 0, 0, 1, 0, 0).isEqual(FactoryGeom.newPnt(0, 0))
+    Assert.IsTrue LibGeom.intLSbyCoo(0, 0, 2, 0, 2, 1, 2, 0).isEqual(FactoryGeom.newPnt(2, 0))
+    Assert.IsTrue LibGeom.intLSbyCoo(0, 0, 2, 2, 0, 2, 2, 0).isEqual(FactoryGeom.newPnt(1, 1))
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestIntLbyCooAndDs()
+    On Error GoTo TestFail
+    'Arrange:
+    Dim eps As Double
+    
+    'Act
+    eps = 0.000000000000001 '1E-15
+    
+    'Assert:
+    Assert.IsNothing LibGeom.intLbyCooAndDs(0, 0, 1, 1, 0, 0, 1, 1)    ' identical lines
+    Assert.IsNothing LibGeom.intLbyCooAndDs(0, 0, 1, 1, 0 + eps, 0, 1, 1) ' almost identical lines
+    Assert.IsNothing LibGeom.intLbyCooAndDs(0, 0, 0, 1, 1, 0, 0, 1)   ' parallel vertical lines
+    Assert.IsNothing LibGeom.intLbyCooAndDs(0, 0, 1, 0, 0, 1, 1, 0)   ' parallel horizontal lines
+    
+    Assert.IsTrue LibGeom.intLbyCooAndDs(0, 0, 1, 1, 0, 2, 1, -1).isEqual(FactoryGeom.newPnt(1, 1))
+    Assert.IsTrue LibGeom.intLbyCooAndDs(0, 0, 1, 1, 0, 2, 0, -1).isEqual(FactoryGeom.newPnt(0, 0))
+    Assert.IsTrue LibGeom.intLbyCooAndDs(0, 0, 1, 1, 0, 2, 1, 0).isEqual(FactoryGeom.newPnt(2, 2))  ' intersection at extentsion
+TestExit:
+    Exit Sub
+TestFail:
+    Assert.Fail "Test raised an error: #" & Err.Number & " - " & Err.Description
+End Sub
+
+'@TestMethod
+Public Sub TestExtTrimLS()
+    On Error GoTo TestFail
+    
+    'Assert:
+    Assert.IsTrue LibGeom.extTrimLS(0, 0, 1, 0, 1, 1).isEqual(FactoryGeom.newPntColl(FactoryGeom.newPnt(0, 0), FactoryGeom.newPnt(2, 0))) ' extend end
+    Assert.IsTrue LibGeom.extTrimLS(0, 0, 1, 0, 1, -1).isEqual(FactoryGeom.newPntColl(FactoryGeom.newPnt(-1, 0), FactoryGeom.newPnt(1, 0)))  ' extend start
+    Assert.IsTrue LibGeom.extTrimLS(0, 0, 2, 0, -1, 1).isEqual(FactoryGeom.newPntColl(FactoryGeom.newPnt(0, 0), FactoryGeom.newPnt(1, 0)))  ' trim end
+    Assert.IsTrue LibGeom.extTrimLS(0, 0, 2, 0, -1, -1).isEqual(FactoryGeom.newPntColl(FactoryGeom.newPnt(1, 0), FactoryGeom.newPnt(2, 0)))  ' trim start
+    Assert.IsTrue LibGeom.extTrimLS(0, 0, 2, 0, 1, 0).isEqual(FactoryGeom.newPntColl(FactoryGeom.newPnt(-1, 0), FactoryGeom.newPnt(3, 0)))   ' extend both
+    Assert.IsTrue LibGeom.extTrimLS(0, 0, 3, 0, -1, 0).isEqual(FactoryGeom.newPntColl(FactoryGeom.newPnt(1, 0), FactoryGeom.newPnt(2, 0)))   ' trim both
 TestExit:
     Exit Sub
 TestFail:
