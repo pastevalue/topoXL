@@ -24,13 +24,15 @@ Attribute VB_Name = "LibMath"
 Option Explicit
 Option Private Module
 
+Private Const MODULE_NAME As String = "LibMath"
+
 ' Compares to double values for equality
 ' Parameters:
 '   - d1, d2: doubles to be compared
 '   - epsilon: tollerance with default value of 1E-15
 ' Returns TRUE if the variance is less than tollerance (epsilon)
-Function areDoublesEqual(ByVal d1 As Double, ByVal d2 As Double, _
-                         Optional ByVal epsilon As Double = 0.000000000000001) As Boolean
+Public Function areDoublesEqual(ByVal d1 As Double, ByVal d2 As Double, _
+                                Optional ByVal epsilon As Double = 0.000000000000001) As Boolean
     areDoublesEqual = Math.Abs(d1 - d2) < epsilon
 End Function
 
