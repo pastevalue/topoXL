@@ -137,7 +137,7 @@ Private Function tblRowToColl(ByVal lr As ListRow, tbl As ListObject) As Collect
     For Each c In tbl.HeaderRowRange
         tempVal = lr.Range.Cells(1, c.Column).value
         If tempVal <> vbNullString Then
-            tblRowToColl.Add tempVal, c.value
+            tblRowToColl.add tempVal, c.value
         End If
     Next c
 End Function
