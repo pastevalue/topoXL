@@ -27,13 +27,13 @@ Attribute VB_Exposed = False
 '' Represents a location defined by a set of 3D grid coordinates
 ''========================================================================
 
-'@Folder("TopoXL.CL")
+'@Folder("TopoXL.CL.geom")
 
 Option Explicit
 
 Private m_X As Double                            'Abscissa: distance measured parallel to the horizontal axis
 Private m_Y As Double                            'Ordinate: distance measured parallel to the vertical axis
-Private m_Z As Double                            'Ordinate: distance measured from XY plan
+Private m_Z As Double                            'Elevation: distance measured from XY plan
 
 ' Class constructor
 Private Sub Class_Initialize()

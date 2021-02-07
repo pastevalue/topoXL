@@ -33,7 +33,7 @@ Attribute VB_Exposed = False
 ''      (-/+, left/right)
 ''========================================================================
 
-'@Folder("TopoXL.CL")
+'@Folder("TopoXL.CL.geom")
 
 Option Explicit
 
