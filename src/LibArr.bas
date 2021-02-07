@@ -22,8 +22,16 @@ Attribute VB_Name = "LibArr"
 '@Folder("TopoXL.libs")
 Option Explicit
 
+Private Const MODULE_NAME As String = "LibArr"
+
 ' Function copied from https://github.com/cristianbuse/VBA-ArrayTools/blob/master/Code%20Modules/LibArrayTools.bas
-Public Function GetArrayDimsCount(ByRef arr As Variant) As Long
+' Returns the Number of dimensions for an input array
+' Returns 0 if array is uninitialized or not an array
+' Note that it is faster to use On Error GoTo ... instead of On Error Resume Next
+'   and also faster to use For... Next instead of Do... Loop. However, this is
+'   useful only if the method is called many times (tens of thousands)
+' Note that a zero-length array has 1 dimension! Ex. Array() returns (0 to -1)
+Public Function getArrayDimsCount(ByRef arr As Variant) As Long
     'In Visual Basic, you can declare arrays with up to 60 dimensions
     Const MAX_DIMENSION As Long = 60
     Dim dimension As Long
@@ -39,5 +47,7 @@ Public Function GetArrayDimsCount(ByRef arr As Variant) As Long
     Next dimension
 Exit Function 'Good practice but not needed. Code will never reach this line
 FinalDimension:
-    GetArrayDimsCount = dimension - 1
+    getArrayDimsCount = dimension - 1
 End Function
+
+
