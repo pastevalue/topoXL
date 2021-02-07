@@ -53,7 +53,7 @@ End Sub
 
 ' Initialize by geometry object and start measure
 ' Raise error if geom parameter is Nothing
-Public Sub init(geom As IGeom, ByVal startM As Double, Optional reversed As Boolean = False)
+Public Sub init(geom As IGeom, ByVal startM As Double, Optional ByVal reversed As Boolean = False)
 
     ' Raise error if start and center coordinates are equal
     If geom Is Nothing Then
