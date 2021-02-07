@@ -113,7 +113,7 @@ Public Sub init(ByVal startX As Double, ByVal startY As Double, _
     m_endPt.y = endPt.y
     
     Dim intPt As Point
-    Set intPt = LibGeom.intOf2LinesByTheta( _
+    Set intPt = LibGeom.intLbyThAndCoo( _
                 m_startPt.x, m_startPt.y, _
                 m_startTheta.val_ - m_curveDir * LibGeom.PI / 2, _
                 m_endPt.x, m_endPt.y, _
@@ -367,3 +367,4 @@ End Property
 Public Property Get IGeom_geomTypeName() As String
     IGeom_geomTypeName = ConstCL.CLA_NAME
 End Property
+
