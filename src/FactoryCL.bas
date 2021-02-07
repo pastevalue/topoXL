@@ -114,7 +114,7 @@ End Function
 Private Function isValidCLtable(tbl As ListObject) As Boolean
         
     'check if Table name is valid
-    If Left(tbl.name, 5) <> CL_TBL_NAME_PREFIX Then
+    If VBA.Left(tbl.name, 5) <> CL_TBL_NAME_PREFIX Then
         isValidCLtable = False
         Exit Function
     End If
@@ -137,7 +137,7 @@ Private Function tblRowToColl(ByVal lr As ListRow, tbl As ListObject) As Collect
     For Each c In tbl.HeaderRowRange
         tempVal = lr.Range.Cells(1, c.Column).value
         If tempVal <> vbNullString Then
-            tblRowToColl.Add tempVal, c.value
+            tblRowToColl.add tempVal, c.value
         End If
     Next c
 End Function

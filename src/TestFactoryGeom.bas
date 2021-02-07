@@ -1,4 +1,5 @@
 Attribute VB_Name = "TestFactoryGeom"
+'@IgnoreModule LineLabelNotUsed
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2019 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
@@ -223,12 +224,12 @@ Public Sub TestNewLnSegValidColl()
     eY = "6.66"
     expected.init sX, sY, eX, eY
     
-    coll.Add ConstCL.LS_NAME, ConstCL.GEOM_TYPE
-    coll.Add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
-    coll.Add sX, ConstCL.LS_M_START_X
-    coll.Add sY, ConstCL.LS_M_START_Y
-    coll.Add eX, ConstCL.LS_M_END_X
-    coll.Add eY, ConstCL.LS_M_END_Y
+    coll.add ConstCL.LS_NAME, ConstCL.GEOM_TYPE
+    coll.add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
+    coll.add sX, ConstCL.LS_M_START_X
+    coll.add sY, ConstCL.LS_M_START_Y
+    coll.add eX, ConstCL.LS_M_END_X
+    coll.add eY, ConstCL.LS_M_END_Y
     Set sut = FactoryGeom.newLnSegColl(coll)
     
     'Assert:
@@ -258,26 +259,26 @@ Public Sub TestNewLnSegInvalidColl()
     eX = "3.0"
     eY = "6.66"
     
-    coll.Add sX, ConstCL.LS_M_START_X
-    coll.Add sY, ConstCL.LS_M_START_Y
-    coll.Add eX, ConstCL.LS_M_END_X
-    coll.Add eY, ConstCL.LS_M_END_Y
-    coll.Add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
-    coll.Add "Wrong Geom Type", ConstCL.GEOM_TYPE
+    coll.add sX, ConstCL.LS_M_START_X
+    coll.add sY, ConstCL.LS_M_START_Y
+    coll.add eX, ConstCL.LS_M_END_X
+    coll.add eY, ConstCL.LS_M_END_Y
+    coll.add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
+    coll.add "Wrong Geom Type", ConstCL.GEOM_TYPE
     Set sut = FactoryGeom.newLnSegColl(coll)
     Assert.IsTrue sut Is Nothing, "LineSegment initialized with wrong GeomType!"
         
     coll.Remove ConstCL.GEOM_TYPE
     coll.Remove ConstCL.GEOM_INIT_TYPE
-    coll.Add ConstCL.LS_NAME, ConstCL.GEOM_TYPE
-    coll.Add "Wrong init type", ConstCL.GEOM_INIT_TYPE
+    coll.add ConstCL.LS_NAME, ConstCL.GEOM_TYPE
+    coll.add "Wrong init type", ConstCL.GEOM_INIT_TYPE
     Set sut = FactoryGeom.newLnSegColl(coll)
     Assert.IsTrue sut Is Nothing, "LineSegment initialized with wrong Init Type GeomType!"
     
     coll.Remove ConstCL.LS_M_START_X
     coll.Remove ConstCL.GEOM_INIT_TYPE
-    coll.Add "1abc", ConstCL.LS_M_START_X
-    coll.Add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
+    coll.add "1abc", ConstCL.LS_M_START_X
+    coll.add ConstCL.LS_INIT_SE, ConstCL.GEOM_INIT_TYPE
     Set sut = FactoryGeom.newLnSegColl(coll)
     Assert.IsTrue sut Is Nothing, "LineSegment initialized wrong value for member GeomType!"
     
@@ -509,14 +510,14 @@ Public Sub TestNewCircArcSCLDValidColl()
     dir = CURVE_DIR.CD_CCW
     expected.initFromSCLD sX, sY, cX, cY, l, dir
     
-    coll.Add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
-    coll.Add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
-    coll.Add sX, ConstCL.CA_M_START_X
-    coll.Add sY, ConstCL.CA_M_START_Y
-    coll.Add cX, ConstCL.CA_M_CENTER_X
-    coll.Add cY, ConstCL.CA_M_CENTER_Y
-    coll.Add l, ConstCL.CA_M_LENGTH
-    coll.Add dir, ConstCL.CA_M_CURVE_DIR
+    coll.add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
+    coll.add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
+    coll.add sX, ConstCL.CA_M_START_X
+    coll.add sY, ConstCL.CA_M_START_Y
+    coll.add cX, ConstCL.CA_M_CENTER_X
+    coll.add cY, ConstCL.CA_M_CENTER_Y
+    coll.add l, ConstCL.CA_M_LENGTH
+    coll.add dir, ConstCL.CA_M_CURVE_DIR
     Set sut = FactoryGeom.newCircArcColl(coll)
     
     'Assert:
@@ -551,28 +552,28 @@ Public Sub TestNewCircArcSCLDInvalidColl()
     l = LibGeom.PI / 2
     dir = CURVE_DIR.CD_CCW
     
-    coll.Add sX, ConstCL.CA_M_START_X
-    coll.Add sY, ConstCL.CA_M_START_Y
-    coll.Add cX, ConstCL.CA_M_CENTER_X
-    coll.Add cY, ConstCL.CA_M_CENTER_Y
-    coll.Add l, ConstCL.CA_M_LENGTH
-    coll.Add dir, ConstCL.CA_M_CURVE_DIR
-    coll.Add "Wrong Geometry Type", ConstCL.GEOM_TYPE
-    coll.Add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
+    coll.add sX, ConstCL.CA_M_START_X
+    coll.add sY, ConstCL.CA_M_START_Y
+    coll.add cX, ConstCL.CA_M_CENTER_X
+    coll.add cY, ConstCL.CA_M_CENTER_Y
+    coll.add l, ConstCL.CA_M_LENGTH
+    coll.add dir, ConstCL.CA_M_CURVE_DIR
+    coll.add "Wrong Geometry Type", ConstCL.GEOM_TYPE
+    coll.add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
     Set sut = FactoryGeom.newCircArcColl(coll)
     Assert.IsTrue sut Is Nothing, "CircularArc initialized with wrong GeomType!"
    
     coll.Remove ConstCL.GEOM_TYPE
     coll.Remove ConstCL.GEOM_INIT_TYPE
-    coll.Add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
-    coll.Add "Wrong init type", ConstCL.GEOM_INIT_TYPE
+    coll.add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
+    coll.add "Wrong init type", ConstCL.GEOM_INIT_TYPE
     Set sut = FactoryGeom.newCircArcColl(coll)
     Assert.IsTrue sut Is Nothing, "CircularArc initialized with wrong Init Type GeomType!"
     
     coll.Remove ConstCL.CA_M_START_X
     coll.Remove ConstCL.GEOM_INIT_TYPE
-    coll.Add "1abc", ConstCL.CA_M_START_X
-    coll.Add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
+    coll.add "1abc", ConstCL.CA_M_START_X
+    coll.add ConstCL.CA_INIT_SCLD, ConstCL.GEOM_INIT_TYPE
     Set sut = FactoryGeom.newCircArcColl(coll)
     Assert.IsTrue sut Is Nothing, "CircularArc initialized wrong value for member GeomType!"
 
@@ -606,14 +607,14 @@ Public Sub TestNewCircArcSERDValidColl()
     dir = CURVE_DIR.CD_CCW
     expected.initFromSERD sX, sY, eX, eY, r, dir
     
-    coll.Add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
-    coll.Add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
-    coll.Add sX, ConstCL.CA_M_START_X
-    coll.Add sY, ConstCL.CA_M_START_Y
-    coll.Add eX, ConstCL.CA_M_END_X
-    coll.Add eY, ConstCL.CA_M_END_Y
-    coll.Add r, ConstCL.CA_M_RADIUS
-    coll.Add dir, ConstCL.CA_M_CURVE_DIR
+    coll.add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
+    coll.add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
+    coll.add sX, ConstCL.CA_M_START_X
+    coll.add sY, ConstCL.CA_M_START_Y
+    coll.add eX, ConstCL.CA_M_END_X
+    coll.add eY, ConstCL.CA_M_END_Y
+    coll.add r, ConstCL.CA_M_RADIUS
+    coll.add dir, ConstCL.CA_M_CURVE_DIR
     Set sut = FactoryGeom.newCircArcColl(coll)
     
     'Assert:
@@ -648,28 +649,28 @@ Public Sub TestNewCircArcSERDInvalidColl()
     r = 1
     dir = CURVE_DIR.CD_CCW
     
-    coll.Add sX, ConstCL.CA_M_START_X
-    coll.Add sY, ConstCL.CA_M_START_Y
-    coll.Add eX, ConstCL.CA_M_END_X
-    coll.Add eY, ConstCL.CA_M_END_Y
-    coll.Add r, ConstCL.CA_M_LENGTH
-    coll.Add dir, ConstCL.CA_M_CURVE_DIR
-    coll.Add "Wrong Geometry Type", ConstCL.GEOM_TYPE
-    coll.Add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
+    coll.add sX, ConstCL.CA_M_START_X
+    coll.add sY, ConstCL.CA_M_START_Y
+    coll.add eX, ConstCL.CA_M_END_X
+    coll.add eY, ConstCL.CA_M_END_Y
+    coll.add r, ConstCL.CA_M_LENGTH
+    coll.add dir, ConstCL.CA_M_CURVE_DIR
+    coll.add "Wrong Geometry Type", ConstCL.GEOM_TYPE
+    coll.add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
     Set sut = FactoryGeom.newCircArcColl(coll)
     Assert.IsTrue sut Is Nothing, "CircularArc initialized with wrong GeomType!"
    
     coll.Remove ConstCL.GEOM_TYPE
     coll.Remove ConstCL.GEOM_INIT_TYPE
-    coll.Add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
-    coll.Add "Wrong init type", ConstCL.GEOM_INIT_TYPE
+    coll.add ConstCL.CA_NAME, ConstCL.GEOM_TYPE
+    coll.add "Wrong init type", ConstCL.GEOM_INIT_TYPE
     Set sut = FactoryGeom.newCircArcColl(coll)
     Assert.IsTrue sut Is Nothing, "CircularArc initialized with wrong Init Type GeomType!"
     
     coll.Remove ConstCL.CA_M_START_X
     coll.Remove ConstCL.GEOM_INIT_TYPE
-    coll.Add "1abc", ConstCL.CA_M_START_X
-    coll.Add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
+    coll.add "1abc", ConstCL.CA_M_START_X
+    coll.add ConstCL.CA_INIT_SERD, ConstCL.GEOM_INIT_TYPE
     Set sut = FactoryGeom.newCircArcColl(coll)
     Assert.IsTrue sut Is Nothing, "CircularArc initialized wrong value for member GeomType!"
 

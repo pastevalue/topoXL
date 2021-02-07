@@ -43,6 +43,19 @@ ErrHandler:
     Set newPntVar = Nothing
 End Function
 
+' Creates a Point Collection from Point objects
+' Returns:
+'   - a new PointColl object
+'   - Nothing if objects of other type than Point are used as input
+Public Function newPntColl(ParamArray pnts() As Variant) As PointColl
+    Set newPntColl = New PointColl
+    Dim p As Variant
+    For Each p In pnts
+        newPntColl.add p
+    Next p
+End Function
+
+
 ' Creates a MeasOffset from a measure distance and an offset
 Public Function newMO(ByVal m As Double, ByVal o As Double) As MeasOffset
     Set newMO = New MeasOffset

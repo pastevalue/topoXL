@@ -1,4 +1,5 @@
 Attribute VB_Name = "TestCircularArc"
+'@IgnoreModule LineLabelNotUsed
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2019 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
@@ -292,8 +293,8 @@ Public Sub TestInitFromSERD()
     
     'Act:
     epsilon = 0.00000000000001                  '1E-14
-    sqr3 = Sqr(3)
-    sqr2 = Sqr(2)
+    sqr3 = Math.Sqr(3)
+    sqr2 = Math.Sqr(2)
     
     ' First quadrant, CW, PI/6 length
     sut.initFromSERD 0, 1, 1 / 2, sqr3 / 2, 1, CURVE_DIR.CD_CW
@@ -617,8 +618,8 @@ Public Sub TestCalcMeasOffsetOfPointOnFullCircle()
 
     'Act:
     epsilon = 0.00000000000001       '1E-14
-    sqr3 = Sqr(3)
-    sqr2 = Sqr(2)
+    sqr3 = Math.Sqr(3)
+    sqr2 = Math.Sqr(2)
     
     'Assert:
     ' Full circle, CCW, right offset
@@ -722,8 +723,8 @@ Public Sub TestCalcMeasOffsetOfPoint()
 
     'Act:
     epsilon = 0.00000000000001       '1E-14
-    sqr3 = Sqr(3)
-    sqr2 = Sqr(2)
+    sqr3 = Math.Sqr(3)
+    sqr2 = Math.Sqr(2)
     
     'Assert:
     
@@ -883,8 +884,8 @@ Public Sub TestCalcMeasOffsetOfPointBeyondCenter()
 
     'Act:
     epsilon = 0.00000000000001       '1E-14
-    sqr3 = Sqr(3)
-    sqr2 = Sqr(2)
+    sqr3 = Math.Sqr(3)
+    sqr2 = Math.Sqr(2)
     
     'Assert:
     

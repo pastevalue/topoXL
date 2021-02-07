@@ -114,10 +114,10 @@ Public Function curveDirFromVariant(ByVal v As Variant) As CURVE_DIR
     If curveDirContains(v) Then                  ' try if value matches
         curveDirFromVariant = v
     Else                                         ' try if string matches
-        Select Case LCase(v)
-        Case LCase(STR_CD_CW)
+        Select Case VBA.LCase(v)
+        Case VBA.LCase(STR_CD_CW)
             curveDirFromVariant = CURVE_DIR.CD_CW
-        Case LCase(STR_CD_CCW)
+        Case VBA.LCase(STR_CD_CCW)
             curveDirFromVariant = CURVE_DIR.CD_CCW
         Case Else
             curveDirFromVariant = CURVE_DIR.CD_NONE

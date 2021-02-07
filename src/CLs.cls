@@ -30,6 +30,7 @@ Attribute VB_Exposed = False
 ''========================================================================
 
 '@Folder("TopoXL.CL")
+
 Option Explicit
 
 Private m_CLs As Collection
@@ -43,7 +44,7 @@ End Sub
 ' Returns True if the CL was added successfully
 Public Function addCL(clObj As CL) As Boolean
     On Error GoTo ErrHandler
-    m_CLs.Add clObj, clObj.name
+    m_CLs.add clObj, clObj.name
     addCL = True
     Exit Function
 ErrHandler:
