@@ -46,7 +46,7 @@ End Sub
 
 ' Add a new element to this Axis
 Public Sub addElem(elem As CLelem)
-    m_elems.Add elem
+    m_elems.add elem
 End Sub
 
 Public Function calcPointByMeasOffset(ByVal m As Double, ByVal o As Double) As Point
