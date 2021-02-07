@@ -1,4 +1,5 @@
 Attribute VB_Name = "TestCircularArc"
+'@IgnoreModule LineLabelNotUsed
 ''' TopoXL: Excel UDF library for land surveyors
 ''' Copyright (C) 2019 Bogdan Morosanu and Cristian Buse
 ''' This program is free software: you can redistribute it and/or modify
