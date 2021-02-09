@@ -108,6 +108,9 @@ Public Function orientationIndex(ByVal x1 As Double, ByVal y1 As Double, _
                                  ByVal x2 As Double, ByVal y2 As Double, _
                                  ByVal x As Double, ByVal y As Double, _
                                  Optional ByVal epsilon As Double = 0.000000000000001) As Integer
+    If x1 = x2 And y1 = y2 Then
+        Err.Raise 5, MODULE_NAME & ".orientationIndex", "Can't compute orientation index using a reference line defined by the same coordinates!"
+    End If
     Dim d As Double: d = (y2 - y1) * (x - x1) - (x2 - x1) * (y - y1)
     If Math.Abs(d) < epsilon Then d = 0
     orientationIndex = Math.Sgn(d)
