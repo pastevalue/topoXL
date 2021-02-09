@@ -40,16 +40,23 @@ End Function
 Public Function cgTheta(ByVal x1 As Double, ByVal y1 As Double, _
                         ByVal x2 As Double, ByVal y2 As Double) As Variant
     Application.Volatile False
-        
+    On Error GoTo failInput
     cgTheta = LibGeom.Atn2(x2 - x1, y2 - y1)
+    
+    Exit Function
+failInput:
+    cgTheta = CVErr(xlErrNum)
 End Function
 
 Public Function cgSide(ByVal x1 As Double, ByVal y1 As Double, _
                        ByVal x2 As Double, ByVal y2 As Double, _
                        ByVal x As Double, ByVal y As Double) As Variant
     Application.Volatile False
-        
+    On Error GoTo failInput
     cgSide = LibGeom.orientationIndex(x1, y1, x2, y2, x, y)
+    Exit Function
+failInput:
+    cgSide = CVErr(xlErrNum)
 End Function
 
 Public Function cgCooInBB(ByVal x As Double, ByVal y As Double, _
@@ -60,16 +67,16 @@ Public Function cgCooInBB(ByVal x As Double, ByVal y As Double, _
     cgCooInBB = LibGeom.cooInBB(x, y, x1, y1, x2, y2)
 End Function
 
-Public Function cgIntLbyThAndCoo(ByVal x1 As Double, ByVal y1 As Double, ByVal theta1 As Double, _
+Public Function cgIntLbyCooAndTh(ByVal x1 As Double, ByVal y1 As Double, ByVal theta1 As Double, _
                                  ByVal x2 As Double, ByVal y2 As Double, ByVal theta2 As Double) As Variant
     Application.Volatile False
     
     Dim p As Point
     Set p = LibGeom.intLbyThAndCoo(x1, y1, theta1, x2, y2, theta2)
     If p Is Nothing Then
-        cgIntLbyThAndCoo = CVErr(xlErrNA)
+        cgIntLbyCooAndTh = CVErr(xlErrNA)
     Else
-        cgIntLbyThAndCoo = p.toArrayXY()
+        cgIntLbyCooAndTh = p.toArrayXY()
     End If
 End Function
 
