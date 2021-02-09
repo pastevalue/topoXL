@@ -426,12 +426,11 @@ Public Function toString() As String
     Dim s As New Point
     Dim e As New Point
     Dim c As New Point
-    
+
     s.init m_sX, m_sY
     e.init m_eX, m_eY
     c.init m_cX, m_cY
     
-    dir = ConstCL.curveDirToString(m_curveDir)
     toString = "Start: " & s.toStringXY & ";" & _
                "End: " & e.toStringXY & ";" & _
                "Center: " & c.toStringXY & ";" & _
