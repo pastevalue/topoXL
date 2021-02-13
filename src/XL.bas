@@ -66,6 +66,7 @@ Public Function initCLsCallback(Optional ByVal dummy As Variant)
         Else
             forceRefreshBookFormulas ThisWorkbook
         End If
+        Set m_bookCalcCallback = Nothing
         m_waitRefresh = False
     End If
 End Function
