@@ -54,7 +54,7 @@ End Function
 ' Do not change 'Function' to 'Sub' to avoid Application.Run disconnection!
 ' Do not delete the 'dummy' parameter (caller can be a SheetCalculate event)!
 '*******************************************************************************
-Public Function initCLsCallback(Optional ByVal dummy As Variant)
+Private Function initCLsCallback(Optional ByVal dummy As Variant)
     If Not m_waitRefresh Then
         m_waitRefresh = True
         initCLs
@@ -94,9 +94,15 @@ Private Sub initCLs()
 End Sub
 
 ' Refreshes all formulas in a Workbook
-Public Sub forceRefreshBookFormulas(ByVal book As Workbook, Optional ByVal password As String)
+Private Sub forceRefreshBookFormulas(ByVal book As Workbook)
     Dim sht As Worksheet
-    Dim isCalcEnabled As Boolean
+    Dim scrUpdate As Boolean: scrUpdate = Application.ScreenUpdating
+    Dim dispAlerts As Boolean: dispAlerts = Application.DisplayAlerts
+    Dim calcMode As XlCalculation: calcMode = Application.Calculation
+    '
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    Application.Calculation = xlCalculationManual
     '
     For Each sht In book.Worksheets
         If sht.EnableCalculation Then
@@ -104,4 +110,14 @@ Public Sub forceRefreshBookFormulas(ByVal book As Workbook, Optional ByVal passw
             sht.EnableCalculation = True
         End If
     Next sht
+RestoreState:
+    Application.ScreenUpdating = scrUpdate
+    Application.DisplayAlerts = dispAlerts
+    Application.Calculation = calcMode
+End Sub
+
+' Refreshes all CLs
+Public Sub refreshCLs()
+    Set userCLs = Nothing
+    initCLsCallback
 End Sub
