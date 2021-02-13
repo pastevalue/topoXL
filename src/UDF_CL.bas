@@ -16,37 +16,12 @@ Attribute VB_Name = "UDF_CL"
 
 ''========================================================================
 '' Description
-'' UDF module used used to store CL (Centerline) related functions
-'' "userCLs" variable declared in this module stores all the initialized
-'' CLs in a CLs object
+'' UDF module exposing Centerline functions
 ''========================================================================
 
 '@Folder("TopoXL.UDF")
 
 Option Explicit
-Public userCLs As CLs
-
-' Searches all worksheets for tables which can be used to initialize a Center Line
-' If errors are found in the input table (missing columns, missing values,...),
-' center line is not initialized
-' Initilized center lines are stored in the userCLs variable of this module
-Public Sub initCLs()
-    Dim ws As Worksheet
-    Dim tbl As ListObject
-    Dim tmpCL As CL
-    
-    Set UDF_CL.userCLs = New CLs
-    'loop all worksheets
-    For Each ws In ThisWorkbook.Worksheets
-        'loop all tables
-        For Each tbl In ws.ListObjects
-            Set tmpCL = FactoryCL.newCLtbl(tbl)
-            If Not tmpCL Is Nothing Then
-                UDF_CL.userCLs.addCL tmpCL
-            End If
-        Next tbl
-    Next ws
-End Sub
 
 Public Function clPntByMeasOffset(ByVal clName As String, _
                                   ByVal measure As Double, _
@@ -54,7 +29,7 @@ Public Function clPntByMeasOffset(ByVal clName As String, _
     Application.Volatile False
     
     Dim tmpCL As CL
-    Set tmpCL = userCLs.getCL(clName)
+    Set tmpCL = XL.getUserCLs.getCL(clName)
     If tmpCL Is Nothing Then
         clPntByMeasOffset = CVErr(xlErrNA) ' CL name not found
     Else
@@ -73,7 +48,7 @@ Public Function clMeasOffsetOfPnt(ByVal clName As String, _
     Application.Volatile False
     
     Dim tmpCL As CL
-    Set tmpCL = userCLs.getCL(clName)
+    Set tmpCL = XL.getUserCLs.getCL(clName)
     If tmpCL Is Nothing Then
         clMeasOffsetOfPnt = CVErr(xlErrNA) ' CL name not found
     Else
@@ -91,7 +66,7 @@ Public Function clXatY(ByVal clName As String, ByVal y As Double) As Variant
     Application.Volatile False
     
     Dim tmpCL As CL
-    Set tmpCL = userCLs.getCL(clName)
+    Set tmpCL = XL.getUserCLs.getCL(clName)
     If tmpCL Is Nothing Then
         clXatY = CVErr(xlErrNA)         ' CL name not found
     Else
@@ -109,7 +84,7 @@ Public Function clYatX(ByVal clName As String, ByVal x As Double) As Variant
     Application.Volatile False
     
     Dim tmpCL As CL
-    Set tmpCL = userCLs.getCL(clName)
+    Set tmpCL = XL.getUserCLs.getCL(clName)
     If tmpCL Is Nothing Then
         clYatX = CVErr(xlErrNA)         ' CL name not found
     Else
@@ -122,10 +97,3 @@ Public Function clYatX(ByVal clName As String, ByVal x As Double) As Variant
         End If
     End If
 End Function
-
-
-
-
-
-
-
