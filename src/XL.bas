@@ -38,22 +38,40 @@ Private m_waitRefresh As Boolean
 ' Returns the persistant userCLs Object
 Public Function getUserCLs() As CLs
     If userCLs Is Nothing Then
-        ' Try both Application.OnTime and SheetCalculate event to make sure
-        '   one of them will trigger the Refresh
-        Application.OnTime Now(), "'" & ThisWorkbook.name & "'!initCLsCallback"
-        If m_bookCalcCallback Is Nothing Then
-            Set m_bookCalcCallback = New BookCalculateCallback
-            m_bookCalcCallback.init ThisWorkbook, "initCLsCallback", True
+        If UDFMode() Then
+            If Not Application.EnableEvents Then
+                Application.EnableEvents = True 'Works in UDF mode as well
+            End If
+    
+            ' Try both Application.OnTime and SheetCalculate event to make sure
+            '   one of them will trigger the Refresh
+            Application.OnTime Now(), "'" & ThisWorkbook.name & "'!initCLsCallback"
+            If m_bookCalcCallback Is Nothing Then
+                Set m_bookCalcCallback = New BookCalculateCallback
+                m_bookCalcCallback.init ThisWorkbook, "initCLsCallback", True
+            End If
+        Else
+            initCLsCallback
         End If
-    Else
-        Set getUserCLs = userCLs
     End If
+    Set getUserCLs = userCLs
+End Function
+
+'Returns a boolean indicating if code was called from a UDF
+Public Function UDFMode() As Boolean
+    Dim dispAlerts As Boolean: dispAlerts = Application.DisplayAlerts
+    
+    On Error Resume Next
+    Application.DisplayAlerts = Not dispAlerts 'Cannot be changed in UDF mode
+    On Error GoTo 0
+    
+    UDFMode = (Application.DisplayAlerts = dispAlerts)
+    If Not UDFMode Then Application.DisplayAlerts = dispAlerts 'Revert
 End Function
 
 ' Callback method. See 'GetUserCLs' method above
 ' Do not change 'Function' to 'Sub' to avoid Application.Run disconnection!
 ' Do not delete the 'dummy' parameter (caller can be a SheetCalculate event)!
-'*******************************************************************************
 Private Function initCLsCallback(Optional ByVal dummy As Variant)
     If Not m_waitRefresh Then
         m_waitRefresh = True
