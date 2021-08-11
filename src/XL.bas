@@ -16,11 +16,8 @@ Attribute VB_Name = "XL"
 
 ''========================================================================
 '' Description
-'' "getUserCLs" exposes all initialized CLs stored in "userCLs" variable
-'' If "userCLs" is not initialized then "getUserCLs" (most likely called
-''  from a UDF) deffers the call to "initCLsCallback which in turn
-''  initializes the CLs and refreshes all formulas in order to forcefully
-''  calculate non-volatile UDFs
+'' "getUserCLs" returns all CLs found in this book and refreshes all
+'   formulas in order to forcefully calculate non-volatile UDFs
 ''========================================================================
 
 '@Folder("TopoXL.Init")
@@ -28,33 +25,52 @@ Attribute VB_Name = "XL"
 Option Explicit
 Option Private Module
 
-Private userCLs As CLs
-
-' Calculate Event Callback and wait indicator used for assuring the persistance
-'  of the userCLs data
 Private m_bookCalcCallback As BookCalculateCallback
-Private m_waitRefresh As Boolean
 
-' Returns the persistant userCLs Object
-Public Function getUserCLs() As CLs
-    If userCLs Is Nothing Then
-        If UDFMode() Then
-            If Not Application.EnableEvents Then
-                Application.EnableEvents = True 'Works in UDF mode as well
-            End If
+' Searches all worksheets for tables containing Center Line data
+' If errors are found in the input table (like missing columns/values)
+'  then the center line is not initialized
+' Initialized center lines are returned and also stored for reuse
+Public Function getUserCLs(Optional forceRefresh As Boolean = False) As CLs
+    Static userCLs As CLs
     
-            ' Try both Application.OnTime and SheetCalculate event to make sure
-            '   one of them will trigger the Refresh
-            Application.OnTime Now(), "'" & ThisWorkbook.name & "'!initCLsCallback"
-            If m_bookCalcCallback Is Nothing Then
-                Set m_bookCalcCallback = New BookCalculateCallback
-                m_bookCalcCallback.init ThisWorkbook, "initCLsCallback", True
-            End If
-        Else
-            initCLsCallback
-        End If
+    If userCLs Is Nothing Or forceRefresh Then
+        Dim ws As Worksheet
+        Dim tbl As ListObject
+        Dim tmpCL As CL
+        
+        Set userCLs = New CLs
+        For Each ws In ThisWorkbook.Worksheets
+            For Each tbl In ws.ListObjects
+                Set tmpCL = FactoryCL.newCLtbl(tbl)
+                If Not tmpCL Is Nothing Then
+                    userCLs.addCL tmpCL
+                End If
+            Next tbl
+        Next ws
+        
+        refreshFormulas
     End If
     Set getUserCLs = userCLs
+End Function
+
+' refreshes all formulas on the spot or defers the call if code is UDF mode
+Private Function refreshFormulas()
+    If UDFMode() Then 'Defer
+        If Not Application.EnableEvents Then
+            Application.EnableEvents = True 'Works in UDF mode as well
+        End If
+
+        ' Try both Application.OnTime and SheetCalculate event to make sure
+        '   one of them will trigger the Refresh
+        Application.OnTime Now(), "'" & ThisWorkbook.name & "'!refreshCallback"
+        If m_bookCalcCallback Is Nothing Then
+            Set m_bookCalcCallback = New BookCalculateCallback
+            m_bookCalcCallback.init ThisWorkbook, "refreshCallback", True
+        End If
+    Else
+        refreshCallback
+    End If
 End Function
 
 'Returns a boolean indicating if code was called from a UDF
@@ -69,13 +85,14 @@ Public Function UDFMode() As Boolean
     If Not UDFMode Then Application.DisplayAlerts = dispAlerts 'Revert
 End Function
 
-' Callback method. See 'GetUserCLs' method above
+' Callback method
 ' Do not change 'Function' to 'Sub' to avoid Application.Run disconnection!
 ' Do not delete the 'dummy' parameter (caller can be a SheetCalculate event)!
-Private Function initCLsCallback(Optional ByVal dummy As Variant)
-    If Not m_waitRefresh Then
-        m_waitRefresh = True
-        initCLs
+Private Function refreshCallback(Optional ByVal dummy As Variant)
+    Static waitRefresh As Boolean
+    
+    If Not waitRefresh Then
+        waitRefresh = True
         If ThisWorkbook.IsAddin Then
             Dim book As Workbook
             For Each book In Application.Workbooks
@@ -85,31 +102,9 @@ Private Function initCLsCallback(Optional ByVal dummy As Variant)
             forceRefreshBookFormulas ThisWorkbook
         End If
         Set m_bookCalcCallback = Nothing
-        m_waitRefresh = False
+        waitRefresh = False
     End If
 End Function
-
-' Searches all worksheets for tables which can be used to initialize a Center Line
-' If errors are found in the input table (missing columns, missing values,...),
-' center line is not initialized
-' Initilized center lines are stored in the userCLs variable of this module
-Private Sub initCLs()
-    Dim ws As Worksheet
-    Dim tbl As ListObject
-    Dim tmpCL As CL
-    
-    Set userCLs = New CLs
-    'loop all worksheets
-    For Each ws In ThisWorkbook.Worksheets
-        'loop all tables
-        For Each tbl In ws.ListObjects
-            Set tmpCL = FactoryCL.newCLtbl(tbl)
-            If Not tmpCL Is Nothing Then
-                userCLs.addCL tmpCL
-            End If
-        Next tbl
-    Next ws
-End Sub
 
 ' Refreshes all formulas in a Workbook
 Private Sub forceRefreshBookFormulas(ByVal book As Workbook)
@@ -136,6 +131,5 @@ End Sub
 
 ' Refreshes all CLs
 Public Sub refreshCLs()
-    Set userCLs = Nothing
-    initCLsCallback
+    getUserCLs forceRefresh:=True
 End Sub
