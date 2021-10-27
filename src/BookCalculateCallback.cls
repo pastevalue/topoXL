@@ -61,7 +61,7 @@ End Sub
 Private Property Get Workbook() As Workbook
     Set Workbook = m_book
 End Property
-Private Property Get CallbackName() As Workbook
+          Private Property Get CallbackName() As String
     CallbackName = m_callbackName
 End Property
 Private Property Get IgnoreErrors() As Boolean
